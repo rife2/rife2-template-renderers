@@ -34,7 +34,7 @@ This project provides a set of template renderers.
 - **rife.render.Uncapitalize**
   - Un-capitalizes a template value.
 - **rife.render.Uppercase**
-  - Convert a template value to uppercase.
+  - Converts a template value to uppercase.
 - **rife.render.Year**
   - Renders the current year.
 

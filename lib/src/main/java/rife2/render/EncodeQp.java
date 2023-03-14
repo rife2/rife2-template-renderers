@@ -19,8 +19,7 @@ package rife2.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-
-import java.util.Locale;
+import rife.tools.Localization;
 
 /**
  * <p>Converts a template value to a quoted-printable string.</p>
@@ -65,7 +64,7 @@ public class EncodeQp implements ValueRenderer {
                     buff.append('0');
                 }
 
-                buff.append(hex.toUpperCase(Locale.getDefault()));
+                buff.append(hex.toUpperCase(Localization.getLocale()));
             }
         }
 

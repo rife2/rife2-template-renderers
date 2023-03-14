@@ -19,8 +19,7 @@ package rife2.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-
-import java.util.Locale;
+import rife.tools.Localization;
 
 /**
  * <p>Converts a template value to lowercase.</p>
@@ -42,7 +41,7 @@ public class Lowercase implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toLowerCase(Locale.getDefault());
+            return template.getValue(differentiator).toLowerCase(Localization.getLocale());
         } else {
             return "";
         }

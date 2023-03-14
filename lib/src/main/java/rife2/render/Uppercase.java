@@ -19,8 +19,7 @@ package rife2.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-
-import java.util.Locale;
+import rife.tools.Localization;
 
 /**
  * <p>Convert a template value to uppercase.</p>
@@ -42,7 +41,7 @@ public class Uppercase implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toUpperCase(Locale.getDefault());
+            return template.getValue(differentiator).toUpperCase(Localization.getLocale());
         } else {
             return "";
         }

@@ -19,8 +19,7 @@ package rife2.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-
-import java.util.Locale;
+import rife.tools.Localization;
 
 /**
  * <p>Un-capitalizes a template value.</p>
@@ -43,7 +42,7 @@ public class Uncapitalize implements ValueRenderer {
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
             var value = template.getValue(differentiator);
-            return value.substring(0, 1).toLowerCase(Locale.getDefault()) + value.substring(1);
+            return value.substring(0, 1).toLowerCase(Localization.getLocale()) + value.substring(1);
         } else {
             return "";
         }
