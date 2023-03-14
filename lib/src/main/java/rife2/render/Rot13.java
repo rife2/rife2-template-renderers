@@ -27,7 +27,7 @@ import rife.template.ValueRenderer;
  *
  * <pre>
  *   &lt;!--v render:rife.render.Rot13:valueId/--&gt;
- *   {{v render:rife.render.Rot13:valueId}}
+ *   {{v render:rife.render.Rot13:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -77,7 +77,7 @@ public class Rot13 implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return rot13(template.getValue(differentiator));
         } else {
             return "";

@@ -27,7 +27,7 @@ import rife.template.ValueRenderer;
  *
  * <pre>
  *   &lt;!--v render:rife.render.EncodeHtmlEntities:valueId/--&gt;
- *   {{v render:rife.render.EncodeHtmlEntities:valueId}}
+ *   {{v render:rife.render.EncodeHtmlEntities:valueId/}}
  * </pre>
  *
  * <p>For example {@code john@doe.com} would be encoded to:</p>
@@ -59,7 +59,7 @@ public class EncodeHtmlEntities implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return toHtmlEntities(template.getValue(differentiator));
         } else {
             return "";

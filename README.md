@@ -49,7 +49,7 @@ All rendered can be used at follows:
 or
 
 ```
-{{v render:rife.render.RendererName:valueId}}
+{{v render:rife.render.RendererName:valueId/}}
 ```
 
 For example, to capitalize a template `foo` value:

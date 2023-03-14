@@ -28,7 +28,7 @@ import rife.tools.StringUtils;
  *
  * <pre>
  *   &lt;!--v render:rife.render.EncodeUrl:valueId/--&gt;
- *   {{v render:rife.render.EncodeUrl:valueId}}
+ *   {{v render:rife.render.EncodeUrl:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -41,7 +41,7 @@ public class EncodeUrl implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return StringUtils.encodeUrl(template.getValue(differentiator));
         } else {
             return "";

@@ -29,7 +29,7 @@ import java.util.Locale;
  *
  * <pre>
  *   &lt;!--v render:rife.render.Uppercase:valueId/--&gt;
- *   {{v render:rife.render.Uppercase:valueId}}
+ *   {{v render:rife.render.Uppercase:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -41,7 +41,7 @@ public class Uppercase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return template.getValue(differentiator).toUpperCase(Locale.getDefault());
         } else {
             return "";

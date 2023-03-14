@@ -29,7 +29,7 @@ import java.util.Locale;
  *
  * <pre>
  *   &lt;!--v render:rife.render.Capitalize:valueId/--&gt;
- *   {{v render:rife.render.Capitalize:valueId}}
+ *   {{v render:rife.render.Capitalize:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -41,7 +41,7 @@ public class Capitalize implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             var value = template.getValue(differentiator);
             return value.substring(0, 1).toUpperCase(Locale.getDefault()) + value.substring(1);
         } else {

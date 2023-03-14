@@ -29,7 +29,7 @@ import java.util.Locale;
  *
  * <pre>
  *   &lt;!--v render:rife.render.EncodeQp:valueId/--&gt;
- *   {{v render:rife.render.EncodeQp:valueId}}
+ *   {{v render:rife.render.EncodeQp:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -77,7 +77,7 @@ public class EncodeQp implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return toQuotedPrintable(template.getValue(differentiator));
         } else {
             return "";

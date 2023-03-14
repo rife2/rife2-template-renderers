@@ -29,7 +29,7 @@ import java.util.Locale;
  *
  * <pre>
  *   &lt;!--v render:rife.render.Lowercase:valueId/--&gt;
- *   {{v render:rife.render.Lowercase:valueId}}
+ *   {{v render:rife.render.Lowercase:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -41,7 +41,7 @@ public class Lowercase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+        if (template.hasValueId(differentiator)) {
             return template.getValue(differentiator).toLowerCase(Locale.getDefault());
         } else {
             return "";
