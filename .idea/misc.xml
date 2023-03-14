@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="EntryPointsManager">
+    <pattern value="rife2.render.Capitalize" />
+    <pattern value="rife2.render.Lowercase" />
+    <pattern value="rife2.render.SwapCase" />
+    <pattern value="rife2.render.Trim" />
+    <pattern value="rife2.render.Uncapitalize" />
+    <pattern value="rife2.render.Uppercase" />
+  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">
     <option name="skipTestSources" value="false" />

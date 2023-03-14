@@ -21,7 +21,6 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 
 import java.util.Locale;
-import java.util.regex.Pattern;
 
 /**
  * <p>Capitalizes a template value.</p>

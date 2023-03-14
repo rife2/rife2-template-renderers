@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     `java-library`
+    pmd
     id("com.github.ben-manes.versions") version "0.46.0"
 }
 
@@ -39,6 +40,13 @@ java {
     	languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
+
+pmd {
+    isIgnoreFailures = true
+    ruleSetFiles = files("${projectDir}/config/pmd.xml")
+    isConsoleOutput = true
+}
+
 
 tasks {
     test {
