@@ -36,34 +36,32 @@ import rife.template.ValueRenderer;
 public class SwapCase implements ValueRenderer {
     /**
      * Swaps the case of a String.
-     * @param s the String to swap the case of
+     *
+     * @param src the String to swap the case of
      * @return the modified String or null
      */
-    public static String swapCase(String s) {
-        if (s == null || s.isEmpty()) {
-            return s;
+    public static String swapCase(final String src) {
+        if (src == null || src.isEmpty()) {
+            return src;
         }
 
-        var buffer = s.toCharArray();
-        var whitespace = true;
-
-        for (var i = 0; i < buffer.length; i++) {
-            var ch = buffer[i];
-            if (Character.isUpperCase(ch) || Character.isTitleCase(ch)) {
-                buffer[i] = Character.toLowerCase(ch);
-                whitespace = false;
-            } else if (Character.isLowerCase(ch)) {
-                if (whitespace) {
-                    buffer[i] = Character.toTitleCase(ch);
-                    whitespace = false;
-                } else {
-                    buffer[i] = Character.toUpperCase(ch);
-                }
+        int offset = 0;
+        var len = src.length();
+        var buff = new int[len];
+        for (var i = 0; i < len; ) {
+            int newCodePoint;
+            var curCodePoint = src.codePointAt(i);
+            if (Character.isUpperCase(curCodePoint) || Character.isTitleCase(curCodePoint)) {
+                newCodePoint = Character.toLowerCase(curCodePoint);
+            } else if (Character.isLowerCase(curCodePoint)) {
+                newCodePoint = Character.toUpperCase(curCodePoint);
             } else {
-                whitespace = Character.isWhitespace(ch);
+                newCodePoint = curCodePoint;
             }
+            buff[offset++] = newCodePoint;
+            i += Character.charCount(newCodePoint);
         }
-        return new String(buffer);
+        return new String(buff, 0, offset);
     }
 
     /**
