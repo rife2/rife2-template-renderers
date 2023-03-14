@@ -29,7 +29,7 @@ dependencies {
 
 configurations {
 	all {
-        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS);
+        resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
     }
 }
 

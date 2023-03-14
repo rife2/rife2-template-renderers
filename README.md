@@ -6,15 +6,23 @@
 This project provides a set of template renderers.
 
 - **rife.render.Capitalize**
-    - Capitalizes a template value.
+  - Capitalizes a template value.
+- **rife.render.EncodeHtml**
+  - Encodes a template value to HTML.
+- **rife.render.EncodeJson**
+  - Encodes a template value to JSON.
+- **rife.render.EncodeUrl**
+  - URL-encodes a template value.
+- **rife.render.EncodeXml**
+  - Encodes a template value to XML.
 - **rife.render.Lowercase**
-    - Converts a template value to lowercase.
+  - Converts a template value to lowercase.
 - **rife.render.SwapCase**
-    - Swap case of a template value.
+  - Swap case of a template value.
 - **rife.render.Trim**
-    - Removes leading and trailing whitespace from a template value.
+  - Removes leading and trailing whitespace from a template value.
 - **rife.render.Uncapitalize**
-    - Un-capitalizes a template value.
+  - Un-capitalizes a template value.
 - **rife.render.Uppercase**
   - Convert a template value to uppercase.
 
@@ -22,24 +30,24 @@ This project provides a set of template renderers.
 
 All rendered can be used at follows:
 
-```html
+```
 <!--v render:rife.render.RendererName:valueId/-->
 ```
 
 or
 
-```json
+```
 {{v render:rife.render.RendererName:valueId}}
 ```
 
 For example, to capitalize a template `foo` value:
 
-```html
+```
 <!--v render:rife.render.Capitalize:foo/-->
 ```
 
 or
 
-```json
+```
 {{v render:rife.render.Capitalize:foo}}
 ```

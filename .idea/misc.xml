@@ -7,6 +7,10 @@
     <pattern value="rife2.render.Trim" />
     <pattern value="rife2.render.Uncapitalize" />
     <pattern value="rife2.render.Uppercase" />
+    <pattern value="rife2.render.EncodeHtml" />
+    <pattern value="rife2.render.EncodeJson" />
+    <pattern value="rife2.render.EncodeUrl" />
+    <pattern value="rife2.render.EncodeXml" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">
