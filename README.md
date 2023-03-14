@@ -11,12 +11,16 @@ This project provides a set of template renderers.
   - Encodes a template value to HTML.
 - **rife.render.EncodeJson**
   - Encodes a template value to JSON.
+- **rife.render.EncodeQp**
+  - Converts a template value to a quoted-printable string.
 - **rife.render.EncodeUrl**
   - URL-encodes a template value.
 - **rife.render.EncodeXml**
   - Encodes a template value to XML.
 - **rife.render.Lowercase**
   - Converts a template value to lowercase.
+- **rife.render.Rot13**
+  - Translates a template value to/from ROT13.
 - **rife.render.SwapCase**
   - Swap case of a template value.
 - **rife.render.Trim**
@@ -25,6 +29,8 @@ This project provides a set of template renderers.
   - Un-capitalizes a template value.
 - **rife.render.Uppercase**
   - Convert a template value to uppercase.
+- **rife.render.Year**
+  - Renders the current year.
 
 ## Usage in Templates
 

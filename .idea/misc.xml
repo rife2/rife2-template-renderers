@@ -11,6 +11,10 @@
     <pattern value="rife2.render.EncodeJson" />
     <pattern value="rife2.render.EncodeUrl" />
     <pattern value="rife2.render.EncodeXml" />
+    <pattern value="rife2.render.EncodeQp" />
+    <pattern value="rife2.render.EncodeHtmlEntities" />
+    <pattern value="rife2.render.Rot13" />
+    <pattern value="rife2.render.Year" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">

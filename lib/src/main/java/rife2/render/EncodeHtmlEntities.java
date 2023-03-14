@@ -1,0 +1,68 @@
+/*
+ *  Copyright 2023 the original author or authors.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
+package rife2.render;
+
+import rife.template.Template;
+import rife.template.ValueRenderer;
+
+/**
+ * <p>Encodes a template value to HTML decimal entities</p>
+ *
+ * <p>Usage:</p>
+ *
+ * <pre>
+ *   &lt;!--v render:rife.render.EncodeHtmlEntities:valueId/--&gt;
+ *   {{v render:rife.render.EncodeHtmlEntities:valueId}}
+ * </pre>
+ *
+ * <p>For example {@code john@doe.com} would be encoded to:</p>
+ *
+ * <pre>&amp;#106;&amp;#111;&amp;#104;&amp;#110;&amp;#64;&amp;#100;&amp;#111;&amp;#101;&amp;#46;&amp;#99;&amp;#111;&amp;#109;</pre>
+ *
+ * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @since 1.0
+ */
+public class EncodeHtmlEntities implements ValueRenderer {
+    /**
+     * Converts a text string to HTML decimal entities.
+     *
+     * @param text the String to convert.
+     * @return the converted string.
+     */
+    public static String toHtmlEntities(String text) {
+        var buff = new StringBuilder(text.length() * 6);
+
+        for (var i = 0; i < text.length(); i++) {
+            buff.append("&#").append((int) text.charAt(i)).append(';');
+        }
+
+        return buff.toString();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String render(Template template, String valueId, String differentiator) {
+        if (differentiator != null && !differentiator.isBlank() && template.hasValueId(differentiator)) {
+            return toHtmlEntities(template.getValue(differentiator));
+        } else {
+            return "";
+        }
+    }
+}
