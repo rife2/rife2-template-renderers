@@ -1,0 +1,45 @@
+[![License](https://img.shields.io/badge/license-Apache%20License%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/java-17%2B-blue)](https://www.oracle.com/java/technologies/javase/jdk17-archive-downloads.html)
+
+# [RIFE2](https://rife2.com/) Template Renderers
+
+This project provides a set of template renderers.
+
+- **rife.render.Capitalize**
+    - Capitalizes a template value.
+- **rife.render.Lowercase**
+    - Converts a template value to lowercase.
+- **rife.render.SwapCase**
+    - Swap case of a template value.
+- **rife.render.Trim**
+    - Removes leading and trailing whitespace from a template value.
+- **rife.render.Uncapitalize**
+    - Un-capitalizes a template value.
+- **rife.render.Uppercase**
+  - Convert a template value to uppercase.
+
+## Usage in Templates
+
+All rendered can be used at follows:
+
+```html
+<!--v render:rife.render.RendererName:valueId/-->
+```
+
+or
+
+```json
+{{v render:rife.render.RendererName:valueId}}
+```
+
+For example, to capitalize a template `foo` value:
+
+```html
+<!--v render:rife.render.Capitalize:foo/-->
+```
+
+or
+
+```json
+{{v render:rife.render.Capitalize:foo}}
+```
