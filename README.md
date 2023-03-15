@@ -13,6 +13,8 @@ This project provides a set of template renderers.
   - Renders the current date and time in ISO 8061 format.
 - **rife.render.DateTimeRfc2822**
   - Renders the current date and time in RFC 2822 format.
+- **rife.render.DateTimeUtc**
+  - Renders the current UTC date and time in ISO 8061 format.
 - **rife.render.EncodeBase64**
   - Encodes a template value to Base64.
 - **rife.render.EncodeHtml**
