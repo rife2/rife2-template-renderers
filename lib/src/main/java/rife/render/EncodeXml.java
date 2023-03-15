@@ -41,10 +41,6 @@ public class EncodeXml implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeXml(template.getValue(differentiator));
-        } else {
-            return "";
-        }
+        return StringUtils.encodeXml(RenderUtils.fetchValue(template, differentiator));
     }
 }

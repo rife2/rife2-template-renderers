@@ -70,10 +70,6 @@ public class SwapCase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return swapCase(template.getValue(differentiator));
-        } else {
-            return "";
-        }
+        return swapCase(RenderUtils.fetchValue(template, differentiator));
     }
 }

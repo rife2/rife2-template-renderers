@@ -41,10 +41,6 @@ public class EncodeJson implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeJson(template.getValue(differentiator));
-        } else {
-            return "";
-        }
+        return StringUtils.encodeJson(RenderUtils.fetchValue(template, differentiator));
     }
 }

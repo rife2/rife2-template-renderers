@@ -43,10 +43,7 @@ public class EncodeBase64 implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeBase64(template.getValue(differentiator).getBytes(StandardCharsets.UTF_8));
-        } else {
-            return "";
-        }
+        return StringUtils.encodeBase64(RenderUtils.fetchValue(template, differentiator)
+                .getBytes(StandardCharsets.UTF_8));
     }
 }

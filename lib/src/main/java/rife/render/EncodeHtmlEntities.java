@@ -59,10 +59,6 @@ public class EncodeHtmlEntities implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return toHtmlEntities(template.getValue(differentiator));
-        } else {
-            return "";
-        }
+        return toHtmlEntities(RenderUtils.fetchValue(template, differentiator));
     }
 }

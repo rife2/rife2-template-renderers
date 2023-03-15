@@ -40,10 +40,6 @@ public class Lowercase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toLowerCase(Localization.getLocale());
-        } else {
-            return "";
-        }
+        return RenderUtils.fetchValue(template, differentiator).toLowerCase(Localization.getLocale());
     }
 }

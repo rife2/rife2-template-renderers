@@ -40,11 +40,7 @@ public class Uncapitalize implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            var value = template.getValue(differentiator);
-            return value.substring(0, 1).toLowerCase(Localization.getLocale()) + value.substring(1);
-        } else {
-            return "";
-        }
+        var value = RenderUtils.fetchValue(template, differentiator);
+        return value.substring(0, 1).toLowerCase(Localization.getLocale()) + value.substring(1);
     }
 }

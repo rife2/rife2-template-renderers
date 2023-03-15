@@ -17,28 +17,24 @@
 
 package rife.render;
 
-import rife.template.Template;
-import rife.template.ValueRenderer;
+import org.junit.jupiter.api.Test;
+import rife.template.TemplateFactory;
 
-/**
- * <p>Removes leading and trailing whitespace from a template value.</p>
- *
- * <p>Usage:</p>
- *
- * <pre>
- *   &lt;!--v render:rife.render.Trim:valueId/--&gt;
- *   {{v render:rife.render.Trim:valueId/}}
- * </pre>
- *
- * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @since 1.0
- */
-public class Trim implements ValueRenderer {
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.fetchValue(template, differentiator).trim();
+import static org.assertj.core.api.Assertions.assertThat;
+
+class TestCase {
+    @Test
+    void testCapitalize() {
+        var t = TemplateFactory.TXT.get("capitalize");
+        t.setAttribute("foo", "this is a test");
+        assertThat(t.getContent()).isEqualTo("This is a test");
+    }
+
+    @Test
+    void testLowercase() {
+        var t = TemplateFactory.TXT.get("lowercase");
+        var bean = new ValueBean("this IS a TEST");
+        t.setBean(bean);
+        assertThat(t.getContent()).isEqualTo(bean.getValue() + ": this is a test");
     }
 }

@@ -40,10 +40,6 @@ public class Uppercase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toUpperCase(Localization.getLocale());
-        } else {
-            return "";
-        }
+        return RenderUtils.fetchValue(template, differentiator).toUpperCase(Localization.getLocale());
     }
 }
