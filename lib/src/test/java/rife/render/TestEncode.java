@@ -23,11 +23,10 @@ import rife.template.TemplateFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 class TestEncode {
-    @Disabled("Until renderer can access beans")
     @Test
     void testEncodeUrl() {
         var t = TemplateFactory.HTML.get("encodeUrl");
-        t.setBean(new ValueBean("a test &"));
+        t.setAttribute("foo", "a test &");
         var encodedValue = "a%20test%20%26";
         assertThat(t.getContent()).isEqualTo(encodedValue + "<br>\n" + encodedValue);
     }
