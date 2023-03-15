@@ -30,7 +30,7 @@ import java.time.ZonedDateTime;
  *
  * <pre>
  *   &lt;!--v render:rife.render.DateTimeUTC/--&gt;
- *   {{v render:rife.render.DateTimeUTC}}
+ *   {{v render:rife.render.DateTimeUTC/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>

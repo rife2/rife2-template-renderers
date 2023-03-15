@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter;
  *
  * <pre>
  *   &lt;!--v render:rife.render.DateIso/--&gt;
- *   {{v render:rife.render.DateIso}}
+ *   {{v render:rife.render.DateIso/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
@@ -43,7 +43,6 @@ public class DateIso implements ValueRenderer {
      */
     static public final DateTimeFormatter iso8601Formatter =
             DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Localization.getLocale());
-
 
     /**
      * {@inheritDoc}

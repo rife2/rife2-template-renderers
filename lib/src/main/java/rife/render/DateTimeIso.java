@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter;
  *
  * <pre>
  *   &lt;!--v render:rife.render.DateTimeIso/--&gt;
- *   {{v render:rife.render.DateTimeIso}}
+ *   {{v render:rife.render.DateTimeIso/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>

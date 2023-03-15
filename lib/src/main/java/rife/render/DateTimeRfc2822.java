@@ -31,7 +31,7 @@ import java.time.format.DateTimeFormatter;
  *
  * <pre>
  *   &lt;!--v render:rife.render.DateTimeRfc2822/--&gt;
- *   {{v render:rife.render.DateTimeRfc2822}}
+ *   {{v render:rife.render.DateTimeRfc2822/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>

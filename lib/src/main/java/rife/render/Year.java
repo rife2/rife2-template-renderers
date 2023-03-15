@@ -27,7 +27,7 @@ import rife.template.ValueRenderer;
  *
  * <pre>
  *   &lt;!--v render:rife.render.Year/--&gt;
- *   {{v render:rife.render.Year}}
+ *   {{v render:rife.render.Year/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
