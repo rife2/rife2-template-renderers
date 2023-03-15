@@ -21,7 +21,6 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.Localization;
 
-import java.text.DateFormat;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 

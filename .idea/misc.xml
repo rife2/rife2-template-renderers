@@ -17,6 +17,33 @@
     <pattern value="rife2.render.Year" />
     <pattern value="rife2.render.EncodeBase64" />
     <pattern value="rife2.render.EncodeUnicode" />
+    <pattern value="rife.render.Capitalize" />
+    <pattern value="rife.render.EncodeBase64" />
+    <pattern value="rife.render.EncodeHtml" />
+    <pattern value="rife.render.EncodeHtmlEntities" />
+    <pattern value="rife.render.EncodeJson" />
+    <pattern value="rife.render.EncodeQp" />
+    <pattern value="rife.render.EncodeUnicode" />
+    <pattern value="rife.render.EncodeUrl" />
+    <pattern value="rife.render.EncodeXml" />
+    <pattern value="rife.render.ValueBean" method="getValue" />
+    <pattern value="rife.render.Lowercase" />
+    <pattern value="rife.render.Rot13" />
+    <pattern value="rife.render.SwapCase" />
+    <pattern value="rife.render.TestDateTime" />
+    <pattern value="rife.render.TestEncode" />
+    <pattern value="rife.render.Trim" />
+    <pattern value="rife.render.Uncapitalize" />
+    <pattern value="rife.render.Uppercase" />
+    <pattern value="rife.render.Year" />
+    <pattern value="rife.render.ValueBean" method="setValue" />
+    <pattern value="rife.render.TestDateTime" method="testDateIso" />
+    <pattern value="rife.render.TestDateTime" method="testDateTimeIso" />
+    <pattern value="rife.render.TestDateTime" method="testDateTimeRfc2822" />
+    <pattern value="rife.render.TestEncode" method="testEncodeUrl" />
+    <pattern value="rife.render.TestDateTime" method="testTimeIso" />
+    <pattern value="rife.render.TestDateTime" method="testYear" />
+    <pattern value="rife.render.ValueBean" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">

@@ -40,6 +40,7 @@ public class SwapCase implements ValueRenderer {
      * @param src the String to swap the case of
      * @return the modified String or null
      */
+    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String swapCase(final String src) {
         if (src == null || src.isEmpty()) {
             return src;
