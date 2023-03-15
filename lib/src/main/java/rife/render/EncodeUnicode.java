@@ -15,34 +15,34 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.StringUtils;
 
 /**
- * <p>Encodes a template value to HTML.</p>
+ * <p>Encodes a template value to Unicode escape codes.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeHtml:valueId/--&gt;
- *   {{v render:rife.render.EncodeHtml:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeUnicode:valueId/--&gt;
+ *   {{v render:rife.render.EncodeUnicode:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see StringUtils#encodeHtml(String)
+ * @see StringUtils#encodeUnicode(String)
  * @since 1.0
  */
-public class EncodeHtml implements ValueRenderer {
+public class EncodeUnicode implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeHtml(template.getValue(differentiator));
+            return StringUtils.encodeUnicode(template.getValue(differentiator));
         } else {
             return "";
         }

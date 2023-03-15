@@ -15,7 +15,7 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;

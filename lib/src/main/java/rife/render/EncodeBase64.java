@@ -15,34 +15,36 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.StringUtils;
 
+import java.nio.charset.StandardCharsets;
+
 /**
- * <p>Encodes a template value to XML.</p>
+ * <p>Encodes a template value to Base64.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeXml:valueId/--&gt;
- *   {{v render:rife.render.EncodeXml:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeBase64:valueId/--&gt;
+ *   {{v render:rife.render.EncodeBase64:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see StringUtils#encodeXml(String)
+ * @see StringUtils#encodeBase64(byte[])
  * @since 1.0
  */
-public class EncodeXml implements ValueRenderer {
+public class EncodeBase64 implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeXml(template.getValue(differentiator));
+            return StringUtils.encodeBase64(template.getValue(differentiator).getBytes(StandardCharsets.UTF_8));
         } else {
             return "";
         }

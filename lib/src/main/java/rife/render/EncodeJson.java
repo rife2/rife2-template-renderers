@@ -15,33 +15,34 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
+import rife.tools.StringUtils;
 
 /**
- * <p>Converts a template value to lowercase.</p>
+ * <p>Encodes a template value to JSON.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Lowercase:valueId/--&gt;
- *   {{v render:rife.render.Lowercase:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeJson:valueId/--&gt;
+ *   {{v render:rife.render.EncodeJson:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see StringUtils#encodeJson(String)
  * @since 1.0
  */
-public class Lowercase implements ValueRenderer {
+public class EncodeJson implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toLowerCase(Localization.getLocale());
+            return StringUtils.encodeJson(template.getValue(differentiator));
         } else {
             return "";
         }

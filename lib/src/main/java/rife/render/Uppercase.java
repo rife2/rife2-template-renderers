@@ -15,34 +15,33 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.Localization;
 
 /**
- * <p>Capitalizes a template value.</p>
+ * <p>Convert a template value to uppercase.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Capitalize:valueId/--&gt;
- *   {{v render:rife.render.Capitalize:valueId/}}
+ *   &lt;!--v render:rife.render.Uppercase:valueId/--&gt;
+ *   {{v render:rife.render.Uppercase:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class Capitalize implements ValueRenderer {
+public class Uppercase implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            var value = template.getValue(differentiator);
-            return value.substring(0, 1).toUpperCase(Localization.getLocale()) + value.substring(1);
+            return template.getValue(differentiator).toUpperCase(Localization.getLocale());
         } else {
             return "";
         }

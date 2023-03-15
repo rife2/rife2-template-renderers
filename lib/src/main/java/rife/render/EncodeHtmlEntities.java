@@ -15,34 +15,52 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.StringUtils;
 
 /**
- * <p>Encodes a template value to Unicode escape codes.</p>
+ * <p>Encodes a template value to HTML decimal entities</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeUnicode:valueId/--&gt;
- *   {{v render:rife.render.EncodeUnicode:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeHtmlEntities:valueId/--&gt;
+ *   {{v render:rife.render.EncodeHtmlEntities:valueId/}}
  * </pre>
  *
+ * <p>For example {@code john@doe.com} would be encoded to:</p>
+ *
+ * <pre>&amp;#106;&amp;#111;&amp;#104;&amp;#110;&amp;#64;&amp;#100;&amp;#111;&amp;#101;&amp;#46;&amp;#99;&amp;#111;&amp;#109;</pre>
+ *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see StringUtils#encodeUnicode(String)
  * @since 1.0
  */
-public class EncodeUnicode implements ValueRenderer {
+public class EncodeHtmlEntities implements ValueRenderer {
+    /**
+     * Converts a text string to HTML decimal entities.
+     *
+     * @param text the String to convert.
+     * @return the converted string.
+     */
+    public static String toHtmlEntities(String text) {
+        var buff = new StringBuilder(text.length() * 6);
+
+        for (var i = 0; i < text.length(); i++) {
+            buff.append("&#").append((int) text.charAt(i)).append(';');
+        }
+
+        return buff.toString();
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeUnicode(template.getValue(differentiator));
+            return toHtmlEntities(template.getValue(differentiator));
         } else {
             return "";
         }

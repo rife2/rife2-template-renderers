@@ -15,34 +15,32 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 /**
- * <p>Un-capitalizes a template value.</p>
+ * <p>Removes leading and trailing whitespace from a template value.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Uncapitalize:valueId/--&gt;
- *   {{v render:rife.render.Uncapitalize:valueId/}}
+ *   &lt;!--v render:rife.render.Trim:valueId/--&gt;
+ *   {{v render:rife.render.Trim:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class Uncapitalize implements ValueRenderer {
+public class Trim implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            var value = template.getValue(differentiator);
-            return value.substring(0, 1).toLowerCase(Localization.getLocale()) + value.substring(1);
+            return template.getValue(differentiator).trim();
         } else {
             return "";
         }

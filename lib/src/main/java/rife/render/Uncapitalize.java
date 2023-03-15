@@ -15,52 +15,34 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
+import rife.tools.Localization;
 
 /**
- * <p>Encodes a template value to HTML decimal entities</p>
+ * <p>Un-capitalizes a template value.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeHtmlEntities:valueId/--&gt;
- *   {{v render:rife.render.EncodeHtmlEntities:valueId/}}
+ *   &lt;!--v render:rife.render.Uncapitalize:valueId/--&gt;
+ *   {{v render:rife.render.Uncapitalize:valueId/}}
  * </pre>
- *
- * <p>For example {@code john@doe.com} would be encoded to:</p>
- *
- * <pre>&amp;#106;&amp;#111;&amp;#104;&amp;#110;&amp;#64;&amp;#100;&amp;#111;&amp;#101;&amp;#46;&amp;#99;&amp;#111;&amp;#109;</pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class EncodeHtmlEntities implements ValueRenderer {
-    /**
-     * Converts a text string to HTML decimal entities.
-     *
-     * @param text the String to convert.
-     * @return the converted string.
-     */
-    public static String toHtmlEntities(String text) {
-        var buff = new StringBuilder(text.length() * 6);
-
-        for (var i = 0; i < text.length(); i++) {
-            buff.append("&#").append((int) text.charAt(i)).append(';');
-        }
-
-        return buff.toString();
-    }
-
+public class Uncapitalize implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return toHtmlEntities(template.getValue(differentiator));
+            var value = template.getValue(differentiator);
+            return value.substring(0, 1).toLowerCase(Localization.getLocale()) + value.substring(1);
         } else {
             return "";
         }

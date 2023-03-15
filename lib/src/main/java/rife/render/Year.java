@@ -15,38 +15,30 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.StringUtils;
-
-import java.nio.charset.StandardCharsets;
 
 /**
- * <p>Encodes a template value to Base64.</p>
+ * <p>Renders the current year.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeBase64:valueId/--&gt;
- *   {{v render:rife.render.EncodeBase64:valueId/}}
+ *   &lt;!--v render:rife.render.Year/--&gt;
+ *   {{v render:rife.render.Year}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see StringUtils#encodeBase64(byte[])
  * @since 1.0
  */
-public class EncodeBase64 implements ValueRenderer {
+public class Year implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeBase64(template.getValue(differentiator).getBytes(StandardCharsets.UTF_8));
-        } else {
-            return "";
-        }
+        return java.time.Year.now().toString();
     }
 }

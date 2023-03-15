@@ -15,33 +15,34 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
+import rife.tools.StringUtils;
 
 /**
- * <p>Convert a template value to uppercase.</p>
+ * <p>Encodes a template value to XML.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Uppercase:valueId/--&gt;
- *   {{v render:rife.render.Uppercase:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeXml:valueId/--&gt;
+ *   {{v render:rife.render.EncodeXml:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see StringUtils#encodeXml(String)
  * @since 1.0
  */
-public class Uppercase implements ValueRenderer {
+public class EncodeXml implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return template.getValue(differentiator).toUpperCase(Localization.getLocale());
+            return StringUtils.encodeXml(template.getValue(differentiator));
         } else {
             return "";
         }

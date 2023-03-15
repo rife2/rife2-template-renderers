@@ -15,34 +15,34 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.StringUtils;
 
 /**
- * <p>Encodes a template value to JSON.</p>
+ * <p>Encodes a template value to HTML.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeJson:valueId/--&gt;
- *   {{v render:rife.render.EncodeJson:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeHtml:valueId/--&gt;
+ *   {{v render:rife.render.EncodeHtml:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see StringUtils#encodeJson(String)
+ * @see StringUtils#encodeHtml(String)
  * @since 1.0
  */
-public class EncodeJson implements ValueRenderer {
+public class EncodeHtml implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
         if (template.hasValueId(differentiator)) {
-            return StringUtils.encodeJson(template.getValue(differentiator));
+            return StringUtils.encodeHtml(template.getValue(differentiator));
         } else {
             return "";
         }

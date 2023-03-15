@@ -15,30 +15,35 @@
  *
  */
 
-package rife2.render;
+package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
+import rife.tools.Localization;
 
 /**
- * <p>Renders the current year.</p>
+ * <p>Converts a template value to lowercase.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Year/--&gt;
- *   {{v render:rife.render.Year}}
+ *   &lt;!--v render:rife.render.Lowercase:valueId/--&gt;
+ *   {{v render:rife.render.Lowercase:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class Year implements ValueRenderer {
+public class Lowercase implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return java.time.Year.now().toString();
+        if (template.hasValueId(differentiator)) {
+            return template.getValue(differentiator).toLowerCase(Localization.getLocale());
+        } else {
+            return "";
+        }
     }
 }
