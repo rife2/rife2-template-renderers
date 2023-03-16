@@ -45,8 +45,8 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeJS() {
-        var t = TemplateFactory.TXT.get("encodeJS");
+    void testEncodeJs() {
+        var t = TemplateFactory.TXT.get("encodeJs");
         t.setAttribute(TestCase.FOO, "'\"\\/");
         assertThat(t.getContent()).isEqualTo("\\'\\\"\\\\\\/");
     }

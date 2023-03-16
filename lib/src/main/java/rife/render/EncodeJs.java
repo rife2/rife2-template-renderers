@@ -27,15 +27,15 @@ import rife.tools.StringUtils;
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.EncodeJS:valueId/--&gt;
- *   {{v render:rife.render.EncodeJS:valueId/}}
+ *   &lt;!--v render:rife.render.EncodeJs:valueId/--&gt;
+ *   {{v render:rife.render.EncodeJs:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @see StringUtils#encodeJson(String)
  * @since 1.0
  */
-public class EncodeJS implements ValueRenderer {
+public class EncodeJs implements ValueRenderer {
     /**
      * {@inheritDoc}
      */

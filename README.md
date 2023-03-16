@@ -26,7 +26,7 @@ This project provides a collection of template renderers.
 | `rife.render.EncodeBase64`        | Encodes a template value to Base64                     |
 | `rife.render.EncodeHtml`          | Encodes a template value to HTML                       |
 | `rife.render.EncodeHtmlEntities`  | Encodes a template value to HTML decimal entities      |
-| `rife.render.EncodeJS`            | Encodes a template value to JavaScript/ECMAScript      |
+| `rife.render.EncodeJs`            | Encodes a template value to JavaScript/ECMAScript      |
 | `rife.render.EncodeJson`          | Encodes a template value to JSON                       |
 | `rife.render.EncodeQp`            | Converts a template value to a quoted-printable string |
 | `rife.render.EncodeUnicode`       | Encodes a template value to Unicode escape codes       |
