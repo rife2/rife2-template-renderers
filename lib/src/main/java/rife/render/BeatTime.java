@@ -39,7 +39,7 @@ import java.time.temporal.ChronoField;
  */
 public class BeatTime implements ValueRenderer {
     /**
-     * Returns the Swatch Internet (.beat) Time for the give date & time.
+     * Returns the Swatch Internet (.beat) Time for the give date-time.
      *
      * @param zonedDateTime the date and time.
      * @return the .beat time. (eg.: {@code @248})
