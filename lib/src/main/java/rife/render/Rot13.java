@@ -37,8 +37,8 @@ public class Rot13 implements ValueRenderer {
     /**
      * Translates a String to/from ROT13.
      *
-     * @param src The source String.
-     * @return The translated String.
+     * @param src the source String.
+     * @return the translated String.
      */
     public static String rot13(String src) {
         if (src == null || src.isEmpty()) {

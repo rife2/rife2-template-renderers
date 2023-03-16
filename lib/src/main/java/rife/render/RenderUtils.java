@@ -33,7 +33,7 @@ public final class RenderUtils {
      *
      * @param template the template
      * @param valueId  the ID of the value to fetch
-     * @return The fetched value.
+     * @return the fetched value.
      */
     public static String fetchValue(Template template, String valueId) {
         Object value = null;

@@ -44,14 +44,19 @@ public class EncodeHtmlEntities implements ValueRenderer {
      * @param text the String to convert.
      * @return the converted string.
      */
+    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String toHtmlEntities(String text) {
-        var buff = new StringBuilder(text.length() * 6);
-
+        // https://stackoverflow.com/a/6766497/8356718
+        var sb = new StringBuilder(text.length() * 6);
         for (var i = 0; i < text.length(); i++) {
-            buff.append("&#").append((int) text.charAt(i)).append(';');
+            var codePoint = text.codePointAt(i);
+            // Skip over the second char in a surrogate pair
+            if (codePoint > 0xffff) {
+                i++;
+            }
+            sb.append(String.format("&#%s;", codePoint));
         }
-
-        return buff.toString();
+        return sb.toString();
     }
 
     /**
