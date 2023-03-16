@@ -41,8 +41,7 @@ public final class RenderUtils {
      */
     public static String beatTime(ZonedDateTime zonedDateTime) {
         var zdt = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC+01:00"));
-        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60)
-                + (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
+        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) + (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
         return String.format("@%03d", beats);
     }
 
@@ -57,8 +56,8 @@ public final class RenderUtils {
             return src;
         }
 
-        var sb = new StringBuilder();
         var len = src.length();
+        var sb = new StringBuilder(len);
 
         char c;
         for (var i = 0; i < len; i++) {
@@ -99,35 +98,36 @@ public final class RenderUtils {
      * @return the translated String.
      */
     public static String rot13(String src) {
-        if (src == null || src.isEmpty()) {
-            return "";
-        } else {
-            var output = new StringBuilder(src.length());
+        if (src == null || src.isBlank()) {
+            return src;
+        }
 
-            for (var i = 0; i < src.length(); i++) {
-                var inChar = src.charAt(i);
+        var len = src.length();
+        var output = new StringBuilder(len);
 
-                if ((inChar >= 'A') && (inChar <= 'Z')) {
-                    inChar += (char) 13;
+        for (var i = 0; i < len; i++) {
+            var inChar = src.charAt(i);
 
-                    if (inChar > 'Z') {
-                        inChar -= (char) 26;
-                    }
+            if ((inChar >= 'A') && (inChar <= 'Z')) {
+                inChar += (char) 13;
+
+                if (inChar > 'Z') {
+                    inChar -= (char) 26;
                 }
-
-                if ((inChar >= 'a') && (inChar <= 'z')) {
-                    inChar += (char) 13;
-
-                    if (inChar > 'z') {
-                        inChar -= (char) 26;
-                    }
-                }
-
-                output.append(inChar);
             }
 
-            return output.toString();
+            if ((inChar >= 'a') && (inChar <= 'z')) {
+                inChar += (char) 13;
+
+                if (inChar > 'z') {
+                    inChar -= (char) 26;
+                }
+            }
+
+            output.append(inChar);
         }
+
+        return output.toString();
     }
 
     /**
@@ -138,13 +138,14 @@ public final class RenderUtils {
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String swapCase(final String src) {
-        if (src == null || src.isEmpty()) {
+        if (src == null || src.isBlank()) {
             return src;
         }
 
         int offset = 0;
         var len = src.length();
         var buff = new int[len];
+
         for (var i = 0; i < len; ) {
             int newCodePoint;
             var curCodePoint = src.codePointAt(i);
@@ -164,15 +165,20 @@ public final class RenderUtils {
     /**
      * Converts a text string to HTML decimal entities.
      *
-     * @param text the String to convert.
+     * @param src the String to convert.
      * @return the converted string.
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
-    public static String toHtmlEntities(String text) {
+    public static String toHtmlEntities(String src) {
+        if (src == null || src.isEmpty()) {
+            return src;
+        }
+
         // https://stackoverflow.com/a/6766497/8356718
-        var sb = new StringBuilder(text.length() * 6);
-        for (var i = 0; i < text.length(); i++) {
-            var codePoint = text.codePointAt(i);
+        var len = src.length();
+        var sb = new StringBuilder(len * 6);
+        for (var i = 0; i < len; i++) {
+            var codePoint = src.codePointAt(i);
             // Skip over the second char in a surrogate pair
             if (codePoint > 0xffff) {
                 i++;
@@ -193,11 +199,12 @@ public final class RenderUtils {
             return src;
         }
 
-        char c;
-        var buff = new StringBuilder(src.length());
-        String hex;
+        var len = src.length();
+        var buff = new StringBuilder(len);
 
-        for (var i = 0; i < src.length(); i++) {
+        char c;
+        String hex;
+        for (var i = 0; i < len; i++) {
             c = src.charAt(i);
 
             if (((c > 47) && (c < 58)) || ((c > 64) && (c < 91)) || ((c > 96) && (c < 123))) {
