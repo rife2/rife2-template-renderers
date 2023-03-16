@@ -58,6 +58,6 @@ class TestDateTime {
     void testYear() {
         var t = TemplateFactory.HTML.get("year");
         var year = java.time.Year.now().toString();
-        assertThat(t.getContent()).isEqualTo(year + "<br>\n" + year);
+        assertThat(t.getContent()).isEqualTo(year + "<br>" + year);
     }
 }

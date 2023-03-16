@@ -19,22 +19,54 @@ package rife.render;
 
 import org.junit.jupiter.api.Test;
 import rife.template.TemplateFactory;
+import rife.tools.Localization;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TestCase {
+    static final String FOO = "foo";
+    static final String SAMPLE_TEXT = "This is a test.";
+
     @Test
     void testCapitalize() {
         var t = TemplateFactory.TXT.get("capitalize");
-        t.setAttribute("foo", "this is a test");
-        assertThat(t.getContent()).isEqualTo("This is a test");
+        t.setAttribute(FOO, SAMPLE_TEXT.toLowerCase(Localization.getLocale()));
+        assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT);
     }
 
     @Test
     void testLowercase() {
         var t = TemplateFactory.TXT.get("lowercase");
-        var bean = new ValueBean("this IS a TEST");
+        var bean = new ValueBean("this IS a TEST.");
         t.setBean(bean);
-        assertThat(t.getContent()).isEqualTo(bean.getValue() + ": this is a test");
+        assertThat(t.getContent()).isEqualTo(bean.getValue() + ": this is a test.");
+    }
+
+    @Test
+    void testSwapCase() {
+        var t = TemplateFactory.TXT.get("swapCase");
+        t.setAttribute(FOO, "tHiS iS a TeSt");
+        assertThat(t.getContent()).isEqualTo("ThIs Is A tEsT");
+    }
+
+    @Test
+    void testTrim() {
+        var t = TemplateFactory.TXT.get("trim");
+        t.setAttribute(FOO, "\t" + SAMPLE_TEXT + " \n");
+        assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT);
+    }
+
+    @Test
+    void testUncapitalize() {
+        var t = TemplateFactory.TXT.get("uncapitalize");
+        t.setAttribute(FOO, SAMPLE_TEXT);
+        assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT.toLowerCase(Localization.getLocale()));
+    }
+
+    @Test
+    void testUppercase() {
+        var t = TemplateFactory.TXT.get("uppercase");
+        t.setAttribute("bar", SAMPLE_TEXT);
+        assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT.toUpperCase(Localization.getLocale()));
     }
 }
