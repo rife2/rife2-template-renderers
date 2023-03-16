@@ -19,6 +19,11 @@ package rife.render;
 
 import rife.template.Template;
 import rife.tools.Convert;
+import rife.tools.Localization;
+
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 
 /**
  * Collection of utility-type methods commonly used by the renderers.
@@ -26,6 +31,47 @@ import rife.tools.Convert;
 public final class RenderUtils {
     private RenderUtils() {
         // no-op
+    }
+
+    /**
+     * Returns the Swatch Internet (.beat) Time for the give date-time.
+     *
+     * @param zonedDateTime the date and time.
+     * @return the .beat time. (eg.: {@code @248})
+     */
+    public static String beatTime(ZonedDateTime zonedDateTime) {
+        var zdt = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC+01:00"));
+        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60)
+                + (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
+        return String.format("@%03d", beats);
+    }
+
+    /**
+     * Encodes a string to JavaScript/ECMAScript.
+     *
+     * @param src the source string.
+     * @return the enocded string
+     */
+    public static String encodeJS(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
+        var sb = new StringBuilder();
+        var len = src.length();
+
+        char c;
+        for (var i = 0; i < len; i++) {
+            c = src.charAt(i);
+            switch (c) {
+                case '\'' -> sb.append("\\'");
+                case '"' -> sb.append("\\\"");
+                case '\\' -> sb.append("\\\\");
+                case '/' -> sb.append("\\/");
+                default -> sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     /**
@@ -44,5 +90,131 @@ public final class RenderUtils {
             value = template.getAttribute(valueId);
         }
         return Convert.toString(value);
+    }
+
+    /**
+     * Translates a String to/from ROT13.
+     *
+     * @param src the source String.
+     * @return the translated String.
+     */
+    public static String rot13(String src) {
+        if (src == null || src.isEmpty()) {
+            return "";
+        } else {
+            var output = new StringBuilder(src.length());
+
+            for (var i = 0; i < src.length(); i++) {
+                var inChar = src.charAt(i);
+
+                if ((inChar >= 'A') && (inChar <= 'Z')) {
+                    inChar += (char) 13;
+
+                    if (inChar > 'Z') {
+                        inChar -= (char) 26;
+                    }
+                }
+
+                if ((inChar >= 'a') && (inChar <= 'z')) {
+                    inChar += (char) 13;
+
+                    if (inChar > 'z') {
+                        inChar -= (char) 26;
+                    }
+                }
+
+                output.append(inChar);
+            }
+
+            return output.toString();
+        }
+    }
+
+    /**
+     * Swaps the case of a String.
+     *
+     * @param src the String to swap the case of
+     * @return the modified String or null
+     */
+    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
+    public static String swapCase(final String src) {
+        if (src == null || src.isEmpty()) {
+            return src;
+        }
+
+        int offset = 0;
+        var len = src.length();
+        var buff = new int[len];
+        for (var i = 0; i < len; ) {
+            int newCodePoint;
+            var curCodePoint = src.codePointAt(i);
+            if (Character.isUpperCase(curCodePoint) || Character.isTitleCase(curCodePoint)) {
+                newCodePoint = Character.toLowerCase(curCodePoint);
+            } else if (Character.isLowerCase(curCodePoint)) {
+                newCodePoint = Character.toUpperCase(curCodePoint);
+            } else {
+                newCodePoint = curCodePoint;
+            }
+            buff[offset++] = newCodePoint;
+            i += Character.charCount(newCodePoint);
+        }
+        return new String(buff, 0, offset);
+    }
+
+    /**
+     * Converts a text string to HTML decimal entities.
+     *
+     * @param text the String to convert.
+     * @return the converted string.
+     */
+    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
+    public static String toHtmlEntities(String text) {
+        // https://stackoverflow.com/a/6766497/8356718
+        var sb = new StringBuilder(text.length() * 6);
+        for (var i = 0; i < text.length(); i++) {
+            var codePoint = text.codePointAt(i);
+            // Skip over the second char in a surrogate pair
+            if (codePoint > 0xffff) {
+                i++;
+            }
+            sb.append(String.format("&#%s;", codePoint));
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Converts the given String to a quoted-printable string.
+     *
+     * @param src the source String
+     * @return the quoted-printable String
+     */
+    public static String toQuotedPrintable(String src) {
+        if (src == null || src.isEmpty()) {
+            return src;
+        }
+
+        char c;
+        var buff = new StringBuilder(src.length());
+        String hex;
+
+        for (var i = 0; i < src.length(); i++) {
+            c = src.charAt(i);
+
+            if (((c > 47) && (c < 58)) || ((c > 64) && (c < 91)) || ((c > 96) && (c < 123))) {
+                buff.append(c);
+            } else {
+                hex = Integer.toString(c, 16);
+
+                buff.append('=');
+
+                if (hex.length() == 1) {
+                    buff.append('0');
+                }
+
+                buff.append(hex.toUpperCase(Localization.getLocale()));
+            }
+        }
+
+        return buff.toString();
     }
 }

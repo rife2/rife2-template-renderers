@@ -34,42 +34,12 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class SwapCase implements ValueRenderer {
-    /**
-     * Swaps the case of a String.
-     *
-     * @param src the String to swap the case of
-     * @return the modified String or null
-     */
-    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
-    public static String swapCase(final String src) {
-        if (src == null || src.isEmpty()) {
-            return src;
-        }
-
-        int offset = 0;
-        var len = src.length();
-        var buff = new int[len];
-        for (var i = 0; i < len; ) {
-            int newCodePoint;
-            var curCodePoint = src.codePointAt(i);
-            if (Character.isUpperCase(curCodePoint) || Character.isTitleCase(curCodePoint)) {
-                newCodePoint = Character.toLowerCase(curCodePoint);
-            } else if (Character.isLowerCase(curCodePoint)) {
-                newCodePoint = Character.toUpperCase(curCodePoint);
-            } else {
-                newCodePoint = curCodePoint;
-            }
-            buff[offset++] = newCodePoint;
-            i += Character.charCount(newCodePoint);
-        }
-        return new String(buff, 0, offset);
-    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return swapCase(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.swapCase(RenderUtils.fetchValue(template, differentiator));
     }
 }

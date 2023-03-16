@@ -37,38 +37,10 @@ import rife.tools.StringUtils;
  */
 public class EncodeJS implements ValueRenderer {
     /**
-     * Encodes a string to JavaScript/ECMAScript.
-     *
-     * @param src the source string.
-     * @return the enocded string
-     */
-    public static String encodeJS(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
-        }
-
-        var sb = new StringBuilder();
-        var len = src.length();
-
-        char c;
-        for (var i = 0; i < len; i++) {
-            c = src.charAt(i);
-            switch (c) {
-                case '\'' -> sb.append("\\'");
-                case '"' -> sb.append("\\\"");
-                case '\\' -> sb.append("\\\\");
-                case '/' -> sb.append("\\/");
-                default -> sb.append(c);
-            }
-        }
-        return sb.toString();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return encodeJS(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.encodeJS(RenderUtils.fetchValue(template, differentiator));
     }
 }

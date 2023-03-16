@@ -19,7 +19,6 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 /**
  * <p>Converts a template value to a quoted-printable string.</p>
@@ -36,46 +35,10 @@ import rife.tools.Localization;
  */
 public class EncodeQp implements ValueRenderer {
     /**
-     * Converts the given String to a quoted-printable string.
-     *
-     * @param src the source String
-     * @return the quoted-printable String
-     */
-    public static String toQuotedPrintable(String src) {
-        if (src == null || src.isEmpty()) {
-            return src;
-        }
-
-        char c;
-        var buff = new StringBuilder(src.length());
-        String hex;
-
-        for (var i = 0; i < src.length(); i++) {
-            c = src.charAt(i);
-
-            if (((c > 47) && (c < 58)) || ((c > 64) && (c < 91)) || ((c > 96) && (c < 123))) {
-                buff.append(c);
-            } else {
-                hex = Integer.toString(c, 16);
-
-                buff.append('=');
-
-                if (hex.length() == 1) {
-                    buff.append('0');
-                }
-
-                buff.append(hex.toUpperCase(Localization.getLocale()));
-            }
-        }
-
-        return buff.toString();
-    }
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return toQuotedPrintable(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.toQuotedPrintable(RenderUtils.fetchValue(template, differentiator));
     }
 }
