@@ -25,6 +25,12 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class TestDateTime {
     @Test
+    void testBestTime() {
+        var t = TemplateFactory.HTML.get("beatTime");
+        assertThat(t.getContent()).matches("@\\d{3}");
+    }
+
+    @Test
     void testDateIso() {
         var t = TemplateFactory.HTML.get("dateIso");
         assertThatCode(() -> DateIso.iso8601Formatter.parse(t.getContent())).doesNotThrowAnyException();

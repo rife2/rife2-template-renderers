@@ -23,7 +23,7 @@ import rife.tools.Convert;
 /**
  * Collection of utility-type methods commonly used by the renderers.
  */
-public final  class RenderUtils {
+public final class RenderUtils {
     private RenderUtils() {
         // no-op
     }

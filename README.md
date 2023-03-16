@@ -7,14 +7,15 @@ This project provides a collection of template renderers.
 
 ## Date/Time Renderers
 
-| Renderer                         | Description                                               |
-|:---------------------------------|:----------------------------------------------------------|
-| `rife.render.DateIso`            | Renders the current date in ISO 8061 format.              |
-| `rife.render.DateTimeIso`        | Renders the current date and time in ISO 8061 format.     |
-| `rife.render.DateTimeRfc2822`    | Renders the current date and time in RFC 2822 format.     |
-| `rife.render.DateTimeUtc`        | Renders the current UTC date and time in ISO 8061 format. |
-| `rife.render.TimeIso`            | Renders the current time in ISO 8061 format.              |
-| `rife.render.Year`               | Renders the current year.                                 |
+| Renderer                         | Description                                                      |
+|:---------------------------------|:-----------------------------------------------------------------|
+| `rife.render.BeatTime`           | Renders the current time in Swatch Internet (.beat) Time format. |
+| `rife.render.DateIso`            | Renders the current date in ISO 8061 format.                     |
+| `rife.render.DateTimeIso`        | Renders the current date and time in ISO 8061 format.            |
+| `rife.render.DateTimeRfc2822`    | Renders the current date and time in RFC 2822 format.            |
+| `rife.render.DateTimeUtc`        | Renders the current UTC date and time in ISO 8061 format.        |
+| `rife.render.TimeIso`            | Renders the current time in ISO 8061 format.                     |
+| `rife.render.Year`               | Renders the current year.                                        |
 
 ## Encoding Renderers
 

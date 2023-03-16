@@ -16,20 +16,20 @@ repositories {
 }
 
 dependencies {
-	implementation("com.uwyn.rife2:rife2:1.5.0-SNAPSHOT") {
-		this.isChanging = true
-	}
-	runtimeOnly("com.uwyn.rife2:rife2:1.5.0-SNAPSHOT:agent") {
-		this.isChanging = true
-	}
+    implementation("com.uwyn.rife2:rife2:1.5.0-SNAPSHOT") {
+        this.isChanging = true
+    }
+    runtimeOnly("com.uwyn.rife2:rife2:1.5.0-SNAPSHOT:agent") {
+        this.isChanging = true
+    }
 
-	testImplementation(platform("org.junit:junit-bom:5.9.2"))
-	testImplementation("org.junit.jupiter:junit-jupiter")
+    testImplementation(platform("org.junit:junit-bom:5.9.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.assertj:assertj-core:3.24.2")
 }
 
 configurations {
-	all {
+    all {
         resolutionStrategy.cacheChangingModulesFor(0, TimeUnit.SECONDS)
     }
 }
@@ -38,7 +38,7 @@ java {
     withJavadocJar()
     withSourcesJar()
     toolchain {
-    	languageVersion.set(JavaLanguageVersion.of(17))
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
 
