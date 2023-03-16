@@ -45,6 +45,13 @@ class TestEncode {
     }
 
     @Test
+    void testEncodeJS() {
+        var t = TemplateFactory.TXT.get("encodeJS");
+        t.setAttribute(TestCase.FOO, "'\"\\/");
+        assertThat(t.getContent()).isEqualTo("\\'\\\"\\\\\\/");
+    }
+
+    @Test
     void testEncodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(TestCase.FOO, "fde\fde\rjk\tos\\u218Foi");
@@ -61,17 +68,16 @@ class TestEncode {
     @Test
     void testEncodeRot13() {
         var t = TemplateFactory.TXT.get("rot13");
-        var value = TestCase.SAMPLE_TEXT;
         var rot13 = "Guvf vf n grfg.";
 
         // Encode
-        var bean = new ValueBean(value);
+        var bean = new ValueBean(TestCase.SAMPLE_TEXT);
         t.setBean(bean);
         assertThat(t.getContent()).isEqualTo(bean.getValue() + ": " + rot13);
 
         // Decode
         t.setValue("value", rot13);
-        assertThat(t.getContent()).isEqualTo(rot13 + ": " + value);
+        assertThat(t.getContent()).isEqualTo(rot13 + ": " + TestCase.SAMPLE_TEXT);
     }
 
     @Test
