@@ -174,9 +174,10 @@ public final class RenderUtils {
             return src;
         }
 
-        // https://stackoverflow.com/a/6766497/8356718
         var len = src.length();
         var sb = new StringBuilder(len * 6);
+
+        // https://stackoverflow.com/a/6766497/8356718
         for (var i = 0; i < len; i++) {
             var codePoint = src.codePointAt(i);
             // Skip over the second char in a surrogate pair
