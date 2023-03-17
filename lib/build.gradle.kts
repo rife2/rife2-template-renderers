@@ -105,7 +105,6 @@ tasks {
                                     .uri(
                                         URI(
                                             "https://rife2.com/tests-badge/update/com.uwyn.rife2/rife2-renderers?" +
-                                                    "NEW\n?" +
                                                     "apiKey=$apiKey&" +
                                                     "passed=$passed&" +
                                                     "failed=$failed&" +
