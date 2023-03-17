@@ -31,4 +31,5 @@ jobs:
       - name: Test with Gradle
         uses: gradle/gradle-build-action@v2
         with:
-          arguments: build check --stacktrace
+          arguments: build check --stacktrace -PtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
+
