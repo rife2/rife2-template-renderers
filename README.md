@@ -21,17 +21,19 @@ This project provides a collection of template renderers.
 
 ## Encoding Renderers
 
-| Renderer                          | Description                                            |
-|:----------------------------------|:-------------------------------------------------------|
-| `rife.render.EncodeBase64`        | Encodes a template value to Base64                     |
-| `rife.render.EncodeHtml`          | Encodes a template value to HTML                       |
-| `rife.render.EncodeHtmlEntities`  | Encodes a template value to HTML decimal entities      |
-| `rife.render.EncodeJs`            | Encodes a template value to JavaScript/ECMAScript      |
-| `rife.render.EncodeJson`          | Encodes a template value to JSON                       |
-| `rife.render.EncodeQp`            | Converts a template value to a quoted-printable string |
-| `rife.render.EncodeUnicode`       | Encodes a template value to Unicode escape codes       |
-| `rife.render.EncodeUrl`           | URL-encodes a template value                           |
-| `rife.render.EncodeXml`           | Encodes a template value to XML                        |
+| Renderer                         | Description                                             |
+|:---------------------------------|:--------------------------------------------------------|
+| `rife.render.EncodeBase64`       | Encodes a template value to Base64                      |
+| `rife.render.EncodeHtml`         | Encodes a template value to HTML                        |
+| `rife.render.EncodeHtmlEntities` | Encodes a template value to HTML decimal entities       |
+| `rife.render.EncodeJs`           | Encodes a template value to JavaScript/ECMAScript       |
+| `rife.render.EncodeJson`         | Encodes a template value to JSON                        |
+| `rife.render.EncodeQp`           | Converts a template value to a quoted-printable string  |
+| `rife.render.EncodeUnicode`      | Encodes a template value to Unicode escape codes        |
+| `rife.render.EncodeUrl`          | URL-encodes a template value                            |
+| `rife.render.EncodeXml`          | Encodes a template value to XML                         |
+| `rife.render.ShorteUrl`          | Shortens a template value using [is.gd](https://is.gd/) |
+
 
 ## Text Renderers
 

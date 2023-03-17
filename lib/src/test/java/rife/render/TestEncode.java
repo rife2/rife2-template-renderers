@@ -100,4 +100,16 @@ class TestEncode {
         t.setAttribute(TestCase.FOO, "a test &");
         assertThat(t.getContent()).isEqualTo("<test>\n    <foo>a test &amp;</foo>\n</test>");
     }
+
+    @Test
+    void testShortenUrl() {
+        var t = TemplateFactory.HTML.get("shortenUrl");
+        var url = "https://example.com/";
+        var shortUrl = "https://is.gd/AG3Hwv";
+        t.setValue(TestCase.FOO, url);
+        assertThat(t.getContent()).isEqualTo(String.format("<a href=\"%s\">%s</a>", shortUrl, url));
+        t.setValue(TestCase.FOO, TestCase.FOO);
+        assertThat(t.getContent()).isEqualTo("<a href=\"foo\">foo</a>");
+
+    }
 }

@@ -20,7 +20,12 @@ package rife.render;
 import rife.template.Template;
 import rife.tools.Convert;
 import rife.tools.Localization;
+import rife.tools.StringUtils;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -131,13 +136,46 @@ public final class RenderUtils {
     }
 
     /**
+     * <p>Shortens a URL using <a href="https://is.gd/">is.gid</a>. The URL string must a valid http or https URL.</p>
+     *
+     * <p>Based on <a href="https://github.com/ethauvin/isgd-shorten">isgd-shorten</a></p>
+     *
+     * @param url the source URL
+     * @return the short URL
+     */
+    public static String shortenUrl(String url) {
+        if (url == null || url.isBlank() || !url.matches("^[Hh][Tt][Tt][Pp][Ss]?:\\/\\/\\w.*")) {
+            return url;
+        }
+
+        var shorten = url;
+        try {
+            var connection = (HttpURLConnection) new URL(
+                    String.format("https://is.gd/create.php?format=simple&url=%s", StringUtils.decodeUrl(url.trim())))
+                    .openConnection();
+            connection.setRequestProperty(
+                    "User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
+            );
+            var responseCode = connection.getResponseCode();
+            if (responseCode >= 200 && responseCode <= 399) {
+                try (var inputStream = connection.getInputStream()) {
+                    shorten = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (IOException ignore) {
+            // do nothing
+        }
+        return shorten;
+    }
+
+    /**
      * Swaps the case of a String.
      *
      * @param src the String to swap the case of
      * @return the modified String or null
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
-    public static String swapCase(final String src) {
+    public static String swapCase(String src) {
         if (src == null || src.isBlank()) {
             return src;
         }
