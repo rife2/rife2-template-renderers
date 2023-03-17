@@ -41,6 +41,6 @@ public class EncodeJs implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.encodeJS(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.encodeJS(template.getValueOrAttribute(differentiator));
     }
 }

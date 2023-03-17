@@ -39,6 +39,6 @@ public class EncodeQp implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.toQuotedPrintable(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.toQuotedPrintable(template.getValueOrAttribute(differentiator));
     }
 }

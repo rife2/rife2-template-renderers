@@ -41,6 +41,6 @@ public class EncodeUrl implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return StringUtils.encodeUrl(RenderUtils.fetchValue(template, differentiator));
+        return StringUtils.encodeUrl(template.getValueOrAttribute(differentiator));
     }
 }

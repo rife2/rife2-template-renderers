@@ -41,6 +41,6 @@ public class EncodeUnicode implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return StringUtils.encodeUnicode(RenderUtils.fetchValue(template, differentiator));
+        return StringUtils.encodeUnicode(template.getValueOrAttribute(differentiator));
     }
 }

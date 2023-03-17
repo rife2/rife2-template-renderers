@@ -41,6 +41,6 @@ public class EncodeHtml implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return StringUtils.encodeHtml(RenderUtils.fetchValue(template, differentiator));
+        return StringUtils.encodeHtml(template.getValueOrAttribute(differentiator));
     }
 }

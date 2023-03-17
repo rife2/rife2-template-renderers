@@ -39,6 +39,6 @@ public class Trim implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.fetchValue(template, differentiator).trim();
+        return template.getValueOrAttribute(differentiator).trim();
     }
 }

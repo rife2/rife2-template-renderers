@@ -17,8 +17,6 @@
 
 package rife.render;
 
-import rife.template.Template;
-import rife.tools.Convert;
 import rife.tools.Localization;
 import rife.tools.StringUtils;
 
@@ -76,24 +74,6 @@ public final class RenderUtils {
             }
         }
         return sb.toString();
-    }
-
-    /**
-     * Fetches the specified value from a template or template's attribute.
-     *
-     * @param template the template
-     * @param valueId  the ID of the value to fetch
-     * @return the fetched value.
-     */
-    public static String fetchValue(Template template, String valueId) {
-        Object value = null;
-        if (template.hasValueId(valueId)) {
-            value = template.getValue(valueId);
-        }
-        if (value == null && template.hasAttribute(valueId)) {
-            value = template.getAttribute(valueId);
-        }
-        return Convert.toString(value);
     }
 
     /**

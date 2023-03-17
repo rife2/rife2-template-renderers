@@ -39,6 +39,6 @@ public class Rot13 implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.rot13(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.rot13(template.getValueOrAttribute(differentiator));
     }
 }
