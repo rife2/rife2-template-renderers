@@ -67,13 +67,13 @@ tasks {
         }
     }
 
-     javadoc {
+    javadoc {
         title = "<a href=\"https://rife2.com\">RIFE2</a> Template Renderers"
         options {
             this as StandardJavadocDocletOptions
             keyWords(true)
             splitIndex(true)
-            links()
+            links("https://rife2.github.io/rife2/")
         }
     }
 }

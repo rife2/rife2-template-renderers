@@ -21,26 +21,24 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 
 /**
- * <p>Shortens a template value using <a href="https://is.gd/">is.gid</a>. The value must a valid http or https URL.</p>
- *
- * <p>Based on <a href="https://github.com/ethauvin/isgd-shorten">isgd-shorten</a></p>
+ * Formats a template credit card number value to the last 4 digits.
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.ShortenUrl:valueId/--&gt;
- *   {{v render:rife.render.ShortenUrl:valueId/}}
+ *   &lt;!--v render:rife.render.FormatCreditCard:valueId/--&gt;
+ *   {{v render:rife.render.FormatCreditCard:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class ShortenUrl implements ValueRenderer {
+public class FormatCreditCard implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.shortenUrl(RenderUtils.fetchValue(template, differentiator));
+        return RenderUtils.formatCreditCard(RenderUtils.fetchValue(template, differentiator));
     }
 }

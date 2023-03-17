@@ -44,6 +44,9 @@
     <pattern value="rife.render.TestDateTime" method="testTimeIso" />
     <pattern value="rife.render.TestDateTime" method="testYear" />
     <pattern value="rife.render.ValueBean" />
+    <pattern value="rife.render.RenderUtils" method="formatCreditCard" />
+    <pattern value="rife.render.RenderUtils" />
+    <pattern value="rife.render.RenderUtils" method="RenderUtils" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">

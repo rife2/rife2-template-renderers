@@ -53,7 +53,7 @@ public final class RenderUtils {
     /**
      * Encodes a string to JavaScript/ECMAScript.
      *
-     * @param src the source string.
+     * @param src the source string
      * @return the enocded string
      */
     public static String encodeJS(String src) {
@@ -97,10 +97,52 @@ public final class RenderUtils {
     }
 
     /**
+     * Returns the last 4 digits a credit card number. The number must satisfy the Luhn algorithm.
+     * Non-digits are stripped from the number.
+     *
+     * @param src the credit card number
+     * @return the last 4 digits of the credit card number or empty
+     */
+    public static String formatCreditCard(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
+        try {
+            var cc = src.replaceAll("[^0-9]", "");
+
+            var len = cc.length();
+            if (len >= 4) {
+                // Luhn algorithm
+                var sum = 0;
+                boolean isSecond = false;
+                int digit;
+                for (int i = len - 1; i >= 0; i--) {
+                    digit = cc.charAt(i) - '0';
+                    if (isSecond) {
+                        digit = digit * 2;
+                    }
+                    sum += digit / 10;
+                    sum += digit % 10;
+
+                    isSecond = !isSecond;
+                }
+                if (sum % 10 == 0) {
+                    return cc.substring(len - 4);
+                }
+            }
+        } catch (NumberFormatException ignore) {
+            // do nothing
+        }
+
+        return "";
+    }
+
+    /**
      * Translates a String to/from ROT13.
      *
-     * @param src the source String.
-     * @return the translated String.
+     * @param src the source String
+     * @return the translated String
      */
     public static String rot13(String src) {
         if (src == null || src.isBlank()) {
@@ -144,7 +186,7 @@ public final class RenderUtils {
      * @return the short URL
      */
     public static String shortenUrl(String url) {
-        if (url == null || url.isBlank() || !url.matches("^[Hh][Tt][Tt][Pp][Ss]?:\\/\\/\\w.*")) {
+        if (url == null || url.isBlank() || !url.matches("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*")) {
             return url;
         }
 
@@ -203,8 +245,8 @@ public final class RenderUtils {
     /**
      * Converts a text string to HTML decimal entities.
      *
-     * @param src the String to convert.
-     * @return the converted string.
+     * @param src the String to convert
+     * @return the converted String
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String toHtmlEntities(String src) {
