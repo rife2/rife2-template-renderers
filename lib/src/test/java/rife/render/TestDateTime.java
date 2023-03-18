@@ -51,7 +51,10 @@ class TestDateTime {
     @Test
     void testDateTimeUtc() {
         var t = TemplateFactory.HTML.get("dateTimeUtc");
-        assertThatCode(() -> DateTimeIso.iso8601Formatter.parse(t.getContent())).doesNotThrowAnyException();
+        var content = t.getContent();
+        assertThatCode(() -> DateTimeIso.iso8601Formatter.parse(content)).doesNotThrowAnyException();
+        assertThat(content).endsWith("Z");
+
     }
 
     @Test

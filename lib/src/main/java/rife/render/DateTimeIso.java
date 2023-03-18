@@ -21,8 +21,12 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 import rife.tools.Localization;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Properties;
 
 /**
  * <p>Return the current date and time in ISO 8601 format.</p>
@@ -49,6 +53,20 @@ public class DateTimeIso implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
+        if (template.hasDefaultValue(valueId)) {
+            var properties = new Properties();
+            try {
+                var tz = "tz";
+                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                if (properties.containsKey(tz)) {
+                    return ZonedDateTime.now().format(
+                            DateTimeIso.iso8601Formatter.withZone(ZoneId.of(properties.getProperty(tz))));
+                }
+            } catch (IOException ignore) {
+                // do nothing
+            }
+
+        }
         return ZonedDateTime.now().format(iso8601Formatter);
     }
 }
