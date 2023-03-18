@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Collection of utility-type methods commonly used by the renderers.
@@ -116,6 +118,22 @@ public final class RenderUtils {
         }
 
         return "";
+    }
+
+    /**
+     * Returns the plural form of a word, if count &gt; 1.
+     *
+     * @param count  the count.
+     * @param word   the singular word.
+     * @param plural the plural word.
+     * @return the singular or plural string.
+     */
+    public static String plural(final long count, final String word, final String plural) {
+        if (count > 1) {
+            return plural;
+        } else {
+            return word;
+        }
     }
 
     /**
@@ -285,4 +303,57 @@ public final class RenderUtils {
 
         return buff.toString();
     }
+
+    /**
+     * Returns the formatted server uptime.
+     *
+     * @param uptime     the uptime in milliseconds.
+     * @param properties the format properties.
+     * @return The formatted uptime.
+     */
+    public static String uptime(long uptime, Properties properties) {
+        var sb = new StringBuilder();
+
+        var days = TimeUnit.MILLISECONDS.toDays(uptime);
+        var years = days / 365;
+        days %= 365;
+        var months = days / 30;
+        days %= 30;
+        var weeks = days / 7;
+        days %= 7;
+        var hours = TimeUnit.MILLISECONDS.toHours(uptime) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(uptime));
+        var minutes = TimeUnit.MILLISECONDS.toMinutes(uptime) - TimeUnit.HOURS.toMinutes(
+                TimeUnit.MILLISECONDS.toHours(uptime));
+
+        if (years > 0) {
+            sb.append(years).append(plural(years, properties.getProperty("year", " year "),
+                    properties.getProperty("years", " years ")));
+        }
+
+        if (months > 0) {
+            sb.append(months).append(plural(months, properties.getProperty("month", " month "),
+                    properties.getProperty("months", " months ")));
+        }
+
+        if (weeks > 0) {
+            sb.append(weeks).append(plural(weeks, properties.getProperty("week", " week "),
+                    properties.getProperty("weeks", " weeks ")));
+        }
+
+        if (days > 0) {
+            sb.append(days).append(plural(days, properties.getProperty("day", " day "),
+                    properties.getProperty("days", " days ")));
+        }
+
+        if (hours > 0) {
+            sb.append(hours).append(plural(hours, properties.getProperty("hour", " hour "),
+                    properties.getProperty("hours", " hours ")));
+        }
+
+        sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
+                properties.getProperty("minutes", " minutes")));
+
+        return sb.toString();
+    }
+
 }

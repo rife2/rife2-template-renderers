@@ -45,6 +45,28 @@ class TestFormat {
         assertThat(t.getContent()).isEqualTo(String.format("<a href=\"%s\">%s</a>", shortUrl, url));
         t.setValue(TestCase.FOO, TestCase.FOO);
         assertThat(t.getContent()).isEqualTo("<a href=\"foo\">foo</a>");
+    }
+
+    @Test
+    void testUptime() {
+        var t = TemplateFactory.TXT.get("uptime");
+        assertThat(t.getContent()).matches("0 minute\n0 minuto\n0 minute");
+
+        t = TemplateFactory.HTML.get("uptime");
+        t.setAttribute(Uptime.class.getName(), 547800300076L);
+        assertThat(t.getContent()).isEqualTo("17 années, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
+        t.setAttribute(Uptime.class.getName(), 120000L);
+        assertThat(t.getContent()).matches("2 minutes");
+
+        t = TemplateFactory.JSON.get("uptime");
+        t.setAttribute(Uptime.class.getName(), 5999964460000L);
+        assertThat(t.getContent()).isEqualTo("190 years 3 months 4 days 47 minutes");
+        t.setAttribute(Uptime.class.getName(), 34822860000L);
+        assertThat(t.getContent()).isEqualTo("1 year 1 month 1 week 1 day 1 hour 1 minute");
+
+        t = TemplateFactory.TXT.get("uptime2");
+        t.setAttribute(Uptime.class.getName(), 547800388076L);
+        assertThat(t.getContent()).matches("17Y-4M-2W-1D-6H-46M");
 
     }
 }

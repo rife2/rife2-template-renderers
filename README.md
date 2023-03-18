@@ -36,10 +36,12 @@ This project provides a collection of template renderers.
 
 ## Format Renderers
 
-| Renderer                         | Description                                                      |
-|:---------------------------------|:-----------------------------------------------------------------|
-| `rife.render.formatCreditcard`   | Formats a template credit card number value to the last 4 digits |
-| `rife.render.ShorteUrl`          | Shortens a template value using [is./gd](https://is.gd/)         |
+| Renderer                       | Description                                                      |
+|:-------------------------------|:-----------------------------------------------------------------|
+| `rife.render.formatCreditcard` | Formats a template credit card number value to the last 4 digits |
+| `rife.render.ShorteUrl`        | Shortens a template value using [is./gd](https://is.gd/)         |
+| `rife.render.Uptime`           | Renders the server uptime in various customizable formats        |
+
 
 ## Text Renderers
 

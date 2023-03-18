@@ -1,0 +1,14 @@
+{{v render:rife.render.Uptime}}
+year=Y-
+years=Y-
+month=M-
+months=M-
+week=W-
+weeks=W-
+day=D-
+days=D-
+hour=H-
+hours=H-
+minute=M
+minutes=M
+{{/v}}

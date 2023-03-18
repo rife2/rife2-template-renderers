@@ -35,5 +35,5 @@ jobs:
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_signingKey }}
           ORG_GRADLE_PROJECT_signingPassword: ${{ secrets.ORG_GRADLE_PROJECT_signingPassword }}
         with:
-          arguments: build check publish --stacktrace -PtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
+          arguments: build check publish --scan --stacktrace -PtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
 
