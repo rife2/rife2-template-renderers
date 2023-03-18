@@ -1,10 +1,10 @@
 {{v render:rife.render.Uptime}}
-year=Y-
-years=Y-
-month=M-
-months=M-
-week=W-
-weeks=W-
+year=YR-
+years=YRS-
+month=M0-
+months=MOS-
+week=WK-
+weeks=WKS-
 day=D-
 days=D-
 hour=H-

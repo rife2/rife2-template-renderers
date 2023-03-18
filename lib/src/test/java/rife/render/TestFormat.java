@@ -66,7 +66,7 @@ class TestFormat {
 
         t = TemplateFactory.TXT.get("uptime2");
         t.setAttribute(Uptime.class.getName(), 547800388076L);
-        assertThat(t.getContent()).matches("17Y-4M-2W-1D-6H-46M");
+        assertThat(t.getContent()).matches("17YRS-4MOS-2WKS-1D-6H-46M");
 
     }
 }

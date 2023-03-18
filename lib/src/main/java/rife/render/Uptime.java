@@ -28,44 +28,7 @@ import java.util.Properties;
 /**
  * Renders the server uptime.
  *
- * <p>Usage:</p>
- *
- * <pre>
- *   &lt;!--v render:rife.render.Uptime/--&gt;
- *   {{v render:rife.render.Uptime:valueId/}}
- * </pre>
- *
- * <p>You can also specify custom formatting using the following properties:</p>
- *
- * <pre>
- *   {{v: render:rife.renader.Uptime}}
- *   year=Y-
- *   years=Y-
- *   month=M-
- *   months=M-
- *   week=W-
- *   weeks=W-
- *   day=D-
- *   days=D-
- *   hour=H-
- *   hours=H-
- *   minute=M-
- *   minutes=M-
- *   {{/v}}
- * </pre>
- *
- * <p>which would render something like</p>
- *
- * <pre>
- *   17Y-2M-2W-1D-9H-33M
- * </pre>
- *
- * <p>You can also specify the uptime via a template attribute</p>
- *
- * <pre>
- *   template.setAttribute(Uptime.class.getName(), 120000L);
- * </pre>
- *
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime">rife.render.Uptime</a>
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
