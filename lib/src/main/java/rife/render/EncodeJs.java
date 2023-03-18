@@ -32,6 +32,7 @@ import rife.tools.StringUtils;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJs">rife.render.EncodeJs</a>
  * @see StringUtils#encodeJson(String)
  * @since 1.0
  */

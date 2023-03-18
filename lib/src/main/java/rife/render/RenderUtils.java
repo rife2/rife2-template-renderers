@@ -51,10 +51,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Encodes a string to JavaScript/ECMAScript.
+     * Encodes a String to JavaScript/ECMAScript.
      *
-     * @param src the source string
-     * @return the enocded string
+     * @param src the source String
+     * @return the encoded String
      */
     public static String encodeJS(String src) {
         if (src == null || src.isBlank()) {

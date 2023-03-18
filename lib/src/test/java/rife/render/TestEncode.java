@@ -54,8 +54,8 @@ class TestEncode {
     @Test
     void testEncodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
-        t.setAttribute(TestCase.FOO, "fde\fde\rjk\tos\\u218Foi");
-        assertThat(t.getContent()).isEqualTo("{\n    \"foo\": \"fde\\fde\\rjk\\tos\\\\u218Foi\"\n}");
+        t.setAttribute(TestCase.FOO, "This is a \"•test\"");
+        assertThat(t.getContent()).isEqualTo("{\n    \"foo\": \"This is a \\\"\\u2022test\\\"\"\n}");
     }
 
     @Test

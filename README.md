@@ -6,7 +6,7 @@
 
 # [RIFE2](https://rife2.com/) Template Renderers
 
-This project provides a collection of template renderers.
+This project provides a collection of useful template renderers.
 
 ## Date/Time Renderers
 
@@ -24,14 +24,14 @@ This project provides a collection of template renderers.
 | Renderer                                                                                                    | Description                                            |
 |:------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------|
 | [rife.render.EncodeBase64](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeBase64) | Encodes a template value to Base64                     |
-| `rife.render.EncodeHtml`                                                                                    | Encodes a template value to HTML                       |
+| [rife.render.EncodeHtml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtml)     | Encodes a template value to HTML                       |
 | `rife.render.EncodeHtmlEntities`                                                                            | Encodes a template value to HTML decimal entities      |
-| `rife.render.EncodeJs`                                                                                      | Encodes a template value to JavaScript/ECMAScript      |
-| `rife.render.EncodeJson`                                                                                    | Encodes a template value to JSON                       |
+| [rife.render.EncodeJs](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJs)         | Encodes a template value to JavaScript/ECMAScript      |
+| [rife.render.EncodeJson](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJson)     | Encodes a template value to JSON                       |
 | `rife.render.EncodeQp`                                                                                      | Converts a template value to a quoted-printable string |
 | `rife.render.EncodeUnicode`                                                                                 | Encodes a template value to Unicode escape codes       |
 | `rife.render.EncodeUrl`                                                                                     | URL-encodes a template value                           |
-| `rife.render.EncodeXml`                                                                                     | Encodes a template value to XML                        |
+| [rife.render.EncodeXml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeXml)       | Encodes a template value to XML                        |
 
 ## Format Renderers
 
@@ -54,30 +54,6 @@ This project provides a collection of template renderers.
 | `rife.render.Uncapitalize`                                                                              | Un-capitalizes a template value                               |
 | `rife.render.Uppercase`                                                                                 | Converts a template value to uppercase                        |
 
-## Usage in Templates
+## Documentation
 
-In RIFE2, template renders are used as follows:
-
-```plain
-<!--v render:rife.render.RendererName/-->
-```
-
-or
-
-```plain
-{{v render:rife.render.RendererName/}}
-```
-
-To specify the value ID when applicable, use:
-
-```plain
-<!--v render:rife.render.RendererName:valueId/-->
-{{v render:rife.render.RendererName:valueId/}}
-```
-
-For example, to capitalize a template `foo` value:
-
-```plain
-<!--v render:rife.render.Capitalize:foo/-->
-{{v render.rife.render.Capitalize:foo/}}
-```
+Read more in the [full documenation](https://github.com/rife2/rife2/wiki).
