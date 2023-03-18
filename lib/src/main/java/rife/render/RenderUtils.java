@@ -123,10 +123,10 @@ public final class RenderUtils {
     /**
      * Returns the plural form of a word, if count &gt; 1.
      *
-     * @param count  the count.
-     * @param word   the singular word.
-     * @param plural the plural word.
-     * @return the singular or plural string.
+     * @param count  the count
+     * @param word   the singular word
+     * @param plural the plural word
+     * @return the singular or plural String
      */
     public static String plural(final long count, final String word, final String plural) {
         if (count > 1) {
@@ -307,8 +307,8 @@ public final class RenderUtils {
     /**
      * Returns the formatted server uptime.
      *
-     * @param uptime     the uptime in milliseconds.
-     * @param properties the format properties.
+     * @param uptime     the uptime in milliseconds
+     * @param properties the format properties
      * @return The formatted uptime.
      */
     public static String uptime(long uptime, Properties properties) {

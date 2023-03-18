@@ -10,49 +10,49 @@ This project provides a collection of template renderers.
 
 ## Date/Time Renderers
 
-| Renderer                                                                                                  | Description                                                     |
-|:----------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------|
-| `rife.render.BeatTime`                                                                                    | Renders the current time in Swatch Internet (.beat) Time format |
-| `rife.render.DateIso`                                                                                     | Renders the current date in ISO 8061 format                     |
-| [rife.render.DateTimeIso](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateTimeIso) | Renders the current date and time in ISO 8061 format            |
-| `rife.render.DateTimeRfc2822`                                                                             | Renders the current date and time in RFC 2822 format            |
-| `rife.render.TimeIso`                                                                                     | Renders the current time in ISO 8061 format                     |
-| `rife.render.Year`                                                                                        | Renders the current year                                        |
+| Renderer                                                                                                          | Description                                                     |
+|:------------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------------|
+| [rife.render.BeatTime](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.BeatTime)               | Renders the current time in Swatch Internet (.beat) Time format |
+| [rife.render.DateIso](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateIso)                 | Renders the current date in ISO 8061 format                     |
+| [rife.render.DateTimeIso](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateTimeIso)         | Renders the current date and time in ISO 8061 format            |
+| [rife.render.DateTimeRfc2822](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateTimeRfc2822) | Renders the current date and time in RFC 2822 format            |
+| [rife.render.TimeIso](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.TimeIso)                 | Renders the current time in ISO 8061 format                     |
+| [rife.render.Year](https://github.com/rife2/rife2-template-renderers/wiki/rife.rennder.Year)                      | Renders the current year                                        |
 
 ## Encoding Renderers
 
-| Renderer                         | Description                                            |
-|:---------------------------------|:-------------------------------------------------------|
-| `rife.render.EncodeBase64`       | Encodes a template value to Base64                     |
-| `rife.render.EncodeHtml`         | Encodes a template value to HTML                       |
-| `rife.render.EncodeHtmlEntities` | Encodes a template value to HTML decimal entities      |
-| `rife.render.EncodeJs`           | Encodes a template value to JavaScript/ECMAScript      |
-| `rife.render.EncodeJson`         | Encodes a template value to JSON                       |
-| `rife.render.EncodeQp`           | Converts a template value to a quoted-printable string |
-| `rife.render.EncodeUnicode`      | Encodes a template value to Unicode escape codes       |
-| `rife.render.EncodeUrl`          | URL-encodes a template value                           |
-| `rife.render.EncodeXml`          | Encodes a template value to XML                        |
+| Renderer                                                                                                    | Description                                            |
+|:------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------|
+| [rife.render.EncodeBase64](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeBase64) | Encodes a template value to Base64                     |
+| `rife.render.EncodeHtml`                                                                                    | Encodes a template value to HTML                       |
+| `rife.render.EncodeHtmlEntities`                                                                            | Encodes a template value to HTML decimal entities      |
+| `rife.render.EncodeJs`                                                                                      | Encodes a template value to JavaScript/ECMAScript      |
+| `rife.render.EncodeJson`                                                                                    | Encodes a template value to JSON                       |
+| `rife.render.EncodeQp`                                                                                      | Converts a template value to a quoted-printable string |
+| `rife.render.EncodeUnicode`                                                                                 | Encodes a template value to Unicode escape codes       |
+| `rife.render.EncodeUrl`                                                                                     | URL-encodes a template value                           |
+| `rife.render.EncodeXml`                                                                                     | Encodes a template value to XML                        |
 
 ## Format Renderers
 
-| Renderer                                                                                        | Description                                                      |
-|:------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------|
-| `rife.render.formatCreditcard`                                                                  | Formats a template credit card number value to the last 4 digits |
-| `rife.render.ShorteUrl`                                                                         | Shortens a template value using [is./gd](https://is.gd/)         |
-| [rife.render.Uptime](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime) | Renders the server uptime in various customizable formats        |
+| Renderer                                                                                                | Description                                                      |
+|:--------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------|
+| `rife.render.formatCreditcard`                                                                          | Formats a template credit card number value to the last 4 digits |
+| [rife.render.ShortenUrl](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.ShortenUrl) | Shortens a template value using [is./gd](https://is.gd/)         |
+| [rife.render.Uptime](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime)         | Renders the server uptime in various customizable formats        |
 
 
 ## Text Renderers
 
-| Renderer                    | Description                                                   |
-|:----------------------------|:--------------------------------------------------------------|
-| `rife.render.Capitalize`    | Capitalizes a template value                                  |
-| `rife.render.Lowercase`     | Converts a template value to lowercase                        |
-| `rife.render.Rot13`         | Translates a template value to/from ROT13                     |
-| `rife.render.SwapCase`      | Swap case of a template value                                 |
-| `rife.render.Trim`          | Removes leading and trailing whitespace from a template value |
-| `rife.render.Uncapitalize`  | Un-capitalizes a template value                               |
-| `rife.render.Uppercase`     | Converts a template value to uppercase                        |
+| Renderer                                                                                                | Description                                                   |
+|:--------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------|
+| [rife.render.Capitalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Capitalize) | Capitalizes a template value                                  |
+| `rife.render.Lowercase`                                                                                 | Converts a template value to lowercase                        |
+| `rife.render.Rot13`                                                                                     | Translates a template value to/from ROT13                     |
+| `rife.render.SwapCase`                                                                                  | Swap case of a template value                                 |
+| `rife.render.Trim`                                                                                      | Removes leading and trailing whitespace from a template value |
+| `rife.render.Uncapitalize`                                                                              | Un-capitalizes a template value                               |
+| `rife.render.Uppercase`                                                                                 | Converts a template value to uppercase                        |
 
 ## Usage in Templates
 

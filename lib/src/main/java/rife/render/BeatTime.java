@@ -33,6 +33,7 @@ import java.time.ZonedDateTime;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.BeatTime">rife.render.BeatTime</a>
  * @since 1.0
  */
 public class BeatTime implements ValueRenderer {

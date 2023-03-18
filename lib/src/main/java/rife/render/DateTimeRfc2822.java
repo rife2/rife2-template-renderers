@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateTimeRfc2822">rife.render.DateTimeRfc2822</a>
  * @since 1.0
  */
 public class DateTimeRfc2822 implements ValueRenderer {

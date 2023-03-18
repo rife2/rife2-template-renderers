@@ -39,6 +39,7 @@ import java.util.Properties;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateTimeIso">rife.render.DateTimeIso</a>
  * @since 1.0
  */
 public class DateTimeIso implements ValueRenderer {

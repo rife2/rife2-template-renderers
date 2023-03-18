@@ -34,6 +34,7 @@ import java.nio.charset.StandardCharsets;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeBase64">rife.render.EncodeBase64</a>
  * @see StringUtils#encodeBase64(byte[])
  * @since 1.0
  */

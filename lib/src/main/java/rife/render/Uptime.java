@@ -28,8 +28,15 @@ import java.util.Properties;
 /**
  * Renders the server uptime.
  *
- * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime">rife.render.Uptime</a>
+ * <p>Usage:</p>
+ *
+ * <pre>
+ *   &lt;!--v render:rife.render.Uptime/--&gt;
+ *   {{v render:rife.render.Uptime/}}
+ * </pre>
+ *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime">rife.render.Uptime</a>
  * @since 1.0
  */
 public class Uptime implements ValueRenderer {

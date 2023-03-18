@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.DateIso">rife.render.DateIso</a>
  * @since 1.0
  */
 public class DateIso implements ValueRenderer {
