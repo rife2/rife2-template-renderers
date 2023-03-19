@@ -30,11 +30,8 @@ import rife.template.ValueRenderer;
  *   {{v render:rife.render.EncodeHtmlEntities:valueId/}}
  * </pre>
  *
- * <p>For example {@code john@doe.com} would be encoded to:</p>
- *
- * <pre>&amp;#106;&amp;#111;&amp;#104;&amp;#110;&amp;#64;&amp;#100;&amp;#111;&amp;#101;&amp;#46;&amp;#99;&amp;#111;&amp;#109;</pre>
- *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtmlEntities">rife.render.EncodeHtmlEntities</a>
  * @since 1.0
  */
 public class EncodeHtmlEntities implements ValueRenderer {

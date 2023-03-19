@@ -59,13 +59,6 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeQp() {
-        var t = TemplateFactory.TXT.get("encodeQp");
-        t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT + "\nAnd one more test for =A0.");
-        assertThat(t.getContent()).isEqualTo("This=20is=20a=20test=2E=0AAnd=20one=20more=20test=20for=20=3DA0=2E");
-    }
-
-    @Test
     void testEncodeRot13() {
         var t = TemplateFactory.TXT.get("rot13");
         var rot13 = "Guvf vf n grfg.";
