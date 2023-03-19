@@ -32,6 +32,7 @@ import rife.tools.Localization;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uncapitalize">rife.render.Uncapitalize</a>
  * @since 1.0
  */
 public class Uncapitalize implements ValueRenderer {

@@ -31,6 +31,7 @@ import rife.template.ValueRenderer;
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Trim">rife.render.Trim</a>
  * @since 1.0
  */
 public class Trim implements ValueRenderer {
