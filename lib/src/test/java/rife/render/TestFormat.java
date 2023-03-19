@@ -37,6 +37,15 @@ class TestFormat {
     }
 
     @Test
+    void testNormalize() {
+        var t = TemplateFactory.HTML.get("normalize");
+        var foo = "News for January 6, 2023 (Paris)";
+        t.setValue(TestCase.FOO, foo);
+        assertThat(t.getContent()).isEqualTo("<a href=\"news/20230106/news-for-january-6-2023-paris\">"
+                + foo + "</a>");
+    }
+
+    @Test
     void testShortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
