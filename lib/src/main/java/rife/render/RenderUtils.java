@@ -35,6 +35,8 @@ import java.util.concurrent.TimeUnit;
  * Collection of utility-type methods commonly used by the renderers.
  */
 public final class RenderUtils {
+    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
+
     private RenderUtils() {
         // no-op
     }
@@ -184,11 +186,8 @@ public final class RenderUtils {
                     String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s", size,
                             StringUtils.encodeUrl(src.trim())))
                     .openConnection();
-            connection.setRequestProperty(
-                    "User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
-            );
-            var responseCode = connection.getResponseCode();
-            if (responseCode >= 200 && responseCode <= 399) {
+            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
+            if (validResponseCode(connection.getResponseCode())) {
                 try (var inputStream = connection.getInputStream()) {
                     svg = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                 }
@@ -256,11 +255,8 @@ public final class RenderUtils {
             var connection = (HttpURLConnection) new URL(
                     String.format("https://is.gd/create.php?format=simple&url=%s", StringUtils.encodeUrl(url.trim())))
                     .openConnection();
-            connection.setRequestProperty(
-                    "User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
-            );
-            var responseCode = connection.getResponseCode();
-            if (responseCode >= 200 && responseCode <= 399) {
+            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
+            if (validResponseCode(connection.getResponseCode())) {
                 try (var inputStream = connection.getInputStream()) {
                     shorten = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                 }
@@ -417,5 +413,15 @@ public final class RenderUtils {
                 properties.getProperty("minutes", " minutes")));
 
         return sb.toString();
+    }
+
+    /**
+     * Checks whether the specified HTTP response code is valid.
+     *
+     * @param code the HTTP response code.
+     * @return {@code true} if the response code is valid.
+     */
+    public static boolean validResponseCode(int code) {
+        return code >= 200 && code <= 399;
     }
 }
