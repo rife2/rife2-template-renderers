@@ -129,8 +129,8 @@ public final class RenderUtils {
      * @return The normalized String
      */
     public static String normalize(String src) {
-        var sb = new StringBuilder(src.length());
         var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD);
+        var sb = new StringBuilder(normalized.length());
         boolean space = false;
         for (var c : normalized.toCharArray()) {
             if (c <= '\u007F') { // ascii only
@@ -164,6 +164,39 @@ public final class RenderUtils {
         } else {
             return word;
         }
+    }
+
+    /**
+     * Generates an SVG QR Code from the given String using <a href="https://goqr.me/">goQR.me</a>.
+     *
+     * @param src  the data String
+     * @param size the QR Code size. (e.g. {@code 150x150})
+     * @return the QR code
+     */
+    public static String qrCode(String src, String size) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
+        var svg = src;
+        try {
+            var connection = (HttpURLConnection) new URL(
+                    String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s", size,
+                            StringUtils.encodeUrl(src.trim())))
+                    .openConnection();
+            connection.setRequestProperty(
+                    "User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
+            );
+            var responseCode = connection.getResponseCode();
+            if (responseCode >= 200 && responseCode <= 399) {
+                try (var inputStream = connection.getInputStream()) {
+                    svg = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (IOException ignore) {
+            // do nothing
+        }
+        return svg;
     }
 
     /**
@@ -221,7 +254,7 @@ public final class RenderUtils {
         var shorten = url;
         try {
             var connection = (HttpURLConnection) new URL(
-                    String.format("https://is.gd/create.php?format=simple&url=%s", StringUtils.decodeUrl(url.trim())))
+                    String.format("https://is.gd/create.php?format=simple&url=%s", StringUtils.encodeUrl(url.trim())))
                     .openConnection();
             connection.setRequestProperty(
                     "User-Agent", "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0"
@@ -385,5 +418,4 @@ public final class RenderUtils {
 
         return sb.toString();
     }
-
 }

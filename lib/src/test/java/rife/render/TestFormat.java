@@ -46,6 +46,14 @@ class TestFormat {
     }
 
     @Test
+    void testQrCode() {
+        var t = TemplateFactory.SVG.get("qrCode");
+        var foo = "https://example.com/";
+        t.setAttribute(TestCase.FOO, foo);
+        assertThat(t.getContent()).startsWith("<?xml").contains("<desc>" + foo + "</desc").contains("width=\"200\"");
+    }
+
+    @Test
     void testShortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
