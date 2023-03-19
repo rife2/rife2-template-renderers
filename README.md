@@ -21,22 +21,23 @@ This project provides a collection of useful template renderers.
 
 ## Encoding Renderers
 
-| Renderer                                                                                                      | Description                                              |
-|:--------------------------------------------------------------------------------------------------------------|:---------------------------------------------------------|
-| [rife.render.EncodeBase64](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeBase64)   | Encodes a template value to Base64                       |
-| [rife.render.EncodeHtml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtml)       | Encodes a template value to HTML                         |
-| [rife.render.EncodeHtmlEntities](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtmlEntities)                                                                            | Encodes a template value to HTML decimal entities        |
-| [rife.render.EncodeJs](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJs)           | Encodes a template value to JavaScript/ECMAScript        |
-| [rife.render.EncodeJson](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJson)       | Encodes a template value to JSON                         |
-| [rife.render.EncodeUnicode](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeUnicode) | Encodes a template value to Unicode escape codes         |
-| [rife.render.EncodeUrl](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeUrl)         | URL-encodes a template value                             |
-| [rife.render.EncodeXml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeXml)         | Encodes a template value to XML                          |
-| [rife.render.Normalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Normalize)         | Normalizes a template value for inclusion in a URL path. |
+| Renderer                                                                                                      | Description                                             |
+|:--------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------|
+| [rife.render.EncodeBase64](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeBase64)   | Encodes a template value to Base64                      |
+| [rife.render.EncodeHtml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtml)       | Encodes a template value to HTML                        |
+| [rife.render.EncodeHtmlEntities](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeHtmlEntities)                                                                            | Encodes a template value to HTML decimal entities       |
+| [rife.render.EncodeJs](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJs)           | Encodes a template value to JavaScript/ECMAScript       |
+| [rife.render.EncodeJson](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeJson)       | Encodes a template value to JSON                        |
+| [rife.render.EncodeUnicode](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeUnicode) | Encodes a template value to Unicode escape codes        |
+| [rife.render.EncodeUrl](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeUrl)         | URL-encodes a template value                            |
+| [rife.render.EncodeXml](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.EncodeXml)         | Encodes a template value to XML                         |
+
 ## Format Renderers
 
 | Renderer                                                                                                            | Description                                                      |
 |:--------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------|
 | [rife.render.formatCreditcard](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.FormatCreditCard) | Formats a template credit card number value to the last 4 digits |
+| [rife.render.Normalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Normalize)               | Normalizes a template value for inclusion in a URL path |
 | [rife.render.ShortenUrl](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.ShortenUrl)             | Shortens a template value using [is./gd](https://is.gd/)         |
 | [rife.render.Uptime](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime)                     | Renders the server uptime in various customizable formats        |
 
