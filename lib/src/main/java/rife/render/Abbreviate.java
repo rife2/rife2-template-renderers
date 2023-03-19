@@ -25,39 +25,37 @@ import java.io.StringReader;
 import java.util.Properties;
 
 /**
- * <p>Masks characters of a template value.</p>
+ * <p>Abbreviate a template value with ellipses.</p>
  *
  * <p>Usage:</p>
  *
  * <pre>
- *   &lt;!--v render:rife.render.Mask:valueId/--&gt;
- *   {{v render:rife.render.Mask:valueId/}}
+ *   &lt;!--v render:rife.render.Abbreviate:valueId/--&gt;
+ *   {{v render:rife.render.Abbreviate:valueId/}}
  * </pre>
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Mask">rife.render.Mask</a>
+ * @see <a href="https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Abbreviate">rife.render.Abbreviate</a>
  * @since 1.0
  */
-public class Mask implements ValueRenderer {
+public class Abbreviate implements ValueRenderer {
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        var mask = "*";
-        var unmasked = 0;
-        var fromStart = false;
+        var mark = "...";
+        var max = 0;
         if (template.hasDefaultValue(valueId)) {
             var properties = new Properties();
             try {
                 properties.load(new StringReader(template.getDefaultValue(valueId)));
-                mask = properties.getProperty("mask", mask);
-                unmasked = Integer.parseInt(properties.getProperty("unmasked", "0"));
-                fromStart = "true".equalsIgnoreCase(properties.getProperty("fromStart", "false"));
+                mark = properties.getProperty("mark", mark);
+                max = Integer.parseInt(properties.getProperty("max", String.valueOf(max)));
             } catch (IOException | NumberFormatException ignore) {
                 // do nothing
             }
         }
-        return RenderUtils.mask(template.getValueOrAttribute(differentiator), mask, unmasked, fromStart);
+        return RenderUtils.abbreviate(template.getValueOrAttribute(differentiator), max, mark);
     }
 }

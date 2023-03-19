@@ -17,7 +17,6 @@
 
 package rife.render;
 
-import rife.tools.Localization;
 import rife.tools.StringUtils;
 
 import java.io.IOException;
@@ -33,12 +32,38 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * Collection of utility-type methods commonly used by the renderers.
+ *
+ * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
+ * @since 1.0
  */
 public final class RenderUtils {
-    private static final String DEFAULT_USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
+    private static final String DEFAULT_USER_AGENT =
+            "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
 
     private RenderUtils() {
         // no-op
+    }
+
+    /**
+     * Abbreviates a String to the given length using a replacement marker.
+     *
+     * @param src    the source String
+     * @param max    the maximum length of the resulting String
+     * @param marker the String used as a replacement marker
+     * @return the abbreviated String
+     */
+    public static String abbreviate(String src, int max, String marker) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
+        var len = src.length();
+
+        if (len <= max || max < 0) {
+            return src;
+        }
+
+        return src.substring(0, max - marker.length()) + marker;
     }
 
     /**
@@ -49,7 +74,8 @@ public final class RenderUtils {
      */
     public static String beatTime(ZonedDateTime zonedDateTime) {
         var zdt = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC+01:00"));
-        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) + (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
+        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) +
+                (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
         return String.format("@%03d", beats);
     }
 
@@ -79,6 +105,29 @@ public final class RenderUtils {
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * Fetches the content (body) of a URL.
+     *
+     * @param url            the URL string.
+     * @param defaultContent the default content to return if none fetched.
+     * @return the url content, or empty.
+     */
+    public static String fetchUrl(String url, String defaultContent) {
+        try {
+            var connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
+            var code = connection.getResponseCode();
+            if (code >= 200 && code <= 399) {
+                try (var inputStream = connection.getInputStream()) {
+                    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                }
+            }
+        } catch (IOException ignore) {
+            // do nothing
+        }
+        return defaultContent;
     }
 
     /**
@@ -204,23 +253,8 @@ public final class RenderUtils {
         if (src == null || src.isBlank()) {
             return src;
         }
-
-        var svg = src;
-        try {
-            var connection = (HttpURLConnection) new URL(
-                    String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s", size,
-                            StringUtils.encodeUrl(src.trim())))
-                    .openConnection();
-            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-            if (validResponseCode(connection.getResponseCode())) {
-                try (var inputStream = connection.getInputStream()) {
-                    svg = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                }
-            }
-        } catch (IOException ignore) {
-            // do nothing
-        }
-        return svg;
+        return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s", size,
+                StringUtils.encodeUrl(src.trim())), src);
     }
 
     /**
@@ -274,22 +308,8 @@ public final class RenderUtils {
         if (url == null || url.isBlank() || !url.matches("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*")) {
             return url;
         }
-
-        var shorten = url;
-        try {
-            var connection = (HttpURLConnection) new URL(
-                    String.format("https://is.gd/create.php?format=simple&url=%s", StringUtils.encodeUrl(url.trim())))
-                    .openConnection();
-            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-            if (validResponseCode(connection.getResponseCode())) {
-                try (var inputStream = connection.getInputStream()) {
-                    shorten = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                }
-            }
-        } catch (IOException ignore) {
-            // do nothing
-        }
-        return shorten;
+        return fetchUrl(String.format("https://is.gd/create.php?format=simple&url=%s",
+                StringUtils.encodeUrl(url.trim())), url);
     }
 
     /**
@@ -352,43 +372,6 @@ public final class RenderUtils {
     }
 
     /**
-     * Converts the given String to a quoted-printable string.
-     *
-     * @param src the source String
-     * @return the quoted-printable String
-     */
-    public static String toQuotedPrintable(String src) {
-        if (src == null || src.isEmpty()) {
-            return src;
-        }
-
-        var len = src.length();
-        var buff = new StringBuilder(len);
-
-        char c;
-        String hex;
-        for (var i = 0; i < len; i++) {
-            c = src.charAt(i);
-
-            if (((c > 47) && (c < 58)) || ((c > 64) && (c < 91)) || ((c > 96) && (c < 123))) {
-                buff.append(c);
-            } else {
-                hex = Integer.toString(c, 16);
-
-                buff.append('=');
-
-                if (hex.length() == 1) {
-                    buff.append('0');
-                }
-
-                buff.append(hex.toUpperCase(Localization.getLocale()));
-            }
-        }
-
-        return buff.toString();
-    }
-
-    /**
      * Returns the formatted server uptime.
      *
      * @param uptime     the uptime in milliseconds
@@ -438,15 +421,5 @@ public final class RenderUtils {
                 properties.getProperty("minutes", " minutes")));
 
         return sb.toString();
-    }
-
-    /**
-     * Checks whether the specified HTTP response code is valid.
-     *
-     * @param code the HTTP response code.
-     * @return {@code true} if the response code is valid.
-     */
-    public static boolean validResponseCode(int code) {
-        return code >= 200 && code <= 399;
     }
 }

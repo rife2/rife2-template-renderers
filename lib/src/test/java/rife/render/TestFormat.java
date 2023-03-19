@@ -24,6 +24,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestFormat {
     @Test
+    void testAbbreviate() {
+        var t = TemplateFactory.HTML.get("abbreviate");
+        t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
+        System.out.println(t.getContent());
+        assertThat(t.getContent()).as("max=12").endsWith("…").hasSize(12);
+
+        t = TemplateFactory.TXT.get("abbreviate");
+        t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
+        assertThat(t.getContent()).as("max=8").endsWith("...").hasSize(8);
+    }
+
+    @Test
     void testFormatCreditCard() {
         var t = TemplateFactory.TXT.get("formatCreditCard");
         t.setAttribute(TestCase.FOO, "4342 2565 6244 0179");
