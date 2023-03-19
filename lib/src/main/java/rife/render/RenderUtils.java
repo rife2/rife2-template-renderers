@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
@@ -119,6 +120,34 @@ public final class RenderUtils {
         }
 
         return "";
+    }
+
+    /**
+     * Normalizes a String for inclusion in a URL path.
+     *
+     * @param src The source String
+     * @return The normalized String
+     */
+    public static String normalize(String src) {
+        var sb = new StringBuilder(src.length());
+        var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD);
+        boolean space = false;
+        for (var c : normalized.toCharArray()) {
+            if (c <= '\u007F') { // ascii only
+                if (!space && c == ' ') {
+                    space = true;
+                    sb.append('-');
+                } else {
+                    space = false;
+                    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')) {
+                        sb.append(c);
+                    } else if (c >= 'A' && c <= 'Z') {
+                        sb.append((char) (c + 32)); // lowercase
+                    }
+                }
+            }
+        }
+        return sb.toString();
     }
 
     /**

@@ -93,4 +93,13 @@ class TestEncode {
         t.setAttribute(TestCase.FOO, "a test &");
         assertThat(t.getContent()).isEqualTo("<test>\n    <foo>a test &amp;</foo>\n</test>");
     }
+
+    @Test
+    void testNormalize() {
+        var t = TemplateFactory.HTML.get("normalize");
+        var foo = "News for January 6, 2023 (Paris)";
+        t.setValue(TestCase.FOO, foo);
+        assertThat(t.getContent()).isEqualTo("<a href=\"https://example.com/news/news-for-january-6-2023-paris\">"
+                + foo + "</a>");
+    }
 }

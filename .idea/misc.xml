@@ -47,6 +47,7 @@
     <pattern value="rife.render.RenderUtils" method="formatCreditCard" />
     <pattern value="rife.render.RenderUtils" />
     <pattern value="rife.render.RenderUtils" method="RenderUtils" />
+    <pattern value="rife.render.RenderUtils" method="toQuotedPrintable" />
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">
