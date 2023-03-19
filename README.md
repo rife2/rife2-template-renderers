@@ -37,8 +37,9 @@ This project provides a collection of useful template renderers.
 | Renderer                                                                                                            | Description                                                      |
 |:--------------------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------------|
 | [rife.render.formatCreditcard](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.FormatCreditCard) | Formats a template credit card number value to the last 4 digits |
+| [rife.render.Mask](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Mask)                         | Masks characters of a template value                             |
 | [rife.render.Normalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Normalize)               | Normalizes a template value for inclusion in a URL path          |
-| [rife.render.QrCode](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.QrCode)                     | Generates an SVG QR Code from a template value                    |
+| [rife.render.QrCode](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.QrCode)                     | Generates an SVG QR Code from a template value                   |
 | [rife.render.ShortenUrl](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.ShortenUrl)             | Shortens a template value URL                                    |
 | [rife.render.Uptime](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uptime)                     | Renders the server uptime in various customizable formats        |
 

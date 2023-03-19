@@ -21,7 +21,7 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 
 /**
- * <p>Normalizes a template value for inclusion in URL path.</p>
+ * <p>Normalizes a template value for inclusion in a URL path.</p>
  *
  * <p>Usage:</p>
  *

@@ -84,7 +84,6 @@ public final class RenderUtils {
     /**
      * Returns the last 4 digits a credit card number. The number must satisfy the Luhn algorithm.
      * Non-digits are stripped from the number.
-     * Th
      *
      * @param src the credit card number
      * @return the last 4 digits of the credit card number or empty
@@ -122,6 +121,32 @@ public final class RenderUtils {
         }
 
         return "";
+    }
+
+    /**
+     * Masks characters in a String.
+     *
+     * @param src       the source String.
+     * @param mask      the String to mask characters with
+     * @param unmasked  the number of characters to leave unmasked
+     * @param fromStart to unmask characters from the start of the String
+     * @return the masked String
+     */
+    public static String mask(String src, String mask, int unmasked, boolean fromStart) {
+        var len = src.length();
+        var buff = new StringBuilder(len);
+        if (unmasked > 0 && unmasked < len) {
+            if (fromStart) {
+                buff.append(src, 0, unmasked);
+            }
+            buff.append(mask.repeat(len - unmasked));
+            if (!fromStart) {
+                buff.append(src.substring(len - unmasked));
+            }
+        } else {
+            buff.append(mask.repeat(len));
+        }
+        return buff.toString();
     }
 
     /**

@@ -37,6 +37,24 @@ class TestFormat {
     }
 
     @Test
+    void testMask() {
+        var t = TemplateFactory.HTML.get("mask");
+        var foo = "374380141731053";
+        t.setAttribute(TestCase.FOO, foo);
+        assertThat(t.getContent()).as("mask.html").isEqualTo("3743•••••••••••");
+
+        t = TemplateFactory.TXT.get("mask");
+        t.setAttribute(TestCase.FOO, foo);
+        assertThat(t.getContent()).as("mask.txt").isEqualTo("***************");
+
+        assertThat(RenderUtils.mask(foo, "?", 4, false)).as("mask=?")
+                .isEqualTo("???????????1053");
+
+        assertThat(RenderUtils.mask(foo, "-", 22, false)).as("unmasked=22")
+                .isEqualTo("---------------");
+    }
+
+    @Test
     void testNormalize() {
         var t = TemplateFactory.HTML.get("normalize");
         var foo = "News for January 6, 2023 (Paris)";
