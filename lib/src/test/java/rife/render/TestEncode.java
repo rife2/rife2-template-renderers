@@ -41,7 +41,8 @@ class TestEncode {
     void testEncodeHtmlEntities() {
         var t = TemplateFactory.HTML.get("encodeHtmlEntities");
         t.setAttribute(TestCase.FOO, "john@doe.com");
-        assertThat(t.getContent()).isEqualTo("<a href=\"mailto:&#106;&#111;&#104;&#110;&#64;&#100;&#111;&#101;&#46;&#99;&#111;&#109;\">Email</a>");
+        assertThat(t.getContent()).isEqualTo(
+                "<a href=\"mailto:&#106;&#111;&#104;&#110;&#64;&#100;&#111;&#101;&#46;&#99;&#111;&#109;\">Email</a>");
     }
 
     @Test
@@ -66,18 +67,19 @@ class TestEncode {
         // Encode
         var bean = new ValueBean(TestCase.SAMPLE_TEXT);
         t.setBean(bean);
-        assertThat(t.getContent()).isEqualTo(bean.getValue() + ": " + rot13);
+        assertThat(t.getContent()).as("encode").isEqualTo(bean.getValue() + ": " + rot13);
 
         // Decode
         t.setValue("value", rot13);
-        assertThat(t.getContent()).isEqualTo(rot13 + ": " + TestCase.SAMPLE_TEXT);
+        assertThat(t.getContent()).as("decode").isEqualTo(rot13 + ": " + TestCase.SAMPLE_TEXT);
     }
 
     @Test
     void testEncodeUnicode() {
         var t = TemplateFactory.TXT.get("encodeUnicode");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
-        assertThat(t.getContent()).isEqualTo("\\u0054\\u0068\\u0069\\u0073\\u0020\\u0069\\u0073\\u0020\\u0061\\u0020\\u0074\\u0065\\u0073\\u0074\\u002E");
+        assertThat(t.getContent()).isEqualTo(
+                "\\u0054\\u0068\\u0069\\u0073\\u0020\\u0069\\u0073\\u0020\\u0061\\u0020\\u0074\\u0065\\u0073\\u0074\\u002E");
     }
 
     @Test

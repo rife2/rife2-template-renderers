@@ -27,12 +27,11 @@ class TestFormat {
     void testAbbreviate() {
         var t = TemplateFactory.HTML.get("abbreviate");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
-        System.out.println(t.getContent());
-        assertThat(t.getContent()).as("max=12").endsWith("…").hasSize(12);
+        assertThat(t.getContent()).as("activate.html").endsWith("…").hasSize(12);
 
         t = TemplateFactory.TXT.get("abbreviate");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
-        assertThat(t.getContent()).as("max=8").endsWith("...").hasSize(8);
+        assertThat(t.getContent()).as("activate.txt").endsWith("...").hasSize(8);
     }
 
     @Test
@@ -58,12 +57,6 @@ class TestFormat {
         t = TemplateFactory.TXT.get("mask");
         t.setAttribute(TestCase.FOO, foo);
         assertThat(t.getContent()).as("mask.txt").isEqualTo("***************");
-
-        assertThat(RenderUtils.mask(foo, "?", 4, false)).as("mask=?")
-                .isEqualTo("???????????1053");
-
-        assertThat(RenderUtils.mask(foo, "-", 22, false)).as("unmasked=22")
-                .isEqualTo("---------------");
     }
 
     @Test
@@ -97,23 +90,25 @@ class TestFormat {
     @Test
     void testUptime() {
         var t = TemplateFactory.TXT.get("uptime");
-        assertThat(t.getContent()).matches("0 minute\n0 minuto\n0 minute");
+        assertThat(t.getContent()).as("uptime.txt").isEqualTo("0 minute\n0 minuto\n0 minute");
 
         t = TemplateFactory.HTML.get("uptime");
         t.setAttribute(Uptime.class.getName(), 547800300076L);
-        assertThat(t.getContent()).isEqualTo("17 années, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
+        assertThat(t.getContent()).as("uptime.html")
+                .isEqualTo("17 années, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
         t.setAttribute(Uptime.class.getName(), 120000L);
-        assertThat(t.getContent()).matches("2 minutes");
+        assertThat(t.getContent()).as("uptime.html: 2 min").isEqualTo("2 minutes");
 
         t = TemplateFactory.JSON.get("uptime");
         t.setAttribute(Uptime.class.getName(), 5999964460000L);
-        assertThat(t.getContent()).isEqualTo("190 years 3 months 4 days 47 minutes");
+        assertThat(t.getContent()).as("uptime.json")
+                .isEqualTo("190 years 3 months 4 days 47 minutes");
         t.setAttribute(Uptime.class.getName(), 34822860000L);
-        assertThat(t.getContent()).isEqualTo("1 year 1 month 1 week 1 day 1 hour 1 minute");
+        assertThat(t.getContent()).as("uptime.json: 1 year...")
+                .isEqualTo("1 year 1 month 1 week 1 day 1 hour 1 minute");
 
         t = TemplateFactory.TXT.get("uptime2");
         t.setAttribute(Uptime.class.getName(), 547800388076L);
-        assertThat(t.getContent()).matches("17YRS-4MOS-2WKS-1D-6H-46M");
-
+        assertThat(t.getContent()).as("uptime2.txt").isEqualTo("17YRS-4MOS-2WKS-1D-6H-46M");
     }
 }

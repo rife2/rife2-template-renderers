@@ -53,7 +53,7 @@ public final class RenderUtils {
      * @return the abbreviated String
      */
     public static String abbreviate(String src, int max, String marker) {
-        if (src == null || src.isBlank()) {
+        if (src == null || src.isBlank() || marker == null) {
             return src;
         }
 
@@ -85,7 +85,7 @@ public final class RenderUtils {
      * @param src the source String
      * @return the encoded String
      */
-    public static String encodeJS(String src) {
+    public static String encodeJs(String src) {
         if (src == null || src.isBlank()) {
             return src;
         }
@@ -173,6 +173,34 @@ public final class RenderUtils {
     }
 
     /**
+     * Converts a text string to HTML decimal entities.
+     *
+     * @param src the String to convert
+     * @return the converted String
+     */
+    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
+    public static String htmlEntities(String src) {
+        if (src == null || src.isEmpty()) {
+            return src;
+        }
+
+        var len = src.length();
+        var sb = new StringBuilder(len * 6);
+
+        // https://stackoverflow.com/a/6766497/8356718
+        int codePoint;
+        for (var i = 0; i < len; i++) {
+            codePoint = src.codePointAt(i);
+            // Skip over the second char in a surrogate pair
+            if (codePoint > 0xffff) {
+                i++;
+            }
+            sb.append(String.format("&#%s;", codePoint));
+        }
+        return sb.toString();
+    }
+
+    /**
      * Masks characters in a String.
      *
      * @param src       the source String.
@@ -182,6 +210,10 @@ public final class RenderUtils {
      * @return the masked String
      */
     public static String mask(String src, String mask, int unmasked, boolean fromStart) {
+        if (src == null || src.isEmpty()) {
+            return src;
+        }
+
         var len = src.length();
         var buff = new StringBuilder(len);
         if (unmasked > 0 && unmasked < len) {
@@ -205,6 +237,10 @@ public final class RenderUtils {
      * @return The normalized String
      */
     public static String normalize(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
         var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD);
         var sb = new StringBuilder(normalized.length());
         boolean space = false;
@@ -342,33 +378,6 @@ public final class RenderUtils {
             i += Character.charCount(newCodePoint);
         }
         return new String(buff, 0, offset);
-    }
-
-    /**
-     * Converts a text string to HTML decimal entities.
-     *
-     * @param src the String to convert
-     * @return the converted String
-     */
-    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
-    public static String toHtmlEntities(String src) {
-        if (src == null || src.isEmpty()) {
-            return src;
-        }
-
-        var len = src.length();
-        var sb = new StringBuilder(len * 6);
-
-        // https://stackoverflow.com/a/6766497/8356718
-        for (var i = 0; i < len; i++) {
-            var codePoint = src.codePointAt(i);
-            // Skip over the second char in a surrogate pair
-            if (codePoint > 0xffff) {
-                i++;
-            }
-            sb.append(String.format("&#%s;", codePoint));
-        }
-        return sb.toString();
     }
 
     /**

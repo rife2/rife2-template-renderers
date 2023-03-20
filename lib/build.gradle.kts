@@ -140,7 +140,7 @@ publishing {
             from(components["java"])
             pom {
                 name.set("RIFE2 Template Renderers")
-                description.set("Template Renderers for the RIFE2 framework")
+                description.set("Template Renderers for the RIFE2 web framework")
                 url.set("https://github.com/rife2/rife2-template-renderers")
                 licenses {
                     license {
