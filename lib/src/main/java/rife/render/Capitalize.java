@@ -42,6 +42,9 @@ public class Capitalize implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         var value = template.getValueOrAttribute(differentiator);
+        if (value == null || value.isBlank()) {
+            return value;
+        }
         return value.substring(0, 1).toUpperCase(Localization.getLocale()) + value.substring(1);
     }
 }

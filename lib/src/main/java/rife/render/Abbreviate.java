@@ -45,7 +45,7 @@ public class Abbreviate implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         var mark = "...";
-        var max = 0;
+        var max = -1;
         if (template.hasDefaultValue(valueId)) {
             var properties = new Properties();
             try {

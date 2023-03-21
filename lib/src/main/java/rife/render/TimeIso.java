@@ -19,10 +19,8 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * <p>Return the current time in ISO 8601 format.</p>
@@ -40,16 +38,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class TimeIso implements ValueRenderer {
     /**
-     * ISO 8601 time formatter.
-     */
-    static public final DateTimeFormatter iso8601Formatter =
-            DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(Localization.getLocale());
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return ZonedDateTime.now().format(iso8601Formatter);
+        return ZonedDateTime.now().format(RenderUtils.ISO_8601_TIME_FORMATTER);
     }
 }

@@ -19,13 +19,11 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 
 /**
@@ -44,12 +42,6 @@ import java.util.Properties;
  */
 public class DateTimeIso implements ValueRenderer {
     /**
-     * ISO 8601 date and time formatter.
-     */
-    static public final DateTimeFormatter iso8601Formatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXXXX").withLocale(Localization.getLocale());
-
-    /**
      * {@inheritDoc}
      */
     @Override
@@ -61,13 +53,13 @@ public class DateTimeIso implements ValueRenderer {
                 properties.load(new StringReader(template.getDefaultValue(valueId)));
                 if (properties.containsKey(tz)) {
                     return ZonedDateTime.now().format(
-                            DateTimeIso.iso8601Formatter.withZone(ZoneId.of(properties.getProperty(tz))));
+                            RenderUtils.ISO_8601_FORMATTER.withZone(ZoneId.of(properties.getProperty(tz))));
                 }
             } catch (IOException ignore) {
                 // do nothing
             }
 
         }
-        return ZonedDateTime.now().format(iso8601Formatter);
+        return ZonedDateTime.now().format(RenderUtils.ISO_8601_FORMATTER);
     }
 }

@@ -55,6 +55,17 @@ class TestRenderUtils {
     }
 
     @Test
+    void testSwapCase() {
+        assertThat(RenderUtils.swapCase(SAMPLE_GERMAN)).isEqualTo("mÖCHTEN sIE EIN PAAR äPFEL?");
+    }
+
+    @Test
+    void testHtmlEntities() {
+        assertThat(RenderUtils.htmlEntities(SAMPLE_GERMAN))
+                .isEqualTo("&#77;&#246;&#99;&#104;&#116;&#101;&#110;&#32;&#83;&#105;&#101;&#32;&#101;&#105;&#110;&#32;&#112;&#97;&#97;&#114;&#32;&#196;&#112;&#102;&#101;&#108;&#63;");
+    }
+
+    @Test
     void testRot13() {
         var encoded = "Zöpugra Fvr rva cnne Äcsry?";
         assertThat(RenderUtils.rot13(SAMPLE_GERMAN)).as("encode").isEqualTo(encoded);

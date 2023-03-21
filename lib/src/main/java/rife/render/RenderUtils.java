@@ -17,6 +17,7 @@
 
 package rife.render;
 
+import rife.tools.Localization;
 import rife.tools.StringUtils;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +39,26 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0
  */
 public final class RenderUtils {
+    /**
+     * ISO 8601 date formatter.
+     */
+    public static final DateTimeFormatter ISO_8601_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Localization.getLocale());
+    /**
+     * ISO 8601 date and time formatter.
+     */
+    public static final DateTimeFormatter ISO_8601_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXXXX").withLocale(Localization.getLocale());
+    /**
+     * ISO 8601 time formatter.
+     */
+    public static final DateTimeFormatter ISO_8601_TIME_FORMATTER =
+            DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(Localization.getLocale());
+    /**
+     * RFC 2822 date and time formatter.
+     */
+    public static final DateTimeFormatter RFC_2822_FORMATTER =
+            DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
 

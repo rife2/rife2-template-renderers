@@ -40,6 +40,10 @@ public class Trim implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return template.getValueOrAttribute(differentiator).trim();
+        var value = template.getValueOrAttribute(differentiator);
+        if (value == null || value.isEmpty()) {
+            return value;
+        }
+        return value.trim();
     }
 }

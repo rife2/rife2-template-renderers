@@ -19,10 +19,8 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * <p>Return the current date and time in RFC 2822 format.</p>
@@ -40,16 +38,10 @@ import java.time.format.DateTimeFormatter;
  */
 public class DateTimeRfc2822 implements ValueRenderer {
     /**
-     * RFC 2822 date and time formatter.
-     */
-    static public final DateTimeFormatter rfc2822Formatter =
-            DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
-
-    /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return ZonedDateTime.now().format(rfc2822Formatter);
+        return ZonedDateTime.now().format(RenderUtils.RFC_2822_FORMATTER);
     }
 }

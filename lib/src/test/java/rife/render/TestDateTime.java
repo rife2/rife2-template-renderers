@@ -33,26 +33,26 @@ class TestDateTime {
     @Test
     void testDateIso() {
         var t = TemplateFactory.HTML.get("dateIso");
-        assertThatCode(() -> DateIso.iso8601Formatter.parse(t.getContent())).doesNotThrowAnyException();
+        assertThatCode(() -> RenderUtils.ISO_8601_DATE_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
     void testDateTimeIso() {
         var t = TemplateFactory.HTML.get("dateTimeIso");
-        assertThatCode(() -> DateTimeIso.iso8601Formatter.parse(t.getContent())).doesNotThrowAnyException();
+        assertThatCode(() -> RenderUtils.ISO_8601_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
     void testDateTimeRfc2822() {
         var t = TemplateFactory.HTML.get("dateTimeRfc2822");
-        assertThatCode(() -> DateTimeRfc2822.rfc2822Formatter.parse(t.getContent())).doesNotThrowAnyException();
+        assertThatCode(() -> RenderUtils.RFC_2822_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
     void testDateTimeUtc() {
         var t = TemplateFactory.HTML.get("dateTimeUtc");
         var content = t.getContent();
-        assertThatCode(() -> DateTimeIso.iso8601Formatter.parse(content)).doesNotThrowAnyException();
+        assertThatCode(() -> RenderUtils.ISO_8601_FORMATTER.parse(content)).doesNotThrowAnyException();
         assertThat(content).endsWith("Z");
 
     }
@@ -60,7 +60,7 @@ class TestDateTime {
     @Test
     void testTimeIso() {
         var t = TemplateFactory.HTML.get("timeIso");
-        assertThatCode(() -> TimeIso.iso8601Formatter.parse(t.getContent())).doesNotThrowAnyException();
+        assertThatCode(() -> RenderUtils.ISO_8601_TIME_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
