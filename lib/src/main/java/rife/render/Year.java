@@ -19,10 +19,8 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
-import rife.tools.Localization;
 
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 /**
  * <p>Renders the current year.</p>
@@ -39,17 +37,12 @@ import java.time.format.DateTimeFormatter;
  * @since 1.0
  */
 public class Year implements ValueRenderer {
-    /**
-     * Year formatter.
-     */
-    static public final DateTimeFormatter yearFormatter =
-            DateTimeFormatter.ofPattern("yyyy").withLocale(Localization.getLocale());
 
     /**
      * {@inheritDoc}
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return ZonedDateTime.now().format(yearFormatter);
+        return ZonedDateTime.now().format(RenderUtils.YEAR_FORMATTER);
     }
 }

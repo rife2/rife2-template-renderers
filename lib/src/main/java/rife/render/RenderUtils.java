@@ -59,6 +59,11 @@ public final class RenderUtils {
      */
     public static final DateTimeFormatter RFC_2822_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
+    /**
+     * Year formatter.
+     */
+    static public final DateTimeFormatter YEAR_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
 
@@ -99,6 +104,19 @@ public final class RenderUtils {
         var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) +
                 (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
         return String.format("@%03d", beats);
+    }
+
+    /**
+     * Capitalizes a String.
+     *
+     * @param src the source String
+     * @return the capitalized String
+     */
+    public static String capitalize(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+        return src.substring(0, 1).toUpperCase(Localization.getLocale()) + src.substring(1);
     }
 
     /**
@@ -400,6 +418,19 @@ public final class RenderUtils {
             i += Character.charCount(newCodePoint);
         }
         return new String(buff, 0, offset);
+    }
+
+    /**
+     * Un-capitalizes a String.
+     *
+     * @param src the source String
+     * @return the capitalized String
+     */
+    public static String uncapitalize(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+        return src.substring(0, 1).toLowerCase(Localization.getLocale()) + src.substring(1);
     }
 
     /**
