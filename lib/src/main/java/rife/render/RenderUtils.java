@@ -444,11 +444,28 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns the formatted server uptime.
+     * <p>Returns the formatted server uptime.</p>
+     *
+     * <p>The default Properties are:</p>
+     *
+     * <pre>
+     * year=\ year\u29F5u0020
+     * years=\ years\u29F5u0020
+     * month=\ month\u29F5u0020
+     * months=\ months\u29F5u0020
+     * week=\ week\u29F5u0020
+     * weeks=\ weeks\u29F5u0020
+     * day=\ day\u29F5u0020
+     * days=\ days\u29F5u0020
+     * hour=\ hour\u29F5u0020
+     * hours=\ hours\u29F5u0020
+     * minute=\ minute
+     * minutes=\ minutes
+     * </pre>
      *
      * @param uptime     the uptime in milliseconds
      * @param properties the format properties
-     * @return The formatted uptime.
+     * @return ghe formatted uptime.
      */
     public static String uptime(long uptime, Properties properties) {
         var sb = new StringBuilder();
