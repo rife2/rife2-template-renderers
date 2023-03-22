@@ -13,10 +13,10 @@ plugins {
     id("com.github.ben-manes.versions") version "0.46.0"
 }
 
-val rifeVersion by rootProject.extra { "1.5.3" }
+val rifeVersion by rootProject.extra { "1.5.4" }
 
 group = "com.uwyn.rife2"
-version = "0.9.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenLocal()

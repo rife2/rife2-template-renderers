@@ -56,7 +56,7 @@ This project provides a collection of useful template renderers.
 | [rife.render.Rot13](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Rot13)               | Translates a template value to/from ROT13                     |
 | [rife.render.SwapCase](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.SwapCase)         | Swap case of a template value                                 |
 | [rife.render.Trim](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Trim)                 | Removes leading and trailing whitespace from a template value |
-| [rife.render.Uncapitalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uncapitalize) | Un-capitalizes a template value                               |
+| [rife.render.Uncapitalize](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uncapitalize) | Uncapitalizes a template value                                |
 | [rife.render.Uppercase](https://github.com/rife2/rife2-template-renderers/wiki/rife.render.Uppercase)       | Converts a template value to uppercase                        |
 
 ## Documentation

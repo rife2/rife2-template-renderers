@@ -439,10 +439,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Un-capitalizes a String.
+     * Uncapitalizes a String.
      *
      * @param src the source String
-     * @return the capitalized String
+     * @return the uncapitalized String
      */
     public static String uncapitalize(String src) {
         if (src == null || src.isBlank()) {
