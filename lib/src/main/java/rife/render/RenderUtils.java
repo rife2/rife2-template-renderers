@@ -160,7 +160,7 @@ public final class RenderUtils {
     /**
      * Fetches the content (body) of a URL.
      *
-     * @param url            the URL string.
+     * @param url            the URL sSng.
      * @param defaultContent the default content to return if none fetched.
      * @return the url content, or empty.
      */
@@ -223,7 +223,7 @@ public final class RenderUtils {
     }
 
     /**
-     * Converts a text string to HTML decimal entities.
+     * Converts a text String to HTML decimal entities.
      *
      * @param src the String to convert
      * @return the converted String
@@ -383,7 +383,9 @@ public final class RenderUtils {
     }
 
     /**
-     * <p>Shortens a URL using <a href="https://is.gd/">is.gid</a>. The URL string must a valid http or https URL.</p>
+     * <p>Shortens a URL using <a href="https://is.gd/">is.gid</a>.</p>
+     *
+     * <p>The URL String must be a valid http or https URL.</p>
      *
      * <p>Based on <a href="https://github.com/ethauvin/isgd-shorten">isgd-shorten</a></p>
      *
@@ -465,8 +467,9 @@ public final class RenderUtils {
      *
      * @param uptime     the uptime in milliseconds
      * @param properties the format properties
-     * @return ghe formatted uptime.
+     * @return the formatted uptime.
      */
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static String uptime(long uptime, Properties properties) {
         var sb = new StringBuilder();
 
