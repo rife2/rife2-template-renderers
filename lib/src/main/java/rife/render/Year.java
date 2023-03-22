@@ -43,6 +43,6 @@ public class Year implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return ZonedDateTime.now().format(RenderUtils.YEAR_FORMATTER);
+        return ZonedDateTime.now().format(RenderUtils.ISO_8601_YEAR_FORMATTER);
     }
 }

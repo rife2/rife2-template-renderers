@@ -41,29 +41,39 @@ import java.util.concurrent.TimeUnit;
 public final class RenderUtils {
     /**
      * ISO 8601 date formatter.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>
      */
     public static final DateTimeFormatter ISO_8601_DATE_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd").withLocale(Localization.getLocale());
     /**
      * ISO 8601 date and time formatter.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>
      */
     public static final DateTimeFormatter ISO_8601_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXXXX").withLocale(Localization.getLocale());
     /**
      * ISO 8601 time formatter.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>
      */
     public static final DateTimeFormatter ISO_8601_TIME_FORMATTER =
             DateTimeFormatter.ofPattern("HH:mm:ss").withLocale(Localization.getLocale());
     /**
+     * ISO 8601 Year formatter.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>
+     */
+    static public final DateTimeFormatter ISO_8601_YEAR_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy").withLocale(Localization.getLocale());
+    /**
      * RFC 2822 date and time formatter.
+     *
+     * @see <a href="https://www.rfc-editor.org/rfc/rfc2822">RFC 2822</a>
      */
     public static final DateTimeFormatter RFC_2822_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
-    /**
-     * Year formatter.
-     */
-    static public final DateTimeFormatter YEAR_FORMATTER =
-            DateTimeFormatter.ofPattern("yyyy").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
 
