@@ -46,11 +46,12 @@ public class DateTimeIso implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        if (template.hasDefaultValue(valueId)) {
+        var defaultValue = template.getDefaultValue(valueId);
+        if (defaultValue != null) {
             var properties = new Properties();
             try {
                 var tz = "tz";
-                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                properties.load(new StringReader(defaultValue));
                 if (properties.containsKey(tz)) {
                     return ZonedDateTime.now().format(
                             RenderUtils.ISO_8601_FORMATTER.withZone(ZoneId.of(properties.getProperty(tz))));

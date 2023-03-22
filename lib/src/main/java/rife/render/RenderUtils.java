@@ -201,13 +201,17 @@ public final class RenderUtils {
                 var sum = 0;
                 boolean isSecond = false;
                 int digit;
+                char c;
                 for (int i = len - 1; i >= 0; i--) {
-                    digit = cc.charAt(i) - '0';
-                    if (isSecond) {
-                        digit = digit * 2;
+                    c = cc.charAt(i);
+                    if (c >= '0' && c <= '9') {
+                        digit = cc.charAt(i) - '0';
+                        if (isSecond) {
+                            digit = digit * 2;
+                        }
+                        sum += digit / 10;
+                        sum += digit % 10;
                     }
-                    sum += digit / 10;
-                    sum += digit % 10;
 
                     isSecond = !isSecond;
                 }
@@ -339,8 +343,10 @@ public final class RenderUtils {
         if (src == null || src.isBlank()) {
             return src;
         }
-        return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s", size,
-                StringUtils.encodeUrl(src.trim())), src);
+        return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
+                StringUtils.encodeUrl(size),
+                StringUtils.encodeUrl(src.trim())),
+                src);
     }
 
     /**

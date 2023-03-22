@@ -45,10 +45,11 @@ public class QrCode implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         var size = "150x150";
-        if (template.hasDefaultValue(valueId)) {
+        var defaultValue = template.getDefaultValue(valueId);
+        if (defaultValue != null) {
             var properties = new Properties();
             try {
-                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                properties.load(new StringReader(defaultValue));
                 size = properties.getProperty("size", size);
             } catch (IOException ignore) {
                 // do nothing

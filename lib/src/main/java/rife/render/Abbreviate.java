@@ -46,10 +46,11 @@ public class Abbreviate implements ValueRenderer {
     public String render(Template template, String valueId, String differentiator) {
         var mark = "...";
         var max = -1;
-        if (template.hasDefaultValue(valueId)) {
+        var defaultValue = template.getDefaultValue(valueId);
+        if (defaultValue != null) {
             var properties = new Properties();
             try {
-                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                properties.load(new StringReader(defaultValue));
                 mark = properties.getProperty("mark", mark);
                 max = Integer.parseInt(properties.getProperty("max", String.valueOf(max)));
             } catch (IOException | NumberFormatException ignore) {

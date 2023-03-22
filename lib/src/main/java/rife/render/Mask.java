@@ -47,10 +47,11 @@ public class Mask implements ValueRenderer {
         var mask = "*";
         var unmasked = 0;
         var fromStart = false;
-        if (template.hasDefaultValue(valueId)) {
+        var defaultValue = template.getDefaultValue(valueId);
+        if (defaultValue != null) {
             var properties = new Properties();
             try {
-                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                properties.load(new StringReader(defaultValue));
                 mask = properties.getProperty("mask", mask);
                 unmasked = Integer.parseInt(properties.getProperty("unmasked", "0"));
                 fromStart = "true".equalsIgnoreCase(properties.getProperty("fromStart", "false"));

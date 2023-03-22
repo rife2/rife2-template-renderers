@@ -46,10 +46,10 @@ public class Uptime implements ValueRenderer {
     @Override
     public String render(Template template, String valueId, String differentiator) {
         var properties = new Properties();
-
-        if (template.hasDefaultValue(valueId)) {
+        var defaultValue = template.getDefaultValue(valueId);
+        if (defaultValue != null) {
             try {
-                properties.load(new StringReader(template.getDefaultValue(valueId)));
+                properties.load(new StringReader(defaultValue));
             } catch (IOException ignore) {
                 // ignore
             }
