@@ -288,7 +288,7 @@ public final class RenderUtils {
      * Normalizes a String for inclusion in a URL path.
      *
      * @param src The source String
-     * @return The normalized String
+     * @return the normalized String
      */
     public static String normalize(String src) {
         if (src == null || src.isBlank()) {
