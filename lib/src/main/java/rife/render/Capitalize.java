@@ -19,6 +19,7 @@ package rife.render;
 
 import rife.template.Template;
 import rife.template.ValueRenderer;
+import rife.tools.StringUtils;
 
 /**
  * <p>Capitalizes a template value.</p>
@@ -40,6 +41,6 @@ public class Capitalize implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.capitalize(template.getValueOrAttribute(differentiator));
+        return StringUtils.capitalize(template.getValueOrAttribute(differentiator));
     }
 }

@@ -106,7 +106,7 @@ public final class RenderUtils {
     /**
      * Returns the Swatch Internet (.beat) Time for the give date-time.
      *
-     * @param zonedDateTime the date and time.
+     * @param zonedDateTime the date and time
      * @return the .beat time. (eg.: {@code @248})
      */
     public static String beatTime(ZonedDateTime zonedDateTime) {
@@ -114,19 +114,6 @@ public final class RenderUtils {
         var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) +
                 (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
         return String.format("@%03d", beats);
-    }
-
-    /**
-     * Capitalizes a String.
-     *
-     * @param src the source String
-     * @return the capitalized String
-     */
-    public static String capitalize(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
-        }
-        return src.substring(0, 1).toUpperCase(Localization.getLocale()) + src.substring(1);
     }
 
     /**
@@ -161,8 +148,8 @@ public final class RenderUtils {
      * Fetches the content (body) of a URL.
      *
      * @param url            the URL sSng.
-     * @param defaultContent the default content to return if none fetched.
-     * @return the url content, or empty.
+     * @param defaultContent the default content to return if none fetched
+     * @return the url content, or empty
      */
     public static String fetchUrl(String url, String defaultContent) {
         try {
@@ -232,7 +219,7 @@ public final class RenderUtils {
     /**
      * Masks characters in a String.
      *
-     * @param src       the source String.
+     * @param src       the source String
      * @param mask      the String to mask characters with
      * @param unmasked  the number of characters to leave unmasked
      * @param fromStart to unmask characters from the start of the String
@@ -262,7 +249,7 @@ public final class RenderUtils {
     /**
      * Normalizes a String for inclusion in a URL path.
      *
-     * @param src The source String
+     * @param src the source String
      * @return the normalized String
      */
     public static String normalize(String src) {
@@ -414,19 +401,6 @@ public final class RenderUtils {
     }
 
     /**
-     * Uncapitalizes a String.
-     *
-     * @param src the source String
-     * @return the uncapitalized String
-     */
-    public static String uncapitalize(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
-        }
-        return src.substring(0, 1).toLowerCase(Localization.getLocale()) + src.substring(1);
-    }
-
-    /**
      * <p>Returns the formatted server uptime.</p>
      *
      * <p>The default Properties are:</p>
@@ -448,7 +422,7 @@ public final class RenderUtils {
      *
      * @param uptime     the uptime in milliseconds
      * @param properties the format properties
-     * @return the formatted uptime.
+     * @return the formatted uptime
      */
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static String uptime(long uptime, Properties properties) {
@@ -500,7 +474,7 @@ public final class RenderUtils {
      * Validates a credit card number using the Luhn algorithm.
      *
      * @param cc the credit card number
-     * @return {@code trude} if the credit card number is valid
+     * @return {@code true} if the credit card number is valid
      */
     public static boolean validateCreditCard(String cc) {
         try {
