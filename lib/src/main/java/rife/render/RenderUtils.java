@@ -192,38 +192,13 @@ public final class RenderUtils {
             return src;
         }
 
-        try {
-            var cc = src.replaceAll("[^0-9]", "");
+        var cc = src.replaceAll("[^0-9]", "");
 
-            var len = cc.length();
-            if (len >= 4) {
-                // Luhn algorithm
-                var sum = 0;
-                boolean isSecond = false;
-                int digit;
-                char c;
-                for (int i = len - 1; i >= 0; i--) {
-                    c = cc.charAt(i);
-                    if (c >= '0' && c <= '9') {
-                        digit = cc.charAt(i) - '0';
-                        if (isSecond) {
-                            digit = digit * 2;
-                        }
-                        sum += digit / 10;
-                        sum += digit % 10;
-                    }
-
-                    isSecond = !isSecond;
-                }
-                if (sum % 10 == 0) {
-                    return cc.substring(len - 4);
-                }
-            }
-        } catch (NumberFormatException ignore) {
-            // do nothing
+        if (validateCreditCard(cc)) {
+            return cc.substring(cc.length() - 4);
+        } else {
+            return "";
         }
-
-        return "";
     }
 
     /**
@@ -344,8 +319,8 @@ public final class RenderUtils {
             return src;
         }
         return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
-                StringUtils.encodeUrl(size),
-                StringUtils.encodeUrl(src.trim())),
+                        StringUtils.encodeUrl(size),
+                        StringUtils.encodeUrl(src.trim())),
                 src);
     }
 
@@ -519,5 +494,43 @@ public final class RenderUtils {
                 properties.getProperty("minutes", " minutes")));
 
         return sb.toString();
+    }
+
+    /**
+     * Validates a credit card number using the Luhn algorithm.
+     *
+     * @param cc the credit card number
+     * @return {@code trude} if the credit card number is valid
+     */
+    public static boolean validateCreditCard(String cc) {
+        try {
+            var len = cc.length();
+            if (len >= 8 && len <= 19) {
+                // Luhn algorithm
+                var sum = 0;
+                boolean second = false;
+                int digit;
+                char c;
+                for (int i = len - 1; i >= 0; i--) {
+                    c = cc.charAt(i);
+                    if (c >= '0' && c <= '9') {
+                        digit = cc.charAt(i) - '0';
+                        if (second) {
+                            digit = digit * 2;
+                        }
+                        sum += digit / 10;
+                        sum += digit % 10;
+
+                        second = !second;
+                    }
+                }
+                if (sum % 10 == 0) {
+                    return true;
+                }
+            }
+        } catch (NumberFormatException ignore) {
+            // do nothing
+        }
+        return false;
     }
 }
