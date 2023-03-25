@@ -27,7 +27,7 @@ class TestFormat {
     void testAbbreviate() {
         var t = TemplateFactory.HTML.get("abbreviate");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
-        assertThat(t.getContent()).as("activate.html").endsWith("…").hasSize(12);
+        assertThat(t.getContent()).as("activate.html").endsWith("&hellip;").hasSize(19);
 
         t = TemplateFactory.TXT.get("abbreviate");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
@@ -52,7 +52,8 @@ class TestFormat {
         var t = TemplateFactory.HTML.get("mask");
         var foo = "374380141731053";
         t.setAttribute(TestCase.FOO, foo);
-        assertThat(t.getContent()).as("mask.html").isEqualTo("3743•••••••••••");
+        assertThat(t.getContent()).as("mask.html")
+                .isEqualTo("3743&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;");
 
         t = TemplateFactory.TXT.get("mask");
         t.setAttribute(TestCase.FOO, foo);
@@ -95,7 +96,7 @@ class TestFormat {
         t = TemplateFactory.HTML.get("uptime");
         t.setAttribute(Uptime.class.getName(), 547800300076L);
         assertThat(t.getContent()).as("uptime.html")
-                .isEqualTo("17 années, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
+                .isEqualTo("17 ann&eacute;es, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
         t.setAttribute(Uptime.class.getName(), 120000L);
         assertThat(t.getContent()).as("uptime.html: 2 min").isEqualTo("2 minutes");
 

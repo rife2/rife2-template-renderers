@@ -13,7 +13,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.46.0"
 }
 
-val rifeVersion by rootProject.extra { "1.5.5" }
+val rifeVersion by rootProject.extra { "1.5.6" }
 
 group = "com.uwyn.rife2"
 version = "1.0.1-SNAPSHOT"

@@ -21,6 +21,7 @@ import rife.tools.Localization;
 import rife.tools.StringUtils;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +40,11 @@ import java.util.concurrent.TimeUnit;
  * @since 1.0
  */
 public final class RenderUtils {
+    /**
+     * The encoding property.
+     */
+    public static final String ENCODING_PROPERTY = "encoding";
+
     /**
      * ISO 8601 date formatter.
      *
@@ -82,12 +88,12 @@ public final class RenderUtils {
     }
 
     /**
-     * Abbreviates a String to the given length using a replacement marker.
+     * Abbreviates a {@code String} to the given length using a replacement marker.
      *
-     * @param src    the source String
-     * @param max    the maximum length of the resulting String
-     * @param marker the String used as a replacement marker
-     * @return the abbreviated String
+     * @param src    the source {@code String}
+     * @param max    the maximum length of the resulting {@code String}
+     * @param marker the {@code String} used as a replacement marker
+     * @return the abbreviated {@code String}
      */
     public static String abbreviate(String src, int max, String marker) {
         if (src == null || src.isBlank() || marker == null) {
@@ -117,10 +123,59 @@ public final class RenderUtils {
     }
 
     /**
-     * Encodes a String to JavaScript/ECMAScript.
+     * <p>Encodes the source {@code String} to the specified encoding.</p>
      *
-     * @param src the source String
-     * @return the encoded String
+     * <p>The supported encodings are:</p>
+     *
+     * <ul>
+     *     <li>{@code html}</li>
+     *     <li>{@code js}</li>
+     *     <li>{@code json}</li>
+     *     <li>{@code unicode}</li>
+     *     <li>{@code url}</li>
+     *     <li>{@code xml}</li>
+     * </ul>
+     *
+     * @param src        the source {@code String} to encode
+     * @param properties the properties containing the {@link #ENCODING_PROPERTY encoding property}.
+     * @return the encoded {@code String}
+     */
+    public static String encode(String src, Properties properties) {
+        if (src == null || src.isBlank() || properties.isEmpty()) {
+            return src;
+        }
+
+        var encoding = properties.getProperty(ENCODING_PROPERTY, "");
+        switch (encoding) {
+            case "html" -> {
+                return StringUtils.encodeHtml(src);
+            }
+            case "js" -> {
+                return RenderUtils.encodeJs(src);
+            }
+            case "json" -> {
+                return StringUtils.encodeJson(src);
+            }
+            case "unicode" -> {
+                return StringUtils.encodeUnicode(src);
+            }
+            case "url" -> {
+                return StringUtils.encodeUrl(src);
+            }
+            case "xml" -> {
+                return StringUtils.encodeXml(src);
+            }
+            default -> {
+                return src;
+            }
+        }
+    }
+
+    /**
+     * Encodes a {@code String} to JavaScript/ECMAScript.
+     *
+     * @param src the source {@code String}
+     * @return the encoded {@code String}
      */
     public static String encodeJs(String src) {
         if (src == null || src.isBlank()) {
@@ -147,7 +202,7 @@ public final class RenderUtils {
     /**
      * Fetches the content (body) of a URL.
      *
-     * @param url            the URL sSng.
+     * @param url            the URL {@code String}
      * @param defaultContent the default content to return if none fetched
      * @return the url content, or empty
      */
@@ -168,8 +223,12 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns the last 4 digits a credit card number. The number must satisfy the Luhn algorithm.
-     * Non-digits are stripped from the number.
+     * <p></p>Returns the last 4 digits a credit card number.</p>
+     *
+     * <ul>
+     *     <li>The number must satisfy the Luhn algorithm</li>
+     *     <li>Non-digits are stripped from the number</li>
+     * </ul>
      *
      * @param src the credit card number
      * @return the last 4 digits of the credit card number or empty
@@ -189,10 +248,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Converts a text String to HTML decimal entities.
+     * Converts a text {@code String} to HTML decimal entities.
      *
-     * @param src the String to convert
-     * @return the converted String
+     * @param src the {@code String} to convert
+     * @return the converted {@code String}
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String htmlEntities(String src) {
@@ -219,11 +278,11 @@ public final class RenderUtils {
     /**
      * Masks characters in a String.
      *
-     * @param src       the source String
-     * @param mask      the String to mask characters with
+     * @param src       the source {@code String}
+     * @param mask      the {@code String} to mask characters with
      * @param unmasked  the number of characters to leave unmasked
-     * @param fromStart to unmask characters from the start of the String
-     * @return the masked String
+     * @param fromStart to unmask characters from the start of the {@code String}
+     * @return the masked {@code String}
      */
     public static String mask(String src, String mask, int unmasked, boolean fromStart) {
         if (src == null || src.isEmpty()) {
@@ -247,10 +306,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Normalizes a String for inclusion in a URL path.
+     * Normalizes a {@code String} for inclusion in a URL path.
      *
-     * @param src the source String
-     * @return the normalized String
+     * @param src the source {@code String}
+     * @return the normalized {@code String}
      */
     public static String normalize(String src) {
         if (src == null || src.isBlank()) {
@@ -279,12 +338,30 @@ public final class RenderUtils {
     }
 
     /**
+     * Returns a new {@code Properties} containing the properties specified in the given {$String}.
+     *
+     * @param src the {@code} String containing the properties
+     * @return the new {@code Properties}
+     */
+    public static Properties parsePropertiesString(String src) {
+        var properties = new Properties();
+        if (src != null && !src.isBlank()) {
+            try {
+                properties.load(new StringReader(src));
+            } catch (IOException ignore) {
+                // ignore
+            }
+        }
+        return properties;
+    }
+
+    /**
      * Returns the plural form of a word, if count &gt; 1.
      *
      * @param count  the count
      * @param word   the singular word
      * @param plural the plural word
-     * @return the singular or plural String
+     * @return the singular or plural {@code String}
      */
     public static String plural(final long count, final String word, final String plural) {
         if (count > 1) {
@@ -295,9 +372,9 @@ public final class RenderUtils {
     }
 
     /**
-     * Generates an SVG QR Code from the given String using <a href="https://goqr.me/">goQR.me</a>.
+     * Generates an SVG QR Code from the given {@code String} using <a href="https://goqr.me/">goQR.me</a>.
      *
-     * @param src  the data String
+     * @param src  the data {@code String}
      * @param size the QR Code size. (e.g. {@code 150x150})
      * @return the QR code
      */
@@ -312,10 +389,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Translates a String to/from ROT13.
+     * Translates a {@code String} to/from ROT13.
      *
-     * @param src the source String
-     * @return the translated String
+     * @param src the source {@code String}
+     * @return the translated {@code String}
      */
     public static String rot13(String src) {
         if (src == null || src.isBlank()) {
@@ -353,7 +430,7 @@ public final class RenderUtils {
     /**
      * <p>Shortens a URL using <a href="https://is.gd/">is.gid</a>.</p>
      *
-     * <p>The URL String must be a valid http or https URL.</p>
+     * <p>The URL {@code String} must be a valid http or https URL.</p>
      *
      * <p>Based on <a href="https://github.com/ethauvin/isgd-shorten">isgd-shorten</a></p>
      *
@@ -371,8 +448,8 @@ public final class RenderUtils {
     /**
      * Swaps the case of a String.
      *
-     * @param src the String to swap the case of
-     * @return the modified String or null
+     * @param src the {@code String} to swap the case of
+     * @return the modified {@code String} or null
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String swapCase(String src) {
@@ -507,4 +584,5 @@ public final class RenderUtils {
         }
         return false;
     }
+
 }

@@ -55,10 +55,13 @@ public class Uptime implements ValueRenderer {
             }
         }
 
+        String uptime;
         if (template.hasAttribute(Uptime.class.getName())) {
-            return RenderUtils.uptime((long) template.getAttribute(Uptime.class.getName()), properties);
+            uptime = RenderUtils.uptime((long) template.getAttribute(Uptime.class.getName()), properties);
         } else {
-            return RenderUtils.uptime(ManagementFactory.getRuntimeMXBean().getUptime(), properties);
+            uptime = RenderUtils.uptime(ManagementFactory.getRuntimeMXBean().getUptime(), properties);
         }
+
+        return template.getEncoder().encode(uptime);
     }
 }

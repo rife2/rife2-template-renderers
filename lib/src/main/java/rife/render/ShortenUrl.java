@@ -42,6 +42,6 @@ public class ShortenUrl implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.shortenUrl(template.getValueOrAttribute(differentiator));
+        return template.getEncoder().encode(RenderUtils.shortenUrl(template.getValueOrAttribute(differentiator)));
     }
 }

@@ -44,7 +44,9 @@ public class EncodeBase64 implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return StringUtils.encodeBase64(template.getValueOrAttribute(differentiator)
-                .getBytes(StandardCharsets.UTF_8));
+        var properties = RenderUtils.parsePropertiesString(template.getDefaultValue(valueId));
+        return RenderUtils.encode(
+                StringUtils.encodeBase64(template.getValueOrAttribute(differentiator).getBytes(StandardCharsets.UTF_8)),
+                properties);
     }
 }

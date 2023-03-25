@@ -40,6 +40,6 @@ public class FormatCreditCard implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.formatCreditCard(template.getValueOrAttribute(differentiator));
+        return template.getEncoder().encode(RenderUtils.formatCreditCard(template.getValueOrAttribute(differentiator)));
     }
 }

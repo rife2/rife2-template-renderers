@@ -40,6 +40,6 @@ public class Normalize implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.normalize(template.getValueOrAttribute(differentiator));
+        return template.getEncoder().encode(RenderUtils.normalize(template.getValueOrAttribute(differentiator)));
     }
 }

@@ -42,6 +42,6 @@ public class BeatTime implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.beatTime(ZonedDateTime.now());
+        return template.getEncoder().encode(RenderUtils.beatTime(ZonedDateTime.now()));
     }
 }

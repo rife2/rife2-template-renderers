@@ -45,6 +45,6 @@ public class Uppercase implements ValueRenderer {
         if (value == null || value.isBlank()) {
             return value;
         }
-        return value.toUpperCase(Localization.getLocale());
+        return template.getEncoder().encode(value.toUpperCase(Localization.getLocale()));
     }
 }

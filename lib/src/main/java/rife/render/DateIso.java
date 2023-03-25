@@ -42,6 +42,6 @@ public class DateIso implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return ZonedDateTime.now().format(RenderUtils.ISO_8601_DATE_FORMATTER);
+        return template.getEncoder().encode(ZonedDateTime.now().format(RenderUtils.ISO_8601_DATE_FORMATTER));
     }
 }

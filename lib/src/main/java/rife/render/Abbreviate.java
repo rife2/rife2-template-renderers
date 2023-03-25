@@ -57,6 +57,8 @@ public class Abbreviate implements ValueRenderer {
                 // do nothing
             }
         }
-        return RenderUtils.abbreviate(template.getValueOrAttribute(differentiator), max, mark);
+
+        return template.getEncoder().encode(
+                RenderUtils.abbreviate(template.getValueOrAttribute(differentiator), max, mark));
     }
 }

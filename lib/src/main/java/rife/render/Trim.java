@@ -44,6 +44,6 @@ public class Trim implements ValueRenderer {
         if (value == null || value.isEmpty()) {
             return value;
         }
-        return value.trim();
+        return template.getEncoder().encode(value.trim());
     }
 }

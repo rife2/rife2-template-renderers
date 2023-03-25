@@ -41,6 +41,6 @@ public class Capitalize implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return StringUtils.capitalize(template.getValueOrAttribute(differentiator));
+        return template.getEncoder().encode(StringUtils.capitalize(template.getValueOrAttribute(differentiator)));
     }
 }

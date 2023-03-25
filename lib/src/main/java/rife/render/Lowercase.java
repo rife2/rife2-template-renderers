@@ -45,6 +45,6 @@ public class Lowercase implements ValueRenderer {
         if (value == null || value.isBlank()) {
             return value;
         }
-        return value.toLowerCase(Localization.getLocale());
+        return template.getEncoder().encode(value.toLowerCase(Localization.getLocale()));
     }
 }

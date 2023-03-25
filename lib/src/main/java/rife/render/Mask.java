@@ -59,6 +59,7 @@ public class Mask implements ValueRenderer {
                 // do nothing
             }
         }
-        return RenderUtils.mask(template.getValueOrAttribute(differentiator), mask, unmasked, fromStart);
+        return template.getEncoder().encode(
+                RenderUtils.mask(template.getValueOrAttribute(differentiator), mask, unmasked, fromStart));
     }
 }

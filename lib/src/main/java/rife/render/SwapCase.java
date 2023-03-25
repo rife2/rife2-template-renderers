@@ -41,6 +41,6 @@ public class SwapCase implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        return RenderUtils.swapCase(template.getValueOrAttribute(differentiator));
+        return template.getEncoder().encode(RenderUtils.swapCase(template.getValueOrAttribute(differentiator)));
     }
 }

@@ -19,6 +19,8 @@ package rife.render;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 class TestRenderUtils {
@@ -33,6 +35,21 @@ class TestRenderUtils {
 
         assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, -1, "")).as("max=-1")
                 .isEqualTo(TestCase.SAMPLE_TEXT);
+    }
+
+    @Test
+    void testEncode() {
+        var p = new Properties();
+        p.put(RenderUtils.ENCODING_PROPERTY, "html");
+        assertThat(RenderUtils.encode("<a test &>", p)).as("html").isEqualTo("&lt;a test &amp;&gt;");
+        p.put(RenderUtils.ENCODING_PROPERTY, "js");
+        assertThat(RenderUtils.encode("\"test'", p)).as("js").isEqualTo("\\\"test\\'");
+        p.put(RenderUtils.ENCODING_PROPERTY, "unicode");
+        assertThat(RenderUtils.encode("test", p)).as("unicode").isEqualTo("\\u0074\\u0065\\u0073\\u0074");
+        p.put(RenderUtils.ENCODING_PROPERTY, "url");
+        assertThat(RenderUtils.encode("a = test", p)).as("url").isEqualTo("a%20%3D%20test");
+        p.put(RenderUtils.ENCODING_PROPERTY, "xml");
+        assertThat(RenderUtils.encode("Joe's Café & Bar", p)).as("xml").isEqualTo("Joe&apos;s Café &amp; Bar");
     }
 
     @Test

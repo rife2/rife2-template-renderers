@@ -61,6 +61,6 @@ public class DateTimeIso implements ValueRenderer {
             }
 
         }
-        return ZonedDateTime.now().format(RenderUtils.ISO_8601_FORMATTER);
+        return template.getEncoder().encode(ZonedDateTime.now().format(RenderUtils.ISO_8601_FORMATTER));
     }
 }
