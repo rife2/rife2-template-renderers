@@ -223,7 +223,7 @@ public final class RenderUtils {
     }
 
     /**
-     * <p></p>Returns the last 4 digits a credit card number.</p>
+     * <p>Returns the last 4 digits a credit card number.</p>
      *
      * <ul>
      *     <li>The number must satisfy the Luhn algorithm</li>
