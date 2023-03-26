@@ -32,6 +32,7 @@ jobs:
         if: matrix.java-version != 17
         env:
           NO_CI: true
+        run: echo $NO_CI
 
       - name: Test with Gradle
         uses: gradle/gradle-build-action@v2
