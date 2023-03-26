@@ -20,10 +20,6 @@ package rife.render;
 import rife.template.Template;
 import rife.template.ValueRenderer;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Properties;
-
 /**
  * <p>Masks characters of a template value.</p>
  *
@@ -48,16 +44,15 @@ public class Mask implements ValueRenderer {
         var unmasked = 0;
         var fromStart = false;
         var defaultValue = template.getDefaultValue(valueId);
-        if (defaultValue != null) {
-            var properties = new Properties();
+        if (defaultValue != null && !defaultValue.isBlank()) {
+            var properties = RenderUtils.parsePropertiesString(defaultValue);
+            mask = properties.getProperty("mask", mask);
             try {
-                properties.load(new StringReader(defaultValue));
-                mask = properties.getProperty("mask", mask);
                 unmasked = Integer.parseInt(properties.getProperty("unmasked", "0"));
-                fromStart = "true".equalsIgnoreCase(properties.getProperty("fromStart", "false"));
-            } catch (IOException | NumberFormatException ignore) {
+            } catch (NumberFormatException ignore) {
                 // do nothing
             }
+            fromStart = "true".equalsIgnoreCase(properties.getProperty("fromStart", "false"));
         }
         return template.getEncoder().encode(
                 RenderUtils.mask(template.getValueOrAttribute(differentiator), mask, unmasked, fromStart));

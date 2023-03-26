@@ -20,10 +20,6 @@ package rife.render;
 import rife.template.Template;
 import rife.template.ValueRenderer;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Properties;
-
 /**
  * <p>Generates an SVG QR Code for a template value using <a href="https://goqr.me/">goQR.me</a>.</p>
  *
@@ -44,17 +40,8 @@ public class QrCode implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        var size = "150x150";
-        var defaultValue = template.getDefaultValue(valueId);
-        if (defaultValue != null) {
-            var properties = new Properties();
-            try {
-                properties.load(new StringReader(defaultValue));
-                size = properties.getProperty("size", size);
-            } catch (IOException ignore) {
-                // do nothing
-            }
-        }
+        var properties = RenderUtils.parsePropertiesString(template.getDefaultValue(valueId));
+        var size = properties.getProperty("size", "150x150");
         return RenderUtils.qrCode(template.getValueOrAttribute(differentiator), size);
     }
 }

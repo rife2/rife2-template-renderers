@@ -20,10 +20,7 @@ package rife.render;
 import rife.template.Template;
 import rife.template.ValueRenderer;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.lang.management.ManagementFactory;
-import java.util.Properties;
 
 /**
  * Renders the server uptime.
@@ -45,16 +42,7 @@ public class Uptime implements ValueRenderer {
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {
-        var properties = new Properties();
-        var defaultValue = template.getDefaultValue(valueId);
-        if (defaultValue != null) {
-            try {
-                properties.load(new StringReader(defaultValue));
-            } catch (IOException ignore) {
-                // ignore
-            }
-        }
-
+        var properties = RenderUtils.parsePropertiesString(template.getDefaultValue(valueId));
         String uptime;
         if (template.hasAttribute(Uptime.class.getName())) {
             uptime = RenderUtils.uptime((long) template.getAttribute(Uptime.class.getName()), properties);

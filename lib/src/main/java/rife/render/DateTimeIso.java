@@ -20,11 +20,8 @@ package rife.render;
 import rife.template.Template;
 import rife.template.ValueRenderer;
 
-import java.io.IOException;
-import java.io.StringReader;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.Properties;
 
 /**
  * <p>Return the current date and time in ISO 8601 format.</p>
@@ -48,16 +45,11 @@ public class DateTimeIso implements ValueRenderer {
     public String render(Template template, String valueId, String differentiator) {
         var defaultValue = template.getDefaultValue(valueId);
         if (defaultValue != null) {
-            var properties = new Properties();
-            try {
-                var tz = "tz";
-                properties.load(new StringReader(defaultValue));
-                if (properties.containsKey(tz)) {
-                    return ZonedDateTime.now().format(
-                            RenderUtils.ISO_8601_FORMATTER.withZone(ZoneId.of(properties.getProperty(tz))));
-                }
-            } catch (IOException ignore) {
-                // do nothing
+            var properties = RenderUtils.parsePropertiesString(template.getDefaultValue(valueId));
+            var tz = "tz";
+            if (properties.containsKey(tz)) {
+                return ZonedDateTime.now().format(
+                        RenderUtils.ISO_8601_FORMATTER.withZone(ZoneId.of(properties.getProperty(tz))));
             }
 
         }

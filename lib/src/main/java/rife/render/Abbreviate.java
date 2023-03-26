@@ -20,10 +20,6 @@ package rife.render;
 import rife.template.Template;
 import rife.template.ValueRenderer;
 
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Properties;
-
 /**
  * <p>Abbreviate a template value with ellipses.</p>
  *
@@ -48,14 +44,9 @@ public class Abbreviate implements ValueRenderer {
         var max = -1;
         var defaultValue = template.getDefaultValue(valueId);
         if (defaultValue != null) {
-            var properties = new Properties();
-            try {
-                properties.load(new StringReader(defaultValue));
-                mark = properties.getProperty("mark", mark);
-                max = Integer.parseInt(properties.getProperty("max", String.valueOf(max)));
-            } catch (IOException | NumberFormatException ignore) {
-                // do nothing
-            }
+            var properties = RenderUtils.parsePropertiesString(defaultValue);
+            mark = properties.getProperty("mark", mark);
+            max = Integer.parseInt(properties.getProperty("max", String.valueOf(max)));
         }
 
         return template.getEncoder().encode(
