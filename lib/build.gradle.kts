@@ -16,7 +16,7 @@ plugins {
 val rifeVersion by rootProject.extra { "1.5.6" }
 
 group = "com.uwyn.rife2"
-version = "1.0.1-SNAPSHOT"
+version = "1.1.0"
 
 repositories {
     mavenLocal()
