@@ -30,9 +30,7 @@ jobs:
 
       - name: Set up NO_CI env
         if: matrix.java-version != 17
-        env:
-          NO_CI: true
-        run: echo $NO_CI
+        run: echo "NO_CI=true" >> $GITHUB_ENV
 
       - name: Test with Gradle
         uses: gradle/gradle-build-action@v2
