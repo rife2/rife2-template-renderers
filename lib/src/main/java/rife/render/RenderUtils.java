@@ -23,6 +23,7 @@ import rife.tools.StringUtils;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -32,6 +33,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoField;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Collection of utility-type methods commonly used by the renderers.
@@ -44,7 +47,6 @@ public final class RenderUtils {
      * The encoding property.
      */
     public static final String ENCODING_PROPERTY = "encoding";
-
     /**
      * ISO 8601 date formatter.
      *
@@ -82,6 +84,7 @@ public final class RenderUtils {
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
+    private final static Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
 
     private RenderUtils() {
         // no-op
@@ -208,15 +211,26 @@ public final class RenderUtils {
      */
     public static String fetchUrl(String url, String defaultContent) {
         try {
-            var connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-            var code = connection.getResponseCode();
-            if (code >= 200 && code <= 399) {
-                try (var inputStream = connection.getInputStream()) {
-                    return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+            var fetchUrl = new URL(url);
+            try {
+                var connection = (HttpURLConnection) fetchUrl.openConnection();
+                connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
+                var code = connection.getResponseCode();
+                if (code >= 200 && code <= 399) {
+                    try (var inputStream = connection.getInputStream()) {
+                        return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
+                    }
+                } else {
+                    if (LOGGER.isLoggable(Level.WARNING)) {
+                        LOGGER.warning("A " + code + " status code was returned by " + fetchUrl.getHost());
+                    }
+                }
+            } catch (IOException ioe) {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.log(Level.WARNING, "An IO error occurred while connecting to " + fetchUrl.getHost(), ioe);
                 }
             }
-        } catch (IOException ignore) {
+        } catch (MalformedURLException ignore) {
             // do nothing
         }
         return defaultContent;
@@ -338,7 +352,7 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns a new {@code Properties} containing the properties specified in the given {$String}.
+     * Returns a new {@code Properties} containing the properties specified in the given {@code String}.
      *
      * @param src the {@code} String containing the properties
      * @return the new {@code Properties}
