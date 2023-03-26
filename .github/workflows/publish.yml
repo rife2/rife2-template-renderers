@@ -30,6 +30,7 @@ jobs:
       - name: Publish with Gradle
         uses: gradle/gradle-build-action@v2
         env:
+          NO_CI: true
           SONATYPE_USER: ${{ secrets.SONATYPE_USER}}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           ORG_GRADLE_PROJECT_signingKey: ${{ secrets.ORG_GRADLE_PROJECT_signingKey }}

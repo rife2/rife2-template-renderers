@@ -58,18 +58,29 @@ pmd {
 }
 
 
+
+
 tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
 
+
     test {
         val apiKey = project.properties["testsBadgeApiKey"]
-        useJUnitPlatform()
+        useJUnitPlatform {
+            if (System.getenv("NO_CI") != null) {
+                excludeTags("no-ci")
+                println("Excluded test tags: $excludeTags")
+            }
+        }
+
         testLogging {
             exceptionFormat = TestExceptionFormat.FULL
             events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+            showStandardStreams = true
         }
+
         addTestListener(object : TestListener {
             override fun beforeTest(p0: TestDescriptor?) = Unit
             override fun beforeSuite(p0: TestDescriptor?) = Unit

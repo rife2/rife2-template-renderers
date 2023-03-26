@@ -17,6 +17,7 @@
 
 package rife.render;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import rife.template.TemplateFactory;
 
@@ -70,6 +71,7 @@ class TestFormat {
     }
 
     @Test
+    @Tag("no-ci")
     void testQrCode() {
         var t = TemplateFactory.SVG.get("qrCode");
         var foo = "https://example.com/";
@@ -78,6 +80,7 @@ class TestFormat {
     }
 
     @Test
+    @Tag("no-ci")
     void testShortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
