@@ -3,7 +3,7 @@ name: Publish to the Maven Central
 on:
   workflow_dispatch:
   release:
-    types: [released]
+    types: [ released ]
 
 jobs:
   build-bld-project:
@@ -34,3 +34,5 @@ jobs:
           -DtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
           -Drife2Username=${{ secrets.RIFE2_USERNAME }}
           -Drife2Password=${{ secrets.RIFE2_PASSWORD }}
+          -DsonatypeUser=${{ secrets.SONATYPE_USER }}
+          -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}

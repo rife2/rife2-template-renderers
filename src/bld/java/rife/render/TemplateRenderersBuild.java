@@ -27,11 +27,12 @@ public class TemplateRenderersBuild extends Project {
                 .link("https://rife2.github.io/rife2/");
 
         publishOperation()
-                .repository(version.isSnapshot() ? repository("https://repo.rife2.com/snapshots")
+                .repository(version.isSnapshot() ? repository(RIFE2_SNAPSHOTS.location())
                         .withCredentials(property("rife2Username"), property("rife2Password"))
-                        : repository("https://repo.rife2.com/releases")
+                        : repository(RIFE2_RELEASES.location())
                         .withCredentials(property("rife2Username"), property("rife2Password")))
-                .repository(MAVEN_CENTRAL)
+                .repository(repository(SONATYPE_RELEASES.location())
+                        .withCredentials(property("sonatypeUser"), property("sonatypePassword")))
                 .info(new PublishInfo()
                         .groupId("com.uwyn.rife2")
                         .artifactId("rife2-renderers")
