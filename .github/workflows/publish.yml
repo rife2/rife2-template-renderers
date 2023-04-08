@@ -41,3 +41,6 @@ jobs:
           -DsonatypePassword=${{ secrets.SONATYPE_PASSWORD }}
           -DsignKey=${{ secrets.SIGN_KEY }}
           -DsignPassphrase=${{ secrets.SIGN_PASSPHRASE }}
+          
+      - name: Delete GnuPG data
+        run: rm -rfv $HOME/.gnupg
