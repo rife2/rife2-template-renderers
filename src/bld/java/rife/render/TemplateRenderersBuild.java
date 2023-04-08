@@ -30,7 +30,7 @@ public class TemplateRenderersBuild extends Project {
                 .repository(version.isSnapshot() ? repository("https://repo.rife2.com/snapshots")
                         .withCredentials(property("rife2Username"), property("rife2Password"))
                         : repository("https://repo.rife2.com/releases")
-                        .withCredentials(property("RIFE2_USERNAME"), property("RIFE2_PASSWORD")))
+                        .withCredentials(property("rife2Username"), property("rife2Password")))
                 .repository(MAVEN_CENTRAL)
                 .info(new PublishInfo()
                         .groupId("com.uwyn.rife2")
