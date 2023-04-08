@@ -72,4 +72,9 @@ public class TemplateRenderersBuild extends Project {
                 .apiKey(property("testsBadgeApiKey"))
                 .fromProject(this));
     }
+
+    @Override
+    public void precompile() throws Exception {
+        // TODO remove when fixed in bld
+    }
 }

@@ -6,7 +6,7 @@ on:
     types: [released]
 
 jobs:
-  build-gradle-project:
+  build-bld-project:
     runs-on: ubuntu-latest
 
     steps:
