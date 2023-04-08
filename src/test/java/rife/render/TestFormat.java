@@ -71,7 +71,7 @@ class TestFormat {
     }
 
     @Test
-    @Tag("no-ci")
+    @DisabledOnCi
     void testQrCode() {
         var t = TemplateFactory.SVG.get("qrCode");
         var foo = "https://example.com/";
@@ -80,7 +80,7 @@ class TestFormat {
     }
 
     @Test
-    @Tag("no-ci")
+    @DisabledOnCi
     void testShortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";

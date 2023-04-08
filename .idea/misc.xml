@@ -1,57 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="EntryPointsManager">
-    <pattern value="rife2.render.Capitalize" />
-    <pattern value="rife2.render.Lowercase" />
-    <pattern value="rife2.render.SwapCase" />
-    <pattern value="rife2.render.Trim" />
-    <pattern value="rife2.render.Uncapitalize" />
-    <pattern value="rife2.render.Uppercase" />
-    <pattern value="rife2.render.EncodeHtml" />
-    <pattern value="rife2.render.EncodeJson" />
-    <pattern value="rife2.render.EncodeUrl" />
-    <pattern value="rife2.render.EncodeXml" />
-    <pattern value="rife2.render.EncodeQp" />
-    <pattern value="rife2.render.EncodeHtmlEntities" />
-    <pattern value="rife2.render.Rot13" />
-    <pattern value="rife2.render.Year" />
-    <pattern value="rife2.render.EncodeBase64" />
-    <pattern value="rife2.render.EncodeUnicode" />
-    <pattern value="rife.render.Capitalize" />
-    <pattern value="rife.render.EncodeBase64" />
-    <pattern value="rife.render.EncodeHtml" />
-    <pattern value="rife.render.EncodeHtmlEntities" />
-    <pattern value="rife.render.EncodeJson" />
-    <pattern value="rife.render.EncodeQp" />
-    <pattern value="rife.render.EncodeUnicode" />
-    <pattern value="rife.render.EncodeUrl" />
-    <pattern value="rife.render.EncodeXml" />
-    <pattern value="rife.render.ValueBean" method="getValue" />
-    <pattern value="rife.render.Lowercase" />
-    <pattern value="rife.render.Rot13" />
-    <pattern value="rife.render.SwapCase" />
-    <pattern value="rife.render.TestDateTime" />
-    <pattern value="rife.render.TestEncode" />
-    <pattern value="rife.render.Trim" />
-    <pattern value="rife.render.Uncapitalize" />
-    <pattern value="rife.render.Uppercase" />
-    <pattern value="rife.render.Year" />
-    <pattern value="rife.render.ValueBean" method="setValue" />
-    <pattern value="rife.render.TestDateTime" method="testDateIso" />
-    <pattern value="rife.render.TestDateTime" method="testDateTimeIso" />
-    <pattern value="rife.render.TestDateTime" method="testDateTimeRfc2822" />
-    <pattern value="rife.render.TestEncode" method="testEncodeUrl" />
-    <pattern value="rife.render.TestDateTime" method="testTimeIso" />
-    <pattern value="rife.render.TestDateTime" method="testYear" />
-    <pattern value="rife.render.ValueBean" />
-    <pattern value="rife.render.RenderUtils" method="formatCreditCard" />
-    <pattern value="rife.render.RenderUtils" />
-    <pattern value="rife.render.RenderUtils" method="RenderUtils" />
-    <pattern value="rife.render.RenderUtils" method="toQuotedPrintable" />
-  </component>
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="PDMPlugin">
     <option name="skipTestSources" value="false" />
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="19" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build" />
+  </component>
 </project>
