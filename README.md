@@ -3,7 +3,7 @@
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/rife2/rife2-template-renderers)](https://github.com/rife2/rife2-template-renderers/releases/latest)
 [![Maven Central](https://img.shields.io/maven-central/v/com.uwyn.rife2/rife2-renderers)](https://central.sonatype.com/artifact/com.uwyn.rife2/rife2-renderers/1.1.0)
 [![Nexus Snapshot](https://img.shields.io/nexus/s/com.uwyn.rife2/rife2-renderers?server=https%3A%2F%2Fs01.oss.sonatype.org%2F)](https://s01.oss.sonatype.org/content/repositories/snapshots/com/uwyn/rife2/rife2-renderers/)
-[![GitHub CI](https://github.com/rife2/rife2-template-renderers/actions/workflows/gradle.yml/badge.svg)](https://github.com/rife2/rife2-template-renderers/actions/workflows/gradle.yml)
+[![GitHub CI](https://github.com/rife2/rife2-template-renderers/actions/workflows/bld.yml/badge.svg)](https://github.com/rife2/rife2-template-renderers/actions/workflows/bld.yml)
 [![Tests](https://rife2.com/tests-badge/badge/com.uwyn.rife2/rife2-renderers)](https://github.com/rife2/rife2-template-renderers/actions/workflows/gradle.yml)
 
 # [RIFE2](https://rife2.com/) Template Renderers
