@@ -27,9 +27,9 @@ public class TemplateRenderersBuild extends Project {
                 .link("https://rife2.github.io/rife2/");
 
         publishOperation()
-                .repository(version.isSnapshot() ? repository("https://repo-rife2-com/snapshots")
+                .repository(version.isSnapshot() ? repository("https://repo.rife2.com/snapshots")
                         .withCredentials(property("RIFE2_USERNAME"), property("RIFE2_PASSWORD"))
-                        : repository("https://repo-rife2-com/releases")
+                        : repository("https://repo.rife2.com/releases")
                         .withCredentials(property("RIFE2_USERNAME"), property("RIFE2_PASSWORD")))
                 .repository(MAVEN_CENTRAL)
                 .info(new PublishInfo()
