@@ -19,7 +19,7 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 0);
+        version = version(1, 1, 1);
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
@@ -27,8 +27,8 @@ public class TemplateRenderersBuild extends Project {
                 .link("https://rife2.github.io/rife2/");
 
         publishOperation()
-//                .repository(version.isSnapshot() ? repository("rife2-snapshots") : repository("rife2-releases"))
-                .repository(MAVEN_LOCAL)
+                .repository(version.isSnapshot() ? repository("rife2-snapshots") : repository("rife2-releases"))
+                .repository(MAVEN_CENTRAL)
                 .info(new PublishInfo()
                         .groupId("com.uwyn.rife2")
                         .artifactId("rife2-renderers")
