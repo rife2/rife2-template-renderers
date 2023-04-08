@@ -27,6 +27,9 @@ jobs:
       - name: Download the dependencies
         run: ./bld download
 
+      - name: Import key
+        run: echo "${secrets.SIGN_SECRET_KEY}" | gpg --import
+        
       - name: Publish with bld
         run: >-
           ./bld compile test publish
