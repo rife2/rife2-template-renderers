@@ -28,7 +28,7 @@ public class TemplateRenderersBuild extends Project {
 
         publishOperation()
                 .repository(version.isSnapshot() ? repository("https://repo.rife2.com/snapshots")
-                        .withCredentials(property("RIFE2_USERNAME"), property("RIFE2_PASSWORD"))
+                        .withCredentials(property("rife2Username"), property("rife2Password"))
                         : repository("https://repo.rife2.com/releases")
                         .withCredentials(property("RIFE2_USERNAME"), property("RIFE2_PASSWORD")))
                 .repository(MAVEN_CENTRAL)
@@ -57,8 +57,6 @@ public class TemplateRenderersBuild extends Project {
 
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 5, 18)));
-        scope(runtime)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 5, 17), "agent"));
         scope(test)
                 .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 2)))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 2)))

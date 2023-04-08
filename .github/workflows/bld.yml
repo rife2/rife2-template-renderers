@@ -33,3 +33,5 @@ jobs:
           ./bld compile test
           -DtestsBadgeUrl=https://rife2.com/tests-badge/update/com.uwyn.rife2/rife2-renderers
           -DtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
+          -Drife2Username=${{ secrets.RIFE2_USERNAME }}
+          -Drife2Password=${{ secrets.RIFE2_PASSWORD }}
