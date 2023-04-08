@@ -44,8 +44,8 @@ public class TemplateRenderersBuild extends Project {
                         .scm(new PublishScm().connection("scm:git:https://github.com/rife2/rife2-template-renderers.git")
                                 .developerConnection("scm:git:git@github.com:rife2/rife2-template-renderers.git")
                                 .url("https://github.com/rife2/rife2-template-renderers"))
-                        .signKey(property("sign.key"))
-                        .signPassphrase(property("sign.passphrase")));
+                        .signKey(property("SIGN_KEY"))
+                        .signPassphrase(property("SIGN_PASSPHRASE")));
 
         javaRelease = 17;
         downloadSources = true;
