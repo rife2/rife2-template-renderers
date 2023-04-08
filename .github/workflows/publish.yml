@@ -28,7 +28,7 @@ jobs:
         run: ./bld download
 
       - name: Import key
-        run: echo "${{ secrets.SIGN_SECRET_KEY }}" | gpg --import
+        run: echo "${{ secrets.SIGN_SECRET_KEY }}" | gpg --batch --import
         
       - name: Publish with bld
         run: >-
