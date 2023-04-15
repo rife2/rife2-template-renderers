@@ -23,8 +23,8 @@
     <rule ref="category/java/codestyle.xml">
         <exclude name="AtLeastOneConstructor"/>
         <exclude name="ClassNamingConventions"/>
-        <exclude name="CommentDefaultAccessModifier"/>
         <exclude name="ConfusingTernary"/>
+        <exclude name="CommentDefaultAccessModifier"/>
         <exclude name="DefaultPackage"/>
         <exclude name="FieldNamingConventions"/>
         <exclude name="LocalVariableCouldBeFinal"/>
@@ -74,7 +74,6 @@
         <exclude name="AvoidFieldNameMatchingMethodName"/>
         <exclude name="AvoidFieldNameMatchingTypeName"/>
         <exclude name="AvoidLiteralsInIfCondition"/>
-        <exclude name="EmptyCatchBlock"/>
         <exclude name="NullAssignment"/>
     </rule>
 
@@ -88,13 +87,6 @@
     <rule ref="category/java/errorprone.xml/AvoidDuplicateLiterals">
         <properties>
             <property name="skipAnnotations" value="true"/>
-        </properties>
-    </rule>
-    <rule ref="category/java/errorprone.xml/EmptyCatchBlock">
-        <properties>
-            <property name="allowExceptionNameRegex">
-                <value>^ignore$</value>
-            </property>
         </properties>
     </rule>
 

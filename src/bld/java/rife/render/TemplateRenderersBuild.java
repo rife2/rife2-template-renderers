@@ -1,6 +1,8 @@
 package rife.render;
 
+import rife.bld.BuildCommand;
 import rife.bld.Project;
+import rife.bld.extension.PmdOperation;
 import rife.bld.extension.TestsBadgeOperation;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
@@ -10,7 +12,8 @@ import rife.bld.publish.PublishScm;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
-import static rife.bld.dependencies.Scope.*;
+import static rife.bld.dependencies.Scope.compile;
+import static rife.bld.dependencies.Scope.test;
 import static rife.bld.operations.JavadocOptions.DocLinkOption.NO_MISSING;
 
 public class TemplateRenderersBuild extends Project {
@@ -19,7 +22,7 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 1);
+        version = version(1, 1, 2, "SNAPSHOT");
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
@@ -57,7 +60,7 @@ public class TemplateRenderersBuild extends Project {
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES, RIFE2_SNAPSHOTS);
 
         scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 5, 19)));
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 5, 20)));
         scope(test)
                 .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 2)))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 2)))
@@ -66,6 +69,15 @@ public class TemplateRenderersBuild extends Project {
 
     public static void main(String[] args) {
         new TemplateRenderersBuild().start(args);
+    }
+
+    @BuildCommand(summary = "Runs PMD analysis")
+    public void pmd() throws Exception {
+        new PmdOperation()
+                .fromProject(this)
+                .failOnViolation(true)
+                .ruleSets("config/pmd.xml")
+                .execute();
     }
 
     public void test() throws Exception {
