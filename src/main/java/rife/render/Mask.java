@@ -49,7 +49,7 @@ public class Mask implements ValueRenderer {
             mask = properties.getProperty("mask", mask);
             try {
                 unmasked = Integer.parseInt(properties.getProperty("unmasked", "0"));
-            } catch (NumberFormatException ignore) {
+            } catch (NumberFormatException ignored) {
                 // do nothing
             }
             fromStart = "true".equalsIgnoreCase(properties.getProperty("fromStart", "false"));

@@ -230,7 +230,7 @@ public final class RenderUtils {
                     LOGGER.log(Level.WARNING, "An IO error occurred while connecting to " + fetchUrl.getHost(), ioe);
                 }
             }
-        } catch (MalformedURLException ignore) {
+        } catch (MalformedURLException ignored) {
             // do nothing
         }
         return defaultContent;
@@ -340,7 +340,7 @@ public final class RenderUtils {
                     sb.append('-');
                 } else {
                     space = false;
-                    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z')) {
+                    if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z') {
                         sb.append(c);
                     } else if (c >= 'A' && c <= 'Z') {
                         sb.append((char) (c + 32)); // lowercase
@@ -362,7 +362,7 @@ public final class RenderUtils {
         if (src != null && !src.isBlank()) {
             try {
                 properties.load(new StringReader(src));
-            } catch (IOException ignore) {
+            } catch (IOException ignored) {
                 // ignore
             }
         }
@@ -419,7 +419,7 @@ public final class RenderUtils {
         for (var i = 0; i < len; i++) {
             var inChar = src.charAt(i);
 
-            if ((inChar >= 'A') && (inChar <= 'Z')) {
+            if (inChar >= 'A' && inChar <= 'Z') {
                 inChar += (char) 13;
 
                 if (inChar > 'Z') {
@@ -427,7 +427,7 @@ public final class RenderUtils {
                 }
             }
 
-            if ((inChar >= 'a') && (inChar <= 'z')) {
+            if (inChar >= 'a' && inChar <= 'z') {
                 inChar += (char) 13;
 
                 if (inChar > 'z') {
@@ -593,10 +593,9 @@ public final class RenderUtils {
                     return true;
                 }
             }
-        } catch (NumberFormatException ignore) {
+        } catch (NumberFormatException ignored) {
             // do nothing
         }
         return false;
     }
-
 }
