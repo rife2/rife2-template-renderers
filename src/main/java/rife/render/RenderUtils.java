@@ -154,7 +154,7 @@ public final class RenderUtils {
                 return StringUtils.encodeHtml(src);
             }
             case "js" -> {
-                return RenderUtils.encodeJs(src);
+                return encodeJs(src);
             }
             case "json" -> {
                 return StringUtils.encodeJson(src);

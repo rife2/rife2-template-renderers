@@ -58,10 +58,10 @@ public class TemplateRenderersBuild extends Project {
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES, RIFE2_SNAPSHOTS);
 
         scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 5, 20)));
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 0)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 2)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 2)))
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 3)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 3)))
                 .include(dependency("org.assertj:assertj-core:3.24.2"));
     }
 

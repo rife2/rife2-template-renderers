@@ -9,12 +9,19 @@
         <exclude name="AvoidPrintStackTrace"/>
         <exclude name="JUnit4TestShouldUseTestAnnotation"/>
         <exclude name="JUnitTestContainsTooManyAsserts"/>
+        <exclude name="GuardLogStatement"/>
     </rule>
 
     <rule ref="category/java/bestpractices.xml/MissingOverride">
         <properties>
             <property name="violationSuppressXPath"
                       value="//MethodDeclaration[@Name='hashCode' or @Name='equals' or @Name='toString']"/>
+        </properties>
+    </rule>
+
+    <rule ref="category/java/bestpractices.xml/ReplaceHashtableWithMap">
+        <properties>
+            <property name="violationSuppressXPath" value="//ClassOrInterfaceDeclaration['java.util.Properties']"/>
         </properties>
     </rule>
 
@@ -25,7 +32,6 @@
         <exclude name="ClassNamingConventions"/>
         <exclude name="ConfusingTernary"/>
         <exclude name="CommentDefaultAccessModifier"/>
-        <exclude name="DefaultPackage"/>
         <exclude name="FieldNamingConventions"/>
         <exclude name="LocalVariableCouldBeFinal"/>
         <exclude name="LongVariable"/>
@@ -37,6 +43,12 @@
         <exclude name="ShortVariable"/>
         <exclude name="UselessParentheses"/>
         <exclude name="UseUnderscoresInNumericLiterals"/>
+    </rule>
+
+    <rule ref="category/java/codestyle.xml/UnnecessaryImport">
+        <properties>
+            <property name="violationSuppressRegex" value="Unused (static|.*\.\*).*"/>
+        </properties>
     </rule>
 
     <!-- DESIGN -->
