@@ -40,6 +40,9 @@ class TestCase {
         var bean = new ValueBean("this IS a TEST.");
         t.setBean(bean);
         assertThat(t.getContent()).isEqualTo(bean.getValue() + ": this is a test.");
+        bean = new ValueBean("");
+        t.setBean(bean);
+        assertThat(t.getContent()).isEqualTo(bean.getValue() + ": ");
     }
 
     @Test
@@ -54,6 +57,8 @@ class TestCase {
         var t = TemplateFactory.TXT.get("trim");
         t.setAttribute(FOO, "\t" + SAMPLE_TEXT + " \n");
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT);
+        t.setAttribute(FOO, "");
+        assertThat(t.getContent()).isEmpty();
     }
 
     @Test
@@ -68,5 +73,7 @@ class TestCase {
         var t = TemplateFactory.TXT.get("uppercase");
         t.setAttribute("bar", SAMPLE_TEXT);
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT.toUpperCase(Localization.getLocale()));
+        t.setAttribute("bar", "");
+        assertThat(t.getContent()).isEmpty();
     }
 }

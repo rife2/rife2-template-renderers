@@ -2,6 +2,7 @@ package rife.render;
 
 import rife.bld.BuildCommand;
 import rife.bld.Project;
+import rife.bld.extension.JacocoReportOperation;
 import rife.bld.extension.PmdOperation;
 import rife.bld.extension.TestsBadgeOperation;
 import rife.bld.publish.PublishDeveloper;
@@ -9,6 +10,7 @@ import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
 import rife.bld.publish.PublishScm;
 
+import java.io.IOException;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
@@ -60,8 +62,8 @@ public class TemplateRenderersBuild extends Project {
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 0)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 9, 3)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 9, 3)))
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 0)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 0)))
                 .include(dependency("org.assertj:assertj-core:3.24.2"));
     }
 
@@ -69,8 +71,15 @@ public class TemplateRenderersBuild extends Project {
         new TemplateRenderersBuild().start(args);
     }
 
+    @BuildCommand(summary = "Generates Jacoco Reports")
+    public void jacoco() throws IOException {
+        new JacocoReportOperation()
+                .fromProject(this)
+                .execute();
+    }
+
     @BuildCommand(summary = "Runs PMD analysis")
-    public void pmd() throws Exception {
+    public void pmd() {
         new PmdOperation()
                 .fromProject(this)
                 .failOnViolation(true)

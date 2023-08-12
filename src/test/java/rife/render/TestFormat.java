@@ -44,7 +44,9 @@ class TestFormat {
         t.setAttribute(TestCase.FOO, "374380141731053");
         assertThat(t.getContent()).as("UK AMEX").isEqualTo("1053");
         t.setAttribute(TestCase.FOO, "000000000000001");
-        assertThat(t.getContent()).isEmpty();
+        assertThat(t.getContent()).as("000000000000001").isEmpty();
+        t.setAttribute(TestCase.FOO, "");
+        assertThat(t.getContent()).as("").isEmpty();
     }
 
     @Test

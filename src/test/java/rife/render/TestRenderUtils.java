@@ -35,11 +35,17 @@ class TestRenderUtils {
 
         assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, -1, "")).as("max=-1")
                 .isEqualTo(TestCase.SAMPLE_TEXT);
+
+        assertThat(RenderUtils.abbreviate("", 10, "")).as("").isEmpty();
     }
 
     @Test
     void testEncode() {
         var p = new Properties();
+        p.put(RenderUtils.ENCODING_PROPERTY, "blah");
+        assertThat(RenderUtils.encode(TestCase.SAMPLE_TEXT, p)).as("invalid encoding").isEqualTo(TestCase.SAMPLE_TEXT);
+        p.put(RenderUtils.ENCODING_PROPERTY, "json");
+        assertThat(RenderUtils.encode("This is a \"•test\"", p)).as("json").isEqualTo("This is a \\\"\\u2022test\\\"");
         p.put(RenderUtils.ENCODING_PROPERTY, "html");
         assertThat(RenderUtils.encode("<a test &>", p)).as("html").isEqualTo("&lt;a test &amp;&gt;");
         p.put(RenderUtils.ENCODING_PROPERTY, "js");
@@ -53,7 +59,21 @@ class TestRenderUtils {
     }
 
     @Test
+    void testEncodeJs() {
+        assertThat(RenderUtils.encodeJs("")).isEmpty();
+    }
+
+    @Test
+    void testFetchUrl() {
+        var s = "default";
+        assertThat(RenderUtils.fetchUrl("blah", s)).isEqualTo(s);
+        assertThat(RenderUtils.fetchUrl("https://www.google.com/404", s)).isEqualTo(s);
+        assertThat(RenderUtils.fetchUrl("https://www.notreallythere.com/", s)).isEqualTo(s);
+    }
+
+    @Test
     void testHtmlEntities() {
+        assertThat(RenderUtils.htmlEntities("")).isEmpty();
         assertThat(RenderUtils.htmlEntities(SAMPLE_GERMAN))
                 .isEqualTo("&#77;&#246;&#99;&#104;&#116;&#101;&#110;&#32;&#83;&#105;&#101;&#32;&#101;&#105;&#110;&#32;&#112;&#97;&#97;&#114;&#32;&#196;&#112;&#102;&#101;&#108;&#63;");
     }
@@ -61,6 +81,8 @@ class TestRenderUtils {
     @Test
     void testMask() {
         var foo = "4342256562440179";
+
+        assertThat(RenderUtils.mask("", " ", 2, false)).isEmpty();
 
         assertThat(RenderUtils.mask(foo, "?", 4, false)).as("mask=?")
                 .isEqualTo("????????????0179");
@@ -74,18 +96,26 @@ class TestRenderUtils {
 
     @Test
     void testNormalize() {
+        assertThat(RenderUtils.normalize("")).isEmpty();
         assertThat(RenderUtils.normalize(SAMPLE_GERMAN)).isEqualTo("mochten-sie-ein-paar-apfel");
+    }
+
+    @Test
+    void testQrCode() {
+        assertThat(RenderUtils.qrCode("", "12")).isEmpty();
     }
 
     @Test
     void testRot13() {
         var encoded = "Zöpugra Fvr rva cnne Äcsry?";
+        assertThat(RenderUtils.rot13("")).isEmpty();
         assertThat(RenderUtils.rot13(SAMPLE_GERMAN)).as("encode").isEqualTo(encoded);
         assertThat(RenderUtils.rot13(encoded)).as("decode").isEqualTo(SAMPLE_GERMAN);
     }
 
     @Test
     void testSwapCase() {
+        assertThat(RenderUtils.swapCase("")).isEmpty();
         assertThat(RenderUtils.swapCase(SAMPLE_GERMAN)).isEqualTo("mÖCHTEN sIE EIN PAAR äPFEL?");
     }
 
