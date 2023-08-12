@@ -1,4 +1,4 @@
-name: Publish to the Maven Central
+name: Publish to the Maven Central/Rife2
 
 on:
   workflow_dispatch:
