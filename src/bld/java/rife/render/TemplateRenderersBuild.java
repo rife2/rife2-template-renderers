@@ -75,7 +75,7 @@ public class TemplateRenderersBuild extends Project {
         new TemplateRenderersBuild().start(args);
     }
 
-    @BuildCommand(summary = "Generates Jacoco Reports")
+    @BuildCommand(summary = "Generates JaCoCo Reports")
     public void jacoco() throws IOException {
         new JacocoReportOperation()
                 .fromProject(this)
