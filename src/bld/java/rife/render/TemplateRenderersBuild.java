@@ -24,7 +24,19 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 2, "SNAPSHOT");
+        version = version(1, 1, 2);
+
+        javaRelease = 17;
+        downloadSources = true;
+        autoDownloadPurge = true;
+        repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
+
+        scope(compile)
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 0)));
+        scope(test)
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 0)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 0)))
+                .include(dependency("org.assertj:assertj-core:3.24.2"));
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
@@ -57,18 +69,6 @@ public class TemplateRenderersBuild extends Project {
                                 .url("https://github.com/rife2/rife2-template-renderers"))
                         .signKey(property("signKey"))
                         .signPassphrase(property("signPassphrase")));
-
-        javaRelease = 17;
-        downloadSources = true;
-        autoDownloadPurge = true;
-        repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES, RIFE2_SNAPSHOTS);
-
-        scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 0)));
-        scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 0)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 0)))
-                .include(dependency("org.assertj:assertj-core:3.24.2"));
     }
 
     public static void main(String[] args) {
