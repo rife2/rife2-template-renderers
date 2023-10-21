@@ -32,7 +32,7 @@ public class TemplateRenderersBuild extends Project {
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
 
         scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 0)));
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 3)));
         scope(test)
                 .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 0)))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 0)))
