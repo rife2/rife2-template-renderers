@@ -1,3 +1,20 @@
+/*
+ *  Copyright 2023-2024 the original author or authors.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       https://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ *
+ */
+
 package rife.render;
 
 import rife.bld.BuildCommand;
@@ -24,7 +41,7 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 4);
+        version = version(1, 1, 5, "SNAPSHOT");
 
         javaRelease = 17;
         downloadSources = true;
@@ -34,12 +51,13 @@ public class TemplateRenderersBuild extends Project {
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 3)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 0)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 0)))
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 1)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 1)))
                 .include(dependency("org.assertj:assertj-core:3.24.2"));
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
+                .author()
                 .docLint(NO_MISSING)
                 .link("https://rife2.github.io/rife2/");
 
