@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023 the original author or authors.
+ *  Copyright 2023-2024 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.text.Normalizer;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoField;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -120,8 +119,8 @@ public final class RenderUtils {
      */
     public static String beatTime(ZonedDateTime zonedDateTime) {
         var zdt = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC+01:00"));
-        var beats = (int) ((zdt.get(ChronoField.SECOND_OF_MINUTE) + (zdt.get(ChronoField.MINUTE_OF_HOUR) * 60) +
-                (zdt.get(ChronoField.HOUR_OF_DAY) * 3600)) / 86.4);
+        var beats = (int) ((zdt.getSecond() + (zdt.getMinute() * 60) +
+                (zdt.getHour() * 3600)) / 86.4);
         return String.format("@%03d", beats);
     }
 
