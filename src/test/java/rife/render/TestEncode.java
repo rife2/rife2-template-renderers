@@ -55,6 +55,10 @@ class TestEncode {
         t.setAttribute(TestCase.FOO, "'\"\\/");
         assertThat(t.getContent()).isEqualTo("\\'\\\"\\\\\\/");
 
+        t = TemplateFactory.TXT.get("encodeJs");
+        t.setAttribute(TestCase.FOO,  "This is\f\b a\r\n\ttest");
+        assertThat(t.getContent()).isEqualTo("This is\\f\\b a\\r\\n\\ttest");
+
         t = TemplateFactory.HTML.get("encodeJs");
         t.setAttribute(TestCase.FOO, '"' + TestCase.SAMPLE_TEXT + '"');
         assertThat(t.getContent()).as("with unicode")

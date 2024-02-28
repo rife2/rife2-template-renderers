@@ -195,6 +195,11 @@ public final class RenderUtils {
                 case '"' -> sb.append("\\\"");
                 case '\\' -> sb.append("\\\\");
                 case '/' -> sb.append("\\/");
+                case '\b' -> sb.append("\\b");
+                case '\n' -> sb.append(("\\n"));
+                case '\t' -> sb.append("\\t");
+                case '\f' -> sb.append("\\f");
+                case '\r' -> sb.append("\\r");
                 default -> sb.append(c);
             }
         }
@@ -597,4 +602,5 @@ public final class RenderUtils {
         }
         return false;
     }
+
 }
