@@ -27,7 +27,6 @@ import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
 import rife.bld.publish.PublishScm;
 
-import java.io.IOException;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
@@ -41,7 +40,7 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 5);
+        version = version(1, 1, 6, "SNAPSHOT");
 
         javaRelease = 17;
         downloadSources = true;
@@ -49,11 +48,11 @@ public class TemplateRenderersBuild extends Project {
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
 
         scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 7, 3)));
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 8, 0)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 2)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 2)))
-                .include(dependency("org.assertj", "assertj-core", version(3, 25, 3)));
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 10, 3)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 10, 3)))
+                .include(dependency("org.assertj", "assertj-core", version(3, 26, 3)));
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
@@ -62,13 +61,13 @@ public class TemplateRenderersBuild extends Project {
                 .link("https://rife2.github.io/rife2/");
 
         publishOperation()
-                .repository(version.isSnapshot() ? repository(SONATYPE_SNAPSHOTS.location())
+                .repository(version.isSnapshot() ? SONATYPE_SNAPSHOTS
                         .withCredentials(property("sonatypeUser"), property("sonatypePassword"))
-                        : repository(SONATYPE_RELEASES.location())
+                        : SONATYPE_RELEASES
                         .withCredentials(property("sonatypeUser"), property("sonatypePassword")))
-                .repository(version.isSnapshot() ? repository(RIFE2_SNAPSHOTS.location())
+                .repository(version.isSnapshot() ? RIFE2_SNAPSHOTS
                         .withCredentials(property("rife2Username"), property("rife2Password"))
-                        : repository(RIFE2_RELEASES.location())
+                        : RIFE2_RELEASES
                         .withCredentials(property("rife2Username"), property("rife2Password")))
                 .info(new PublishInfo()
                         .groupId("com.uwyn.rife2")
@@ -81,7 +80,7 @@ public class TemplateRenderersBuild extends Project {
                         .developer(new PublishDeveloper().id("gbevin").name("Geert Bevin").email("gbevin@uwyn.com")
                                 .url("https://github.com/gbevin"))
                         .license(new PublishLicense().name("The Apache License, Version 2.0")
-                                .url("http://www.apache.org/licenses/LICENSE-2.0.txt"))
+                                .url("https://www.apache.org/licenses/LICENSE-2.0.txt"))
                         .scm(new PublishScm().connection("scm:git:https://github.com/rife2/rife2-template-renderers.git")
                                 .developerConnection("scm:git:git@github.com:rife2/rife2-template-renderers.git")
                                 .url("https://github.com/rife2/rife2-template-renderers"))
@@ -94,14 +93,14 @@ public class TemplateRenderersBuild extends Project {
     }
 
     @BuildCommand(summary = "Generates JaCoCo Reports")
-    public void jacoco() throws IOException {
+    public void jacoco() throws Exception {
         new JacocoReportOperation()
                 .fromProject(this)
                 .execute();
     }
 
     @BuildCommand(summary = "Runs PMD analysis")
-    public void pmd() {
+    public void pmd() throws Exception {
         new PmdOperation()
                 .fromProject(this)
                 .failOnViolation(true)
