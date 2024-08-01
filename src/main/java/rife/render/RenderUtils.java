@@ -334,21 +334,20 @@ public final class RenderUtils {
             return src;
         }
 
-        var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD);
-        var sb = new StringBuilder(normalized.length());
-        boolean space = false;
-        for (var c : normalized.toCharArray()) {
-            if (c <= '\u007F') { // ascii only
-                if (!space && c == ' ') {
-                    space = true;
-                    sb.append('-');
-                } else {
-                    space = false;
-                    if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z') {
-                        sb.append(c);
-                    } else if (c >= 'A' && c <= 'Z') {
-                        sb.append((char) (c + 32)); // lowercase
+        var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD).toCharArray();
+
+        var sb = new StringBuilder(normalized.length);
+        for (var i = 0; i < normalized.length; i++) {
+            var c = normalized[i];
+            if (c <= '\u007F') { // ASCII only
+                if (" &()-_=[{]}\\|;:,<.>/".indexOf(c) != -1) { // common separators
+                    if (!sb.isEmpty() && i != normalized.length - 1 && sb.charAt(sb.length() - 1) != '-') {
+                        sb.append('-');
                     }
+                } else if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z') { // letters & digits
+                    sb.append(c);
+                } else if (c >= 'A' && c <= 'Z') { // uppercase letters
+                    sb.append((char) (c + 32)); // make lowercase
                 }
             }
         }

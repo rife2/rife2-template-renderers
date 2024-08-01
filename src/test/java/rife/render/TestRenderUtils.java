@@ -96,8 +96,14 @@ class TestRenderUtils {
 
     @Test
     void testNormalize() {
-        assertThat(RenderUtils.normalize("")).isEmpty();
-        assertThat(RenderUtils.normalize(SAMPLE_GERMAN)).isEqualTo("mochten-sie-ein-paar-apfel");
+        assertThat(RenderUtils.normalize("")).as("empty").isEmpty();
+        assertThat(RenderUtils.normalize(" &()-_=[{]}\\|;:,<.>/")).as("blank").isEmpty();
+        assertThat(RenderUtils.normalize(SAMPLE_GERMAN)).as("greman").isEqualTo("mochten-sie-ein-paar-apfel");
+        assertThat(RenderUtils.normalize("foo  bar, <foo-bar>,foo:bar,foo;(bar), {foo} & bar=foo.bar[foo|bar]"))
+                .as("foo-bar")
+                .isEqualTo("foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar");
+        assertThat(RenderUtils.normalize("News for January 6, 2023 (Paris)")).as("docs example")
+                .isEqualTo("news-for-january-6-2023-paris");
     }
 
     @Test
