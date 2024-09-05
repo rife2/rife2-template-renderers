@@ -17,6 +17,7 @@
 
 package rife.render;
 
+import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -127,10 +128,12 @@ class TestRenderUtils {
 
     @Test
     void testValidateCreditCard() {
-        assertThat(RenderUtils.validateCreditCard("4505 4672 3366 6430")).as("visa").isTrue();
-        assertThat(RenderUtils.validateCreditCard("5189-5923-3915-0425")).as("mastercard").isTrue();
-        assertThat(RenderUtils.validateCreditCard("3433634926643302")).as("amex").isTrue();
-        assertThat(RenderUtils.validateCreditCard("6011 1076-8252 0629")).as("discover").isTrue();
-        assertThat(RenderUtils.validateCreditCard("0123456789012345")).as("invalid").isFalse();
+        try (var softly = new AutoCloseableSoftAssertions()) {
+            softly.assertThat(RenderUtils.validateCreditCard("4505 4672 3366 6430")).as("visa").isTrue();
+            softly.assertThat(RenderUtils.validateCreditCard("5189-5923-3915-0425")).as("mastercard").isTrue();
+            softly.assertThat(RenderUtils.validateCreditCard("3433634926643302")).as("amex").isTrue();
+            softly.assertThat(RenderUtils.validateCreditCard("6011 1076-8252 0629")).as("discover").isTrue();
+            softly.assertThat(RenderUtils.validateCreditCard("0123456789012345")).as("invalid").isFalse();
+        }
     }
 }
