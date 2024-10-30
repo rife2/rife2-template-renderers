@@ -38,7 +38,12 @@ import java.lang.management.ManagementFactory;
  */
 public class Uptime implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Renders the server uptime.
+     *
+     * @param template       the template that is currently being rendered
+     * @param valueId        the id of the value to render
+     * @param differentiator a differentiator that may be used to differentiate the rendering of this value renderer
+     * @return the server uptime
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

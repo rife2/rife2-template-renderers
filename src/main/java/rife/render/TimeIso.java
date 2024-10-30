@@ -23,7 +23,7 @@ import rife.template.ValueRenderer;
 import java.time.ZonedDateTime;
 
 /**
- * <p>Return the current time in ISO 8601 format.</p>
+ * <p>Renders the current time in ISO 8601 format.</p>
  *
  * <p>Usage:</p>
  *
@@ -38,7 +38,12 @@ import java.time.ZonedDateTime;
  */
 public class TimeIso implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the current time in ISO 8601 format.
+     *
+     * @param template       the template that is currently being rendered
+     * @param valueId        the id of the value to be rendered
+     * @param differentiator a differentiator that may be used to differentiate the rendering of this value renderer
+     * @return the current time in ISO 8601 format
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

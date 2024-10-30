@@ -38,7 +38,12 @@ import rife.tools.StringUtils;
  */
 public class EncodeHtml implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value encoded to HTML.
+     *
+     * @param template       the template containing the value to be rendered
+     * @param valueId        the identifier of the value to render
+     * @param differentiator a string used to differentiate the rendering
+     * @return the HTML-encoded value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

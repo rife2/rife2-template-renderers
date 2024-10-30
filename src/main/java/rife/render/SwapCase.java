@@ -21,7 +21,7 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 
 /**
- * <p>Swap case of a template value.</p>
+ * <p>Swaps case of a template value.</p>
  *
  * <p>Usage:</p>
  *
@@ -35,9 +35,13 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class SwapCase implements ValueRenderer {
-
     /**
-     * {@inheritDoc}
+     * Returns the template value with swapped case.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the swapped case value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

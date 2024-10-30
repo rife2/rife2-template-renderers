@@ -22,7 +22,7 @@ import rife.template.ValueRenderer;
 import rife.tools.Localization;
 
 /**
- * <p>Convert a template value to uppercase.</p>
+ * <p>Converts a template value to uppercase.</p>
  *
  * <p>Usage:</p>
  *
@@ -37,7 +37,12 @@ import rife.tools.Localization;
  */
 public class Uppercase implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value converted to uppercase.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the uppercased value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

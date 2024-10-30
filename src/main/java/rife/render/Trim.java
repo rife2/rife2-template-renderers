@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class Trim implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Renders the template value by removing leading and trailing whitespace.
+     *
+     * @param template       the template instance
+     * @param valueId        the id of the value to render
+     * @param differentiator an optional differentiator to use for cache invalidation
+     * @return the trimmed value, or the original value if it is {@code null} or empty
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

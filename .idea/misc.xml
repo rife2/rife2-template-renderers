@@ -3,6 +3,7 @@
   <component name="EntryPointsManager">
     <pattern value="rife.render.TemplateRenderersBuild" method="jacoco" />
     <pattern value="rife.render.TemplateRenderersBuild" method="pmd" />
+    <pattern value="rife.render.ValueBean" method="setValue" />
   </component>
   <component name="PDMPlugin">
     <option name="customRuleSets">

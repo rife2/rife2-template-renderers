@@ -23,7 +23,7 @@ import rife.template.ValueRenderer;
 import java.time.ZonedDateTime;
 
 /**
- * <p>Return the current date and time in RFC 2822 format.</p>
+ * <p>Renders the current date and time in RFC 2822 format.</p>
  *
  * <p>Usage:</p>
  *
@@ -38,7 +38,12 @@ import java.time.ZonedDateTime;
  */
 public class DateTimeRfc2822 implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the current date and time in RFC 2822 format.
+     *
+     * @param template       the template instance
+     * @param valueId        the value id
+     * @param differentiator the differentiator
+     * @return the current date and time in RFC 2822 format
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

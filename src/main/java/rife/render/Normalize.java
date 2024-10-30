@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class Normalize implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value normalized for inclusion in a URL path.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the normalized value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

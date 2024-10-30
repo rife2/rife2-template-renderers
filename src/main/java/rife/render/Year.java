@@ -37,9 +37,13 @@ import java.time.ZonedDateTime;
  * @since 1.0
  */
 public class Year implements ValueRenderer {
-
     /**
-     * {@inheritDoc}
+     * Renders the current year.
+     *
+     * @param template       the template that is currently being rendered
+     * @param valueId        the id of the value to render
+     * @param differentiator a differentiator that may be used to differentiate the rendering of this value renderer
+     * @return the current year
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

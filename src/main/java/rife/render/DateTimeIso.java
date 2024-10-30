@@ -24,7 +24,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 /**
- * <p>Return the current date and time in ISO 8601 format.</p>
+ * <p>Renders the current date and time in ISO 8601 format.</p>
  *
  * <p>Usage:</p>
  *
@@ -39,7 +39,15 @@ import java.time.ZonedDateTime;
  */
 public class DateTimeIso implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Renders the current date and time in ISO 8601 format.
+     *
+     * <p>Additionally, it allows specifying a time zone through the template's default value properties with the key
+     * {@code tz}. If no time zone is specified, the system default time zone is used.</p>
+     *
+     * @param template       the template that is currently being rendered
+     * @param valueId        the id of the value to be rendered
+     * @param differentiator a differentiator that may be used to differentiate the rendering of this value renderer
+     * @return the current date and time in ISO 8601 format
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

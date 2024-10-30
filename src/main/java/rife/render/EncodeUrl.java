@@ -38,7 +38,12 @@ import rife.tools.StringUtils;
  */
 public class EncodeUrl implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value encoded to URL.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the URL-encoded value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

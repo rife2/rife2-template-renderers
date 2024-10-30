@@ -21,7 +21,7 @@ import rife.template.Template;
 import rife.template.ValueRenderer;
 
 /**
- * <p>Abbreviate a template value with ellipses.</p>
+ * <p>Abbreviates a template value with ellipses.</p>
  *
  * <p>Usage:</p>
  *
@@ -36,7 +36,18 @@ import rife.template.ValueRenderer;
  */
 public class Abbreviate implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * <p>Returns the template value abbreviated with ellipses.</p>
+     *
+     * <p>Two parameters can be specified:</p>
+     * <ul>
+     *   <li><code>mark</code>: the string that will be used to abbreviate the value. Default is <code>...</code></li>
+     *   <li><code>max</code>: the maximum number of characters to render. Default is <code>-1</code> (no abbreviation).</li>
+     * </ul>
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value to render
+     * @param differentiator a generic string that can be used to differentiate the rendering
+     * @return the abbreviated value, or the original value if no abbreviation is necessary
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

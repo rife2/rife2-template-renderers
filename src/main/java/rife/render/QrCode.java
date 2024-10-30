@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class QrCode implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value encoded as an SVG QR Code.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the SVG QR Code
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

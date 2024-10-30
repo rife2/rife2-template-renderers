@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class Rot13 implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value translated to/from ROT13.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the ROT13 value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

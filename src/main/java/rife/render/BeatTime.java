@@ -38,7 +38,12 @@ import java.time.ZonedDateTime;
  */
 public class BeatTime implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the current time in Swatch Internet (.beat) Time format.
+     *
+     * @param template       the template instance
+     * @param valueId        the value id
+     * @param differentiator the differentiator
+     * @return the rendered value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

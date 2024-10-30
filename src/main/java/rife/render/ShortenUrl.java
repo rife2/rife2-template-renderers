@@ -38,7 +38,12 @@ import rife.template.ValueRenderer;
  */
 public class ShortenUrl implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value shortened using <a href="https://is.gd/">is.gid</a>.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the template shortened value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

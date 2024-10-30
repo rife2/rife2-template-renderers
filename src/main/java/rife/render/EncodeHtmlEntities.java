@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class EncodeHtmlEntities implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value encoded to HTML decimal entities.
+     *
+     * @param template       the template instance
+     * @param valueId        the value id
+     * @param differentiator the differentiator
+     * @return the encoded value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

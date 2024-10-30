@@ -37,7 +37,12 @@ import rife.tools.StringUtils;
  */
 public class Uncapitalize implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the un-capitalized template value.
+     *
+     * @param template       the template to render
+     * @param valueId        the id of the value to render
+     * @param differentiator the differentiator to use for the value lookup
+     * @return the un-capitalized value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

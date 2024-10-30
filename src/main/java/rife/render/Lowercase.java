@@ -37,7 +37,12 @@ import rife.tools.Localization;
  */
 public class Lowercase implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the template value converted to lowercase.
+     *
+     * @param template       the template that contains the value
+     * @param valueId        the id of the value
+     * @param differentiator the differentiator to use
+     * @return the lowercase value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

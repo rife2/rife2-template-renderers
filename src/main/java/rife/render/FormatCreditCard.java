@@ -36,7 +36,12 @@ import rife.template.ValueRenderer;
  */
 public class FormatCreditCard implements ValueRenderer {
     /**
-     * {@inheritDoc}
+     * Returns the last 4 digits of the template credit number value.
+     *
+     * @param template       the {@link Template}
+     * @param valueId        the value id
+     * @param differentiator the differentiator
+     * @return the formatted value
      */
     @Override
     public String render(Template template, String valueId, String differentiator) {

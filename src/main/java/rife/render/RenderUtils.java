@@ -83,7 +83,7 @@ public final class RenderUtils {
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
-    private final static Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
 
     private RenderUtils() {
         // no-op
