@@ -40,7 +40,7 @@ public class TemplateRenderersBuild extends Project {
     public TemplateRenderersBuild() {
         pkg = "rife.render";
         name = "rife2-template-renderers";
-        version = version(1, 1, 7, "SNAPSHOT");
+        version = version(1, 2, 0, "SNAPSHOT");
 
         javaRelease = 17;
         downloadSources = true;
