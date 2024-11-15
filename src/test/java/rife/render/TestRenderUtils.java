@@ -41,6 +41,17 @@ class TestRenderUtils {
     }
 
     @Test
+    void testCapitalizeWords() {
+        assertThat(RenderUtils.capitalizeWords("hello world")).isEqualTo("Hello World");
+        assertThat(RenderUtils.capitalizeWords("java programming")).isEqualTo("Java Programming");
+        assertThat(RenderUtils.capitalizeWords("TEST")).isEqualTo("Test");
+        assertThat(RenderUtils.capitalizeWords("multiple   spaces")).isEqualTo("Multiple   Spaces");
+        assertThat(RenderUtils.capitalizeWords("white\t\fspaces")).isEqualTo("White\t\fSpaces");
+        assertThat(RenderUtils.capitalizeWords("")).isEmpty();
+        assertThat(RenderUtils.capitalizeWords(null)).isNull();
+    }
+
+    @Test
     void testEncode() {
         var p = new Properties();
         p.put(RenderUtils.ENCODING_PROPERTY, "blah");

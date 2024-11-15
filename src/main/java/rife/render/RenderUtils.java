@@ -125,6 +125,38 @@ public final class RenderUtils {
     }
 
     /**
+     * Returns a {@code String} with the first letter of each word capitalized.
+     *
+     * @param src the source {@code String}
+     * @return the capitalized {@code String}
+     */
+    public static String capitalizeWords(String src) {
+        if (src == null || src.isBlank()) {
+            return src;
+        }
+
+        var result = new StringBuilder();
+        var capitalizeNext = true;
+
+        for (var i = 0; i < src.length(); i++) {
+            char c = src.charAt(i);
+            if (Character.isWhitespace(c)) {
+                capitalizeNext = true;
+                result.append(c);
+            } else {
+                if (capitalizeNext) {
+                    result.append(Character.toUpperCase(c));
+                } else {
+                    result.append(Character.toLowerCase(c));
+                }
+                capitalizeNext = false;
+            }
+        }
+
+        return result.toString();
+    }
+
+    /**
      * <p>Encodes the source {@code String} to the specified encoding.</p>
      *
      * <p>The supported encodings are:</p>
