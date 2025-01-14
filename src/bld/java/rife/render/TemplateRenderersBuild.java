@@ -50,8 +50,8 @@ public class TemplateRenderersBuild extends Project {
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 0)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 11, 3)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 11, 3)))
+                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 11, 4)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 11, 4)))
                 .include(dependency("org.assertj", "assertj-core", version(3, 27, 2)));
 
         javadocOperation().javadocOptions()
