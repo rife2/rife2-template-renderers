@@ -52,7 +52,7 @@ public class TemplateRenderersBuild extends Project {
         scope(test)
                 .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 11, 3)))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 11, 3)))
-                .include(dependency("org.assertj", "assertj-core", version(3, 26, 3)));
+                .include(dependency("org.assertj", "assertj-core", version(3, 27, 2)));
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
