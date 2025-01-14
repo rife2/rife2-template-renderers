@@ -139,7 +139,7 @@ public final class RenderUtils {
         var capitalizeNext = true;
 
         for (var i = 0; i < src.length(); i++) {
-            char c = src.charAt(i);
+            var c = src.charAt(i);
             if (Character.isWhitespace(c)) {
                 capitalizeNext = true;
                 result.append(c);
@@ -248,8 +248,9 @@ public final class RenderUtils {
     public static String fetchUrl(String url, String defaultContent) {
         try {
             var fetchUrl = new URL(url);
+            HttpURLConnection connection = null;
             try {
-                var connection = (HttpURLConnection) fetchUrl.openConnection();
+                connection = (HttpURLConnection) fetchUrl.openConnection();
                 connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
                 var code = connection.getResponseCode();
                 if (code >= 200 && code <= 399) {
@@ -265,10 +266,15 @@ public final class RenderUtils {
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(Level.WARNING, "An IO error occurred while connecting to " + fetchUrl.getHost(), ioe);
                 }
+            } finally {
+                if (connection != null) {
+                    connection.disconnect();
+                }
             }
         } catch (MalformedURLException ignored) {
             // do nothing
         }
+
         return defaultContent;
     }
 
