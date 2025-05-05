@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestFormat {
     @Test
-    void testAbbreviate() {
+    void abbreviate() {
         var t = TemplateFactory.HTML.get("abbreviate");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
         assertThat(t.getContent()).as("activate.html").endsWith("&hellip;").hasSize(19);
@@ -35,7 +35,7 @@ class TestFormat {
     }
 
     @Test
-    void testFormatCreditCard() {
+    void formatCreditCard() {
         var t = TemplateFactory.TXT.get("formatCreditCard");
         t.setAttribute(TestCase.FOO, "4342 2565 6244 0179");
         assertThat(t.getContent()).as("US VISA").isEqualTo("0179");
@@ -50,7 +50,7 @@ class TestFormat {
     }
 
     @Test
-    void testMask() {
+    void mask() {
         var t = TemplateFactory.HTML.get("mask");
         var foo = "374380141731053";
         t.setAttribute(TestCase.FOO, foo);
@@ -63,7 +63,7 @@ class TestFormat {
     }
 
     @Test
-    void testNormalize() {
+    void normalize() {
         var t = TemplateFactory.HTML.get("normalize");
         var foo = "News for January 6, 2023 (Paris)";
         t.setValue(TestCase.FOO, foo);
@@ -73,7 +73,7 @@ class TestFormat {
 
     @Test
     @DisabledOnCi
-    void testQrCode() {
+    void qrCode() {
         var t = TemplateFactory.SVG.get("qrCode");
         var foo = "https://example.com/";
         t.setAttribute(TestCase.FOO, foo);
@@ -82,7 +82,7 @@ class TestFormat {
 
     @Test
     @DisabledOnCi
-    void testShortenUrl() {
+    void shortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
         var shortUrl = "https://is.gd/AG3Hwv";
@@ -93,7 +93,7 @@ class TestFormat {
     }
 
     @Test
-    void testUptime() {
+    void uptime() {
         var t = TemplateFactory.TXT.get("uptime");
         assertThat(t.getContent()).as("uptime.txt").isEqualTo("0 minute\n0 minuto\n0 minute");
 

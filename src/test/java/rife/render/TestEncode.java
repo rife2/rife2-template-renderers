@@ -24,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class TestEncode {
     @Test
-    void testEncodeBase64() {
+    void encodeBase64() {
         var t = TemplateFactory.TXT.get("encodeBase64");
         t.setValue(TestCase.FOO, TestCase.SAMPLE_TEXT);
         assertThat(t.getContent()).isEqualTo(t.getValue(TestCase.FOO) + ": VGhpcyBpcyBhIHRlc3Qu");
@@ -35,14 +35,14 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeHtml() {
+    void encodeHtml() {
         var t = TemplateFactory.HTML.get("encodeHtml");
         t.setAttribute(TestCase.FOO, "<a test &>");
         assertThat(t.getContent()).isEqualTo("&lt;a test &amp;&gt;");
     }
 
     @Test
-    void testEncodeHtmlEntities() {
+    void encodeHtmlEntities() {
         var t = TemplateFactory.HTML.get("encodeHtmlEntities");
         t.setAttribute(TestCase.FOO, "john@doe.com");
         assertThat(t.getContent()).isEqualTo(
@@ -50,7 +50,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeJs() {
+    void encodeJs() {
         var t = TemplateFactory.TXT.get("encodeJs");
         t.setAttribute(TestCase.FOO, "'\"\\/");
         assertThat(t.getContent()).isEqualTo("\\'\\\"\\\\\\/");
@@ -66,7 +66,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeJson() {
+    void encodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(TestCase.FOO, "This is a \"•test\"");
         assertThat(t.getContent()).isEqualTo("{\n    \"foo\": \"This is a \\\"\\u2022test\\\"\"\n}");
@@ -77,7 +77,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeRot13() {
+    void encodeRot13() {
         var t = TemplateFactory.TXT.get("rot13");
         var rot13 = "Guvf vf n grfg.";
 
@@ -92,7 +92,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeUnicode() {
+    void encodeUnicode() {
         var t = TemplateFactory.TXT.get("encodeUnicode");
         t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
         assertThat(t.getContent()).isEqualTo(
@@ -105,7 +105,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeUrl() {
+    void encodeUrl() {
         var t = TemplateFactory.HTML.get("encodeUrl");
         t.setAttribute(TestCase.FOO, "a test &");
         assertThat(t.getContent()).isEqualTo("<a href=\"https://example.com/a%20test%20%26\">a test &amp;</a>");
@@ -117,7 +117,7 @@ class TestEncode {
     }
 
     @Test
-    void testEncodeXml() {
+    void encodeXml() {
         var t = TemplateFactory.XML.get("encodeXml");
         t.setAttribute(TestCase.FOO, "a test &");
         assertThat(t.getContent()).isEqualTo("<test>\n    <foo>a test &amp;</foo>\n</test>");

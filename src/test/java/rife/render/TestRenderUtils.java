@@ -28,7 +28,7 @@ class TestRenderUtils {
     static final String SAMPLE_GERMAN = "Möchten Sie ein paar Äpfel?";
 
     @Test
-    void testAbbreviate() {
+    void abbreviate() {
         assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, 9, "")).as("max=9")
                 .isEqualTo("This is a");
 
@@ -41,7 +41,7 @@ class TestRenderUtils {
     }
 
     @Test
-    void testCapitalizeWords() {
+    void capitalizeWords() {
         assertThat(RenderUtils.capitalizeWords("hello world")).isEqualTo("Hello World");
         assertThat(RenderUtils.capitalizeWords("java programming")).isEqualTo("Java Programming");
         assertThat(RenderUtils.capitalizeWords("TEST")).isEqualTo("Test");
@@ -52,7 +52,7 @@ class TestRenderUtils {
     }
 
     @Test
-    void testEncode() {
+    void encode() {
         var p = new Properties();
         p.put(RenderUtils.ENCODING_PROPERTY, "blah");
         assertThat(RenderUtils.encode(TestCase.SAMPLE_TEXT, p)).as("invalid encoding").isEqualTo(TestCase.SAMPLE_TEXT);
@@ -71,12 +71,12 @@ class TestRenderUtils {
     }
 
     @Test
-    void testEncodeJs() {
+    void encodeJs() {
         assertThat(RenderUtils.encodeJs("")).isEmpty();
     }
 
     @Test
-    void testFetchUrl() {
+    void fetchUrl() {
         var s = "default";
         assertThat(RenderUtils.fetchUrl("blah", s)).isEqualTo(s);
         assertThat(RenderUtils.fetchUrl("https://www.google.com/404", s)).isEqualTo(s);
@@ -84,14 +84,14 @@ class TestRenderUtils {
     }
 
     @Test
-    void testHtmlEntities() {
+    void htmlEntities() {
         assertThat(RenderUtils.htmlEntities("")).isEmpty();
         assertThat(RenderUtils.htmlEntities(SAMPLE_GERMAN))
                 .isEqualTo("&#77;&#246;&#99;&#104;&#116;&#101;&#110;&#32;&#83;&#105;&#101;&#32;&#101;&#105;&#110;&#32;&#112;&#97;&#97;&#114;&#32;&#196;&#112;&#102;&#101;&#108;&#63;");
     }
 
     @Test
-    void testMask() {
+    void mask() {
         var foo = "4342256562440179";
 
         assertThat(RenderUtils.mask("", " ", 2, false)).isEmpty();
@@ -107,7 +107,7 @@ class TestRenderUtils {
     }
 
     @Test
-    void testNormalize() {
+    void normalize() {
         assertThat(RenderUtils.normalize("")).as("empty").isEmpty();
         assertThat(RenderUtils.normalize(" &()-_=[{]}\\|;:,<.>/")).as("blank").isEmpty();
         assertThat(RenderUtils.normalize(SAMPLE_GERMAN)).as("greman").isEqualTo("mochten-sie-ein-paar-apfel");
@@ -119,12 +119,14 @@ class TestRenderUtils {
     }
 
     @Test
-    void testQrCode() {
-        assertThat(RenderUtils.qrCode("", "12")).isEmpty();
+    void qrCode() {
+        assertThat(RenderUtils.qrCode("", "12")).as("empty").isEmpty();
+        assertThat(RenderUtils.qrCode("erik", "24")).as("svg")
+                .startsWith("<?xml").contains("<svg").contains("<desc>erik");
     }
 
     @Test
-    void testRot13() {
+    void rot13() {
         var encoded = "Zöpugra Fvr rva cnne Äcsry?";
         assertThat(RenderUtils.rot13("")).isEmpty();
         assertThat(RenderUtils.rot13(SAMPLE_GERMAN)).as("encode").isEqualTo(encoded);
@@ -132,13 +134,13 @@ class TestRenderUtils {
     }
 
     @Test
-    void testSwapCase() {
+    void swapCase() {
         assertThat(RenderUtils.swapCase("")).isEmpty();
         assertThat(RenderUtils.swapCase(SAMPLE_GERMAN)).isEqualTo("mÖCHTEN sIE EIN PAAR äPFEL?");
     }
 
     @Test
-    void testValidateCreditCard() {
+    void validateCreditCard() {
         try (var softly = new AutoCloseableSoftAssertions()) {
             softly.assertThat(RenderUtils.validateCreditCard("4505 4672 3366 6430")).as("visa").isTrue();
             softly.assertThat(RenderUtils.validateCreditCard("5189-5923-3915-0425")).as("mastercard").isTrue();

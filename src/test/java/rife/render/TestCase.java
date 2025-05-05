@@ -28,14 +28,14 @@ class TestCase {
     static final String SAMPLE_TEXT = "This is a test.";
 
     @Test
-    void testCapitalize() {
+    void capitalize() {
         var t = TemplateFactory.TXT.get("capitalize");
         t.setAttribute(FOO, SAMPLE_TEXT.toLowerCase(Localization.getLocale()));
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT);
     }
 
     @Test
-    void testLowercase() {
+    void lowercase() {
         var t = TemplateFactory.TXT.get("lowercase");
         var bean = new ValueBean("this IS a TEST.");
         t.setBean(bean);
@@ -46,14 +46,14 @@ class TestCase {
     }
 
     @Test
-    void testSwapCase() {
+    void swapCase() {
         var t = TemplateFactory.TXT.get("swapCase");
         t.setAttribute(FOO, "tHiS iS a TeSt");
         assertThat(t.getContent()).isEqualTo("ThIs Is A tEsT");
     }
 
     @Test
-    void testTrim() {
+    void trim() {
         var t = TemplateFactory.TXT.get("trim");
         t.setAttribute(FOO, "\t" + SAMPLE_TEXT + " \n");
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT);
@@ -62,14 +62,14 @@ class TestCase {
     }
 
     @Test
-    void testUncapitalize() {
+    void uncapitalize() {
         var t = TemplateFactory.TXT.get("uncapitalize");
         t.setAttribute(FOO, SAMPLE_TEXT);
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT.toLowerCase(Localization.getLocale()));
     }
 
     @Test
-    void testUppercase() {
+    void uppercase() {
         var t = TemplateFactory.TXT.get("uppercase");
         t.setAttribute("bar", SAMPLE_TEXT);
         assertThat(t.getContent()).isEqualTo(SAMPLE_TEXT.toUpperCase(Localization.getLocale()));

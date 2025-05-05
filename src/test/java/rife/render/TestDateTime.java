@@ -25,31 +25,31 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class TestDateTime {
     @Test
-    void testBestTime() {
+    void bestTime() {
         var t = TemplateFactory.HTML.get("beatTime");
         assertThat(t.getContent()).matches("@\\d{3}");
     }
 
     @Test
-    void testDateIso() {
+    void dateIso() {
         var t = TemplateFactory.HTML.get("dateIso");
         assertThatCode(() -> RenderUtils.ISO_8601_DATE_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
-    void testDateTimeIso() {
+    void dateTimeIso() {
         var t = TemplateFactory.HTML.get("dateTimeIso");
         assertThatCode(() -> RenderUtils.ISO_8601_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
-    void testDateTimeRfc2822() {
+    void dateTimeRfc2822() {
         var t = TemplateFactory.HTML.get("dateTimeRfc2822");
         assertThatCode(() -> RenderUtils.RFC_2822_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
-    void testDateTimeUtc() {
+    void dateTimeUtc() {
         var t = TemplateFactory.HTML.get("dateTimeUtc");
         var content = t.getContent();
         assertThatCode(() -> RenderUtils.ISO_8601_FORMATTER.parse(content)).doesNotThrowAnyException();
@@ -58,13 +58,13 @@ class TestDateTime {
     }
 
     @Test
-    void testTimeIso() {
+    void timeIso() {
         var t = TemplateFactory.HTML.get("timeIso");
         assertThatCode(() -> RenderUtils.ISO_8601_TIME_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
-    void testYear() {
+    void year() {
         var t = TemplateFactory.HTML.get("year");
         var year = java.time.Year.now().toString();
         assertThat(t.getContent()).isEqualTo(year + "<br>" + year);
