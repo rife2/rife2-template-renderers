@@ -19,6 +19,7 @@ package rife.render;
 
 import rife.bld.BuildCommand;
 import rife.bld.Project;
+import rife.bld.extension.ExecOperation;
 import rife.bld.extension.JacocoReportOperation;
 import rife.bld.extension.PmdOperation;
 import rife.bld.extension.TestsBadgeOperation;
@@ -27,6 +28,9 @@ import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
 import rife.bld.publish.PublishScm;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
@@ -116,10 +120,36 @@ public class TemplateRenderersBuild extends Project {
                 .execute();
     }
 
+    @Override
     public void test() throws Exception {
-        testsBadgeOperation.executeOnce(() -> testsBadgeOperation
+        var testResultsDir = "build/test-results/test/";
+
+        var op = testsBadgeOperation
                 .url(property("testsBadgeUrl"))
                 .apiKey(property("testsBadgeApiKey"))
-                .fromProject(this));
+                .fromProject(this);
+        op.testToolOptions().reportsDir(new File(testResultsDir));
+        op.execute();
+
+        var xunitViewer = new File("/usr/bin/xunit-viewer");
+        if (xunitViewer.exists() && xunitViewer.canExecute()) {
+            var reportsDir = "build/reports/tests/test/";
+
+            var iconv = new File("/usr/bin/iconv");
+            if (iconv.exists() && iconv.canExecute()) {
+                var junitTestResults = new File(testResultsDir, "TEST-junit-jupiter.xml").getPath();
+                new ExecOperation()
+                        .fromProject(this)
+                        .command("iconv", "-f", "CP1250", "-t", "UTF8", "-o", junitTestResults, junitTestResults)
+                        .execute();
+
+                Files.createDirectories(Path.of(reportsDir));
+
+                new ExecOperation()
+                        .fromProject(this)
+                        .command(xunitViewer.getPath(), "-r", testResultsDir, "-o", reportsDir + "index.html")
+                        .execute();
+            }
+        }
     }
 }
