@@ -596,10 +596,16 @@ public final class RenderUtils {
                     properties.getProperty("hours", " hours ")));
         }
 
-        sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
-                properties.getProperty("minutes", " minutes")));
+        if (minutes == 0) {
+            if (years == 0 && months == 0 && weeks == 0 && days == 0 && hours == 0) {
+                sb.append(0).append(properties.getProperty("minute", " minute"));
+            }
+        } else {
+            sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
+                    properties.getProperty("minutes", " minutes")));
+        }
 
-        return sb.toString();
+        return sb.toString().trim();
     }
 
     /**
