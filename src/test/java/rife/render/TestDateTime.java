@@ -31,24 +31,28 @@ class TestDateTime {
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void dateIso() {
         var t = TemplateFactory.HTML.get("dateIso");
         assertThatCode(() -> RenderUtils.ISO_8601_DATE_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void dateTimeIso() {
         var t = TemplateFactory.HTML.get("dateTimeIso");
         assertThatCode(() -> RenderUtils.ISO_8601_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void dateTimeRfc2822() {
         var t = TemplateFactory.HTML.get("dateTimeRfc2822");
         assertThatCode(() -> RenderUtils.RFC_2822_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void dateTimeUtc() {
         var t = TemplateFactory.HTML.get("dateTimeUtc");
         var content = t.getContent();
@@ -58,6 +62,7 @@ class TestDateTime {
     }
 
     @Test
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     void timeIso() {
         var t = TemplateFactory.HTML.get("timeIso");
         assertThatCode(() -> RenderUtils.ISO_8601_TIME_FORMATTER.parse(t.getContent())).doesNotThrowAnyException();

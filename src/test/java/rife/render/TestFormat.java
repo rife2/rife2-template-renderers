@@ -19,6 +19,7 @@ package rife.render;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import rife.template.TemplateFactory;
 
@@ -66,6 +67,7 @@ class TestFormat {
 
     @Test
     @DisabledOnCi
+    @Tag("no-ci")
     void qrCode() {
         var t = TemplateFactory.SVG.get("qrCode");
         var foo = "https://example.com/";
@@ -75,6 +77,7 @@ class TestFormat {
 
     @Test
     @DisabledOnCi
+    @Tag("no-ci")
     void shortenUrl() {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
