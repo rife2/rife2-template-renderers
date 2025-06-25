@@ -43,6 +43,11 @@ import java.util.logging.Logger;
  */
 public final class RenderUtils {
     /**
+     * Common separators.
+     */
+    public static final char[] COMMON_SEPARATORS =
+            {' ', '&', '(', ')', '-', '_', '=', '[', '{', ']', '}', '\\', '|', ';', ':', ',', '<', '.', '>', '/', '@'};
+    /**
      * The encoding property.
      */
     public static final String ENCODING_PROPERTY = "encoding";
@@ -81,10 +86,17 @@ public final class RenderUtils {
      */
     public static final DateTimeFormatter RFC_2822_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
-
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
+    //Pre-computed lookup for separator characters - much faster than indexOf
+    private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
+
+    static {
+        for (char c : COMMON_SEPARATORS) {
+            SEPARATOR_LOOKUP[c] = true;
+        }
+    }
 
     private RenderUtils() {
         // no-op
@@ -214,27 +226,32 @@ public final class RenderUtils {
      * @return the encoded {@code String}
      */
     public static String encodeJs(String src) {
-        if (src == null || src.isBlank()) {
+        if (src == null || src.isEmpty()) {
             return src;
         }
 
-        var len = src.length();
-        var sb = new StringBuilder(len);
+        int len = src.length();
+        var sb = new StringBuilder(len + (len >> 2)); // Pre-allocate ~25% extra capacity
 
-        char c;
-        for (var i = 0; i < len; i++) {
-            c = src.charAt(i);
+        for (int i = 0; i < len; i++) {
+            char c = src.charAt(i);
             switch (c) {
                 case '\'' -> sb.append("\\'");
                 case '"' -> sb.append("\\\"");
                 case '\\' -> sb.append("\\\\");
                 case '/' -> sb.append("\\/");
                 case '\b' -> sb.append("\\b");
-                case '\n' -> sb.append(("\\n"));
+                case '\n' -> sb.append("\\n");
                 case '\t' -> sb.append("\\t");
                 case '\f' -> sb.append("\\f");
                 case '\r' -> sb.append("\\r");
-                default -> sb.append(c);
+                default -> {
+                    if (c < 0x20 || c == 0x7F) {
+                        sb.append("\\u").append(String.format("%04x", (int) c));
+                    } else {
+                        sb.append(c);
+                    }
+                }
             }
         }
         return sb.toString();
@@ -317,20 +334,25 @@ public final class RenderUtils {
             return src;
         }
 
-        var len = src.length();
-        var sb = new StringBuilder(len * 6);
+        int len = src.length();
+        var sb = new StringBuilder(len * 8); // Increased capacity estimate
 
-        // https://stackoverflow.com/a/6766497/8356718
         int codePoint;
-        for (var i = 0; i < len; i++) {
+        for (int i = 0; i < len; ) {
             codePoint = src.codePointAt(i);
-            // Skip over the second char in a surrogate pair
-            if (codePoint > 0xffff) {
-                i++;
-            }
-            sb.append(String.format("&#%s;", codePoint));
+
+            // Append the numeric character reference directly
+            sb.append("&#").append(codePoint).append(';');
+
+            // Advance by the number of char units consumed
+            i += Character.charCount(codePoint);
         }
+
         return sb.toString();
+    }
+
+    private static boolean isCommonSeparator(char c) {
+        return c < SEPARATOR_LOOKUP.length && SEPARATOR_LOOKUP[c];
     }
 
     /**
@@ -347,19 +369,28 @@ public final class RenderUtils {
             return src;
         }
 
-        var len = src.length();
-        var buff = new StringBuilder(len);
-        if (unmasked > 0 && unmasked < len) {
-            if (fromStart) {
-                buff.append(src, 0, unmasked);
-            }
-            buff.append(mask.repeat(len - unmasked));
-            if (!fromStart) {
-                buff.append(src.substring(len - unmasked));
-            }
-        } else {
-            buff.append(mask.repeat(len));
+        // Use codePointCount for proper Unicode support (counts actual characters, not UTF-16 units)
+        int codePointCount = src.codePointCount(0, src.length());
+
+        // Early return for full masking
+        if (unmasked <= 0 || unmasked >= codePointCount) {
+            return mask.repeat(codePointCount);
         }
+
+        var buff = new StringBuilder();
+
+        if (fromStart) {
+            // Show first N characters, mask the rest
+            int unmaskedEndIndex = src.offsetByCodePoints(0, unmasked);
+            buff.append(src, 0, unmaskedEndIndex)
+                    .append(mask.repeat(codePointCount - unmasked));
+        } else {
+            // Mask first part, show last N characters
+            int maskedEndIndex = src.offsetByCodePoints(0, codePointCount - unmasked);
+            buff.append(mask.repeat(codePointCount - unmasked))
+                    .append(src, maskedEndIndex, src.length());
+        }
+
         return buff.toString();
     }
 
@@ -371,26 +402,35 @@ public final class RenderUtils {
      */
     public static String normalize(String src) {
         if (src == null || src.isBlank()) {
-            return src;
+            return "";
         }
 
         var normalized = Normalizer.normalize(src.trim(), Normalizer.Form.NFD).toCharArray();
-
         var sb = new StringBuilder(normalized.length);
-        for (var i = 0; i < normalized.length; i++) {
-            var c = normalized[i];
-            if (c <= '\u007F') { // ASCII only
-                if (" &()-_=[{]}\\|;:,<.>/".indexOf(c) != -1) { // common separators
-                    if (!sb.isEmpty() && i != normalized.length - 1 && sb.charAt(sb.length() - 1) != '-') {
-                        sb.append('-');
-                    }
-                } else if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z') { // letters & digits
-                    sb.append(c);
-                } else if (c >= 'A' && c <= 'Z') { // uppercase letters
-                    sb.append((char) (c + 32)); // make lowercase
+        var lastWasSeparator = false;
+
+        for (var c : normalized) {
+            if (c > '\u007F') {
+                continue; // Skip non-ASCII early
+            }
+
+            if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z') {
+                if (lastWasSeparator && !sb.isEmpty()) {
+                    sb.append('-');
                 }
+                sb.append(c);
+                lastWasSeparator = false;
+            } else if (c >= 'A' && c <= 'Z') {
+                if (lastWasSeparator && !sb.isEmpty()) {
+                    sb.append('-');
+                }
+                sb.append((char) (c + 32)); // Convert to lowercase
+                lastWasSeparator = false;
+            } else if (isCommonSeparator(c)) {
+                lastWasSeparator = true;
             }
         }
+
         return sb.toString();
     }
 
@@ -439,7 +479,8 @@ public final class RenderUtils {
         if (src == null || src.isBlank()) {
             return src;
         }
-        return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
+        return fetchUrl(
+                String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
                         StringUtils.encodeUrl(size),
                         StringUtils.encodeUrl(src.trim())),
                 src);
@@ -452,36 +493,44 @@ public final class RenderUtils {
      * @return the translated {@code String}
      */
     public static String rot13(String src) {
-        if (src == null || src.isBlank()) {
+        if (src == null) {
+            return "";
+        }
+
+        if (src.isEmpty()) {
             return src;
         }
 
-        var len = src.length();
-        var output = new StringBuilder(len);
+        var result = new StringBuilder(src.length());
 
-        for (var i = 0; i < len; i++) {
-            var inChar = src.charAt(i);
+        int i = 0;
+        while (i < src.length()) {
+            int codePoint = src.codePointAt(i);
+            int charCount = Character.charCount(codePoint);
 
-            if (inChar >= 'A' && inChar <= 'Z') {
-                inChar += (char) 13;
+            // Only apply ROT13 to ASCII letters (A-Z, a-z)
+            if ((codePoint >= 'A' && codePoint <= 'Z') || (codePoint >= 'a' && codePoint <= 'z')) {
+                boolean isUpperCase = codePoint <= 'Z';
 
-                if (inChar > 'Z') {
-                    inChar -= (char) 26;
-                }
+                // Convert to lowercase for calculation
+                int lowerCodePoint = isUpperCase ? codePoint + 32 : codePoint;
+
+                // Apply ROT13: shift by 13, wrap around
+                int rotatedCodePoint = ((lowerCodePoint - 'a' + 13) % 26) + 'a';
+
+                // Restore original case
+                int finalCodePoint = isUpperCase ? rotatedCodePoint - 32 : rotatedCodePoint;
+
+                result.appendCodePoint(finalCodePoint);
+            } else {
+                // Non-ASCII letters and other characters remain unchanged
+                result.appendCodePoint(codePoint);
             }
 
-            if (inChar >= 'a' && inChar <= 'z') {
-                inChar += (char) 13;
-
-                if (inChar > 'z') {
-                    inChar -= (char) 26;
-                }
-            }
-
-            output.append(inChar);
+            i += charCount;
         }
 
-        return output.toString();
+        return result.toString();
     }
 
     /**
@@ -510,28 +559,27 @@ public final class RenderUtils {
      */
     @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String swapCase(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
+        if (src == null || src.isEmpty()) {
+            return "";
         }
 
-        int offset = 0;
-        var len = src.length();
-        var buff = new int[len];
+        var result = new StringBuilder(src.length());
 
-        for (var i = 0; i < len; ) {
-            int newCodePoint;
-            var curCodePoint = src.codePointAt(i);
-            if (Character.isUpperCase(curCodePoint) || Character.isTitleCase(curCodePoint)) {
-                newCodePoint = Character.toLowerCase(curCodePoint);
-            } else if (Character.isLowerCase(curCodePoint)) {
-                newCodePoint = Character.toUpperCase(curCodePoint);
-            } else {
-                newCodePoint = curCodePoint;
+        for (int i = 0; i < src.length(); /* incremented inside loop */) {
+            int codePoint = src.codePointAt(i);
+            int charCount = Character.charCount(codePoint);
+            int convertedCodePoint = codePoint;
+
+            if (Character.isUpperCase(codePoint)) {
+                convertedCodePoint = Character.toLowerCase(codePoint);
+            } else if (Character.isLowerCase(codePoint)) {
+                convertedCodePoint = Character.toUpperCase(codePoint);
             }
-            buff[offset++] = newCodePoint;
-            i += Character.charCount(newCodePoint);
+
+            result.appendCodePoint(convertedCodePoint);
+            i += charCount;
         }
-        return new String(buff, 0, offset);
+        return result.toString();
     }
 
     /**
@@ -561,48 +609,49 @@ public final class RenderUtils {
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static String uptime(long uptime, Properties properties) {
         var sb = new StringBuilder();
+        long remainingUptime = uptime;
 
-        var days = TimeUnit.MILLISECONDS.toDays(uptime);
-        var years = days / 365;
-        days %= 365;
-        var months = days / 30;
-        days %= 30;
-        var weeks = days / 7;
-        days %= 7;
-        var hours = TimeUnit.MILLISECONDS.toHours(uptime) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(uptime));
-        var minutes = TimeUnit.MILLISECONDS.toMinutes(uptime) - TimeUnit.HOURS.toMinutes(
-                TimeUnit.MILLISECONDS.toHours(uptime));
+        long years = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 365;
+        remainingUptime -= TimeUnit.DAYS.toMillis(years * 365);
 
         if (years > 0) {
             sb.append(years).append(plural(years, properties.getProperty("year", " year "),
                     properties.getProperty("years", " years ")));
         }
 
+        long months = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 30;
+        remainingUptime -= TimeUnit.DAYS.toMillis(months * 30);
+
         if (months > 0) {
             sb.append(months).append(plural(months, properties.getProperty("month", " month "),
                     properties.getProperty("months", " months ")));
         }
+
+        long weeks = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 7;
+        remainingUptime -= TimeUnit.DAYS.toMillis(weeks * 7);
 
         if (weeks > 0) {
             sb.append(weeks).append(plural(weeks, properties.getProperty("week", " week "),
                     properties.getProperty("weeks", " weeks ")));
         }
 
+        long days = TimeUnit.MILLISECONDS.toDays(remainingUptime);
+        remainingUptime -= TimeUnit.DAYS.toMillis(days);
+
         if (days > 0) {
             sb.append(days).append(plural(days, properties.getProperty("day", " day "),
                     properties.getProperty("days", " days ")));
         }
 
+        long hours = TimeUnit.MILLISECONDS.toHours(remainingUptime);
+        remainingUptime -= TimeUnit.HOURS.toMillis(hours);
+
         if (hours > 0) {
             sb.append(hours).append(plural(hours, properties.getProperty("hour", " hour "),
                     properties.getProperty("hours", " hours ")));
         }
-
-        if (minutes == 0) {
-            if (years == 0 && months == 0 && weeks == 0 && days == 0 && hours == 0) {
-                sb.append(0).append(properties.getProperty("minute", " minute"));
-            }
-        } else {
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(remainingUptime);
+        if (minutes > 0 || sb.isEmpty()) { // Append minutes if there are any, or if no other units were appended
             sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
                     properties.getProperty("minutes", " minutes")));
         }
@@ -617,35 +666,38 @@ public final class RenderUtils {
      * @return {@code true} if the credit card number is valid
      */
     public static boolean validateCreditCard(String cc) {
-        try {
-            var len = cc.length();
-            if (len >= 8 && len <= 19) {
-                // Luhn algorithm
-                var sum = 0;
-                boolean second = false;
-                int digit;
-                char c;
-                for (int i = len - 1; i >= 0; i--) {
-                    c = cc.charAt(i);
-                    if (c >= '0' && c <= '9') {
-                        digit = cc.charAt(i) - '0';
-                        if (second) {
-                            digit = digit * 2;
-                        }
-                        sum += digit / 10;
-                        sum += digit % 10;
+        if (cc == null) {
+            return false;
+        }
 
-                        second = !second;
+        int len = cc.length();
+        if (len < 8 || len > 19) {
+            return false;
+        }
+
+        int sum = 0;
+        boolean second = false;
+
+        // Process from right to left
+        for (int i = len - 1; i >= 0; i--) {
+            char c = cc.charAt(i);
+
+            // Process only digits
+            if (c >= '0' && c <= '9') {
+                int digit = c - '0';
+
+                if (second) {
+                    digit <<= 1; // Multiply by 2 using bit shift
+                    if (digit > 9) {
+                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
                     }
                 }
-                if (sum % 10 == 0) {
-                    return true;
-                }
-            }
-        } catch (NumberFormatException ignored) {
-            // do nothing
-        }
-        return false;
-    }
 
+                sum += digit;
+                second = !second;
+            }
+        }
+
+        return sum % 10 == 0;
+    }
 }

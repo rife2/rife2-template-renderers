@@ -17,17 +17,15 @@
 
 package rife.render;
 
+import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Properties;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -250,131 +248,176 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Encode JavaScript Tests")
         class EncodeJavaScriptTests {
-            private static Stream<Arguments> javascriptEscapeTestCases() {
-                return Stream.of(
-                        Arguments.of("test's", "test\\'s"),
-                        Arguments.of("test\"s", "test\\\"s"),
-                        Arguments.of("test\\s", "test\\\\s"),
-                        Arguments.of("test/s", "test\\/s"),
-                        Arguments.of("test\bs", "test\\bs"),
-                        Arguments.of("test\ns", "test\\ns"),
-                        Arguments.of("test\ts", "test\\ts"),
-                        Arguments.of("test\fs", "test\\fs"),
-                        Arguments.of("test\rs", "test\\rs"),
-                        Arguments.of("a'b\"c\\d/e\bf\ng\th\fi\rj", "a\\'b\\\"c\\\\d\\/e\\bf\\ng\\th\\fi\\rj")
-                );
+            @Test
+            @DisplayName("Should be consistent with multiple calls")
+            void shouldBeConsistentWithMultipleCalls() {
+                var input = "Test'String\"With\\Special/Characters\n\t";
+                var result1 = RenderUtils.encodeJs(input);
+                var result2 = RenderUtils.encodeJs(input);
+
+                assertThat(result1).isEqualTo(result2);
             }
 
             @Test
-            void encodeJsWithAllSpecialChars() {
+            @DisplayName("Should encode backslash")
+            void shouldEncodeBackslash() {
+                assertThat(RenderUtils.encodeJs("\\")).isEqualTo("\\\\");
+                assertThat(RenderUtils.encodeJs("Hello\\World")).isEqualTo("Hello\\\\World");
+            }
+
+            @Test
+            @DisplayName("Should encode backspace")
+            void shouldEncodeBackspace() {
+                assertThat(RenderUtils.encodeJs("\b")).isEqualTo("\\b");
+                assertThat(RenderUtils.encodeJs("Hello\bWorld")).isEqualTo("Hello\\bWorld");
+            }
+
+            @Test
+            @DisplayName("Should encode carriage return")
+            void shouldEncodeCarriageReturn() {
+                assertThat(RenderUtils.encodeJs("\r")).isEqualTo("\\r");
+                assertThat(RenderUtils.encodeJs("Hello\rWorld")).isEqualTo("Hello\\rWorld");
+            }
+
+            @Test
+            @DisplayName("Should encode control characters as unicode escapes")
+            void shouldEncodeControlCharacters() {
+                // Test some control characters
+                try (var softly = new AutoCloseableSoftAssertions()) {
+                    softly.assertThat(RenderUtils.encodeJs("\u0000")).isEqualTo("\\u0000"); // null character
+                    softly.assertThat(RenderUtils.encodeJs("\u0001")).isEqualTo("\\u0001"); // start of heading
+                    softly.assertThat(RenderUtils.encodeJs("\u001f")).isEqualTo("\\u001F"); // unit separator
+                    softly.assertThat(RenderUtils.encodeJs("\u007f")).isEqualTo("\\u007F"); // delete character
+                }
+            }
+
+            @Test
+            @DisplayName("Should encode double quote")
+            void shouldEncodeDoubleQuote() {
+                assertThat(RenderUtils.encodeJs("\"")).isEqualTo("\\\"");
+                assertThat(RenderUtils.encodeJs("Hello\"World")).isEqualTo("Hello\\\"World");
+            }
+
+            @Test
+            @DisplayName("Should encode form feed")
+            void shouldEncodeFormFeed() {
+                assertThat(RenderUtils.encodeJs("\f")).isEqualTo("\\f");
+                assertThat(RenderUtils.encodeJs("Hello\fWorld")).isEqualTo("Hello\\fWorld");
+            }
+
+            @Test
+            @DisplayName("Should encode forward slash")
+            void shouldEncodeForwardSlash() {
+                assertThat(RenderUtils.encodeJs("/")).isEqualTo("\\/");
+                assertThat(RenderUtils.encodeJs("Hello/World")).isEqualTo("Hello\\/World");
+            }
+
+            @Test
+            @DisplayName("Should encode multiple special characters")
+            void shouldEncodeMultipleSpecialCharacters() {
+                var input = "Hello\n\t\"World\"\\/'Test'";
+                var expected = "Hello\\n\\t\\\"World\\\"\\\\\\/\\'Test\\'";
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
+            @Test
+            @DisplayName("Should encode newline")
+            void shouldEncodeNewline() {
+                assertThat(RenderUtils.encodeJs("\n")).isEqualTo("\\n");
+                assertThat(RenderUtils.encodeJs("Hello\nWorld")).isEqualTo("Hello\\nWorld");
+            }
+
+            @Test
+            @DisplayName("Should encode single quote")
+            void shouldEncodeSingleQuote() {
+                assertThat(RenderUtils.encodeJs("'")).isEqualTo("\\'");
+                assertThat(RenderUtils.encodeJs("Hello'World")).isEqualTo("Hello\\'World");
+            }
+
+            @Test
+            @DisplayName("Should encode tab")
+            void shouldEncodeTab() {
+                assertThat(RenderUtils.encodeJs("\t")).isEqualTo("\\t");
+                assertThat(RenderUtils.encodeJs("Hello\tWorld")).isEqualTo("Hello\\tWorld");
+            }
+
+            @Test
+            @DisplayName("Should handle JavaScript code snippet")
+            void shouldHandleJavaScriptCodeSnippet() {
+                var input = "alert('Hello\\nWorld');";
+                var expected = "alert(\\'Hello\\\\nWorld\\');";
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
+            @Test
+            @DisplayName("Should handle JSON-like string")
+            void shouldHandleJsonLikeString() {
+                var input = "{\"name\": \"John\", \"age\": 30}";
+                var expected = "{\\\"name\\\": \\\"John\\\", \\\"age\\\": 30}";
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
+            @Test
+            @DisplayName("Should handle long string efficiently")
+            void shouldHandleLongString() {
+                var input = "test'string\"with\\special/chars\n".repeat(1000);
+                var result = RenderUtils.encodeJs(input);
+
+                assertThat(result)
+                        .isNotNull()
+                        .contains("\\'")
+                        .contains("\\\"")
+                        .contains("\\\\")
+                        .contains("\\/")
+                        .contains("\\n");
+            }
+
+            @Test
+            @DisplayName("Should handle mixed content with control characters")
+            void shouldHandleMixedContentWithControlCharacters() {
+                var input = "Hello\u0001World\u007f";
+                var expected = "Hello\\u0001World\\u007F";
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
+            @ParameterizedTest
+            @NullAndEmptySource
+            @ValueSource(strings = {"", " ", "   "})
+            @DisplayName("Should handle null and empty strings")
+            void shouldHandleNullAndEmptyStrings(String input) {
+                var result = RenderUtils.encodeJs(input);
+                assertThat(result).isEqualTo(input);
+            }
+
+            @Test
+            @DisplayName("Should handle edge case with only special characters")
+            void shouldHandleOnlySpecialCharacters() {
                 var input = "'\"\\/\b\n\t\f\r";
                 var expected = "\\'\\\"\\\\\\/\\b\\n\\t\\f\\r";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
             @Test
-            void encodeJsWithBackslash() {
-                assertThat(RenderUtils.encodeJs("This is a test \\string\\"))
-                        .isEqualTo("This is a test \\\\string\\\\");
-            }
-
-            @Test
-            void encodeJsWithBackspace() {
-                assertThat(RenderUtils.encodeJs("abc\bdef")).isEqualTo("abc\\bdef");
-            }
-
-            @Test
-            void encodeJsWithBlankInput() {
-                assertThat(RenderUtils.encodeJs("   ")).isEqualTo("   ");
-            }
-
-            @Test
-            void encodeJsWithCarriageReturn() {
-                assertThat(RenderUtils.encodeJs("abc\rdef")).isEqualTo("abc\\rdef");
-            }
-
-            @Test
-            void encodeJsWithConsecutiveSpecialChars() {
-                assertThat(RenderUtils.encodeJs("''\"\"\\\\")).isEqualTo("\\'\\'\\\"\\\"\\\\\\\\");
-            }
-
-            @Test
-            void encodeJsWithDoubleQuote() {
-                assertThat(RenderUtils.encodeJs("This is a test \"string\""))
-                        .isEqualTo("This is a test \\\"string\\\"");
-            }
-
-            @Test
-            void encodeJsWithEmptyInput() {
-                assertThat(RenderUtils.encodeJs("")).isEqualTo("");
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            @ValueSource(strings = {" ", "  ", "\t", "\n"})
-            void encodeJsWithEmptyOrBlankInputs(String input) {
+            @DisplayName("Should handle regular text without encoding")
+            void shouldHandleRegularText() {
+                var input = "Hello World 123 ABC xyz";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(input);
             }
 
             @Test
-            void encodeJsWithFormFeed() {
-                assertThat(RenderUtils.encodeJs("abc\fdef")).isEqualTo("abc\\fdef");
-            }
-
-            @Test
-            void encodeJsWithForwardSlash() {
-                assertThat(RenderUtils.encodeJs("This is a test /string/"))
-                        .isEqualTo("This is a test \\/string\\/");
-            }
-
-            @Test
-            void encodeJsWithMixedChars() {
-                var input = "Hello 'World' and \"JavaScript\" with \\slashes/ and \nnewlines.";
-                var expected = "Hello \\'World\\' and \\\"JavaScript\\\" with \\\\slashes\\/ and \\nnewlines.";
+            @DisplayName("Should handle unicode characters above control range")
+            void shouldHandleUnicodeCharacters() {
+                var input = "Hello 世界 🌍";
+                var expected = "Hello \\u4E16\\u754C \\uD83C\\uDF0D";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
             @Test
-            void encodeJsWithNewline() {
-                assertThat(RenderUtils.encodeJs("abc\ndef")).isEqualTo("abc\\ndef");
-            }
-
-            @Test
-            void encodeJsWithNoSpecialChars() {
-                var input = "Hello World 123!";
-                assertThat(input).isEqualTo(RenderUtils.encodeJs(input));
-            }
-
-            @Test
-            void encodeJsWithNullInput() {
+            @DisplayName("Should return null for null input")
+            void shouldReturnNullForNullInput() {
                 assertThat(RenderUtils.encodeJs(null)).isNull();
             }
-
-            @Test
-            void encodeJsWithSingleQuote() {
-                assertThat(RenderUtils.encodeJs("This is a test 'string'"))
-                        .isEqualTo("This is a test \\'string\\'");
-            }
-
-            @Test
-            void encodeJsWithSpecialCharsAtStartAndEnd() {
-                assertThat(RenderUtils.encodeJs("'test'")).isEqualTo("\\'test\\'");
-                assertThat(RenderUtils.encodeJs("\"test\"")).isEqualTo("\\\"test\\\"");
-                assertThat(RenderUtils.encodeJs("\\test\\")).isEqualTo("\\\\test\\\\");
-            }
-
-            @Test
-            void encodeJsWithTab() {
-                assertThat(RenderUtils.encodeJs("abc\tdef")).isEqualTo("abc\\tdef");
-            }
-
-            @ParameterizedTest
-            @MethodSource("javascriptEscapeTestCases")
-            void encodeJsWithVariousSpecialCharsParameterized(String input, String expected) {
-                assertThat(RenderUtils.encodeJs(input)).as("encodeJs(%s,%s)", input, expected).isEqualTo(expected);
-            }
         }
-
     }
 
     @Nested
@@ -385,7 +428,7 @@ class TestRenderUtils {
         @Test
         void fetchUrl() {
             assertThat(RenderUtils.fetchUrl("https://postman-echo.com/get?foo=bar", DEFAULT))
-                    .contains("\"foo\": \"bar\"");
+                    .contains("\"foo\":\"bar\"");
         }
 
         @Test
