@@ -132,29 +132,30 @@ public final class RenderUtils {
      * @return the capitalized {@code String}
      */
     public static String capitalizeWords(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
+        if (src == null) {
+            return null;
+        } else if (src.isEmpty()) {
+            return "";
         }
 
-        var result = new StringBuilder();
+        final var length = src.length();
+        final var chars = new char[length];
         var capitalizeNext = true;
 
-        for (var i = 0; i < src.length(); i++) {
-            var c = src.charAt(i);
+        for (int i = 0; i < length; i++) {
+            final var c = src.charAt(i);
             if (Character.isWhitespace(c)) {
                 capitalizeNext = true;
-                result.append(c);
-            } else {
-                if (capitalizeNext) {
-                    result.append(Character.toUpperCase(c));
-                } else {
-                    result.append(Character.toLowerCase(c));
-                }
+                chars[i] = c;
+            } else if (capitalizeNext) {
+                chars[i] = Character.toUpperCase(c);
                 capitalizeNext = false;
+            } else {
+                chars[i] = Character.toLowerCase(c);
             }
         }
 
-        return result.toString();
+        return new String(chars);
     }
 
     /**

@@ -30,6 +30,8 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class TestRenderUtils {
@@ -105,36 +107,47 @@ class TestRenderUtils {
     }
 
     @Nested
-    @DisplayName("Capitalize Tests")
-    class CapitalizeTests {
+    @DisplayName("Capitalize Words Tests")
+    class CapitalizeWordsTests {
         @Test
-        void capitalizeWords() {
-            assertThat(RenderUtils.capitalizeWords("hello world")).isEqualTo("Hello World");
+        void capitalizeWordsBlankInput() {
+            assertEquals("   ", RenderUtils.capitalizeWords("   "));
         }
 
         @Test
-        void capitalizeWordsWithEmpty() {
-            assertThat(RenderUtils.capitalizeWords("")).isEmpty();
+        void capitalizeWordsMultipleWords() {
+            assertEquals("The Quick Brown Fox", RenderUtils.capitalizeWords("the quick brown fox"));
         }
 
         @Test
-        void capitalizeWordsWithMultipleSpaces() {
-            assertThat(RenderUtils.capitalizeWords("multiple   spaces")).isEqualTo("Multiple   Spaces");
+        void capitalizeWordsNullInput() {
+            assertNull(RenderUtils.capitalizeWords(null));
         }
 
         @Test
-        void capitalizeWordsWithNull() {
-            assertThat(RenderUtils.capitalizeWords(null)).isNull();
+        void capitalizeWordsSingleWord() {
+            assertEquals("Hello", RenderUtils.capitalizeWords("hello"));
         }
 
         @Test
-        void capitalizeWordsWithSpecialCharacters() {
-            assertThat(RenderUtils.capitalizeWords("white\t\fspaces")).isEqualTo("White\t\fSpaces");
+        void capitalizeWordsWordWithLeadingWhitespace() {
+            assertEquals(" Hello World", RenderUtils.capitalizeWords(" hello world"));
         }
 
         @Test
-        void capitalizeWordsWithUppercase() {
-            assertThat(RenderUtils.capitalizeWords("HELLO World")).isEqualTo("Hello World");
+        void capitalizeWordsWordWithMultipleWhitespaces() {
+            assertEquals("  The\tQuick   Brown\fFox  ",
+                    RenderUtils.capitalizeWords("  the\tquick   brown\ffox  "));
+        }
+
+        @Test
+        void capitalizeWordsWordWithTrailingWhitespace() {
+            assertEquals("Hello World ", RenderUtils.capitalizeWords("hello world "));
+        }
+
+        @Test
+        void capitalizeWordsWordWithUnicode() {
+            assertEquals("Über Äpfel Éclair", RenderUtils.capitalizeWords("über äpfel éclair"));
         }
     }
 
