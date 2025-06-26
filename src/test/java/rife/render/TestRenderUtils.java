@@ -910,23 +910,227 @@ class TestRenderUtils {
     }
 
     @Nested
-    @DisplayName("ROT13 Test")
-    class Rot13Test {
-        private static final String ENCODED = "Zöpugra Fvr rva cnne Äcsry?";
+    @DisplayName("ROT13 Tests")
+    class Rot13Tests {
+        @ParameterizedTest
+        @CsvSource({
+                "a, n",
+                "n, a",
+                "z, m",
+                "m, z",
+                "A, N",
+                "N, A",
+                "Z, M",
+                "M, Z",
+                "hello, uryyb",
+                "world, jbeyq",
+                "HELLO, URYYB",
+                "WORLD, JBEYQ"
+        })
+        @DisplayName("Should apply ROT13 transformation to basic ASCII letters")
+        void shouldApplyRot13ToBasicStrings(String input, String expected) {
+            String result = RenderUtils.rot13(input);
 
-        @Test
-        void rot13Decode() {
-            assertThat(RenderUtils.rot13(ENCODED)).as("decode").isEqualTo(SAMPLE_GERMAN);
+            assertThat(result).isEqualTo(expected);
         }
 
         @Test
-        void rot13Encode() {
-            assertThat(RenderUtils.rot13(SAMPLE_GERMAN)).as("encode").isEqualTo(ENCODED);
+        @DisplayName("ROT13 should be its own inverse (applying twice returns original)")
+        void shouldBeItsOwnInverse() {
+            String[] testCases = {
+                    "Hello World",
+                    "The quick brown fox",
+                    "UPPERCASE",
+                    "lowercase",
+                    "MiXeD cAsE",
+                    "Numbers 123 and symbols !@#",
+                    "Unicode café naïve",
+                    "Emoji 😀 test 🚀"
+            };
+
+            for (String original : testCases) {
+                String encoded = RenderUtils.rot13(original);
+                String decoded = RenderUtils.rot13(encoded);
+
+                assertThat(decoded)
+                        .as("ROT13 should be its own inverse for: %s", original)
+                        .isEqualTo(original);
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ, NOPQRSTUVWXYZABCDEFGHIJKLM",
+                "abcdefghijklmnopqrstuvwxyz, nopqrstuvwxyzabcdefghijklm",
+                "abcdefghijklm, nopqrstuvwxyz",
+                "nopqrstuvwxyz, abcdefghijklm",
+                "ABCDEFGHIJKLM, NOPQRSTUVWXYZ",
+                "NOPQRSTUVWXYZ, ABCDEFGHIJKLM"
+        })
+        @DisplayName("Should correctly map the full alphabet (A-M ↔ N-Z)")
+        void shouldCorrectlyMapAlphabet(String input, String expected) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'Hello, World!', 'Uryyb, Jbeyq!'",
+                "Test123, Grfg123",
+                "'ROT13 cipher', 'EBG13 pvcure'",
+                "a1b2c3, n1o2p3",
+                "'Mix3d C4s3!', 'Zvk3q P4f3!'",
+                "'The quick brown fox jumps over the lazy dog.', 'Gur dhvpx oebja sbk whzcf bire gur ynml qbt.'",
+                "'Pack my box with five dozen liquor jugs.', 'Cnpx zl obk jvgu svir qbmra yvdhbe whtf.'"
+        })
+        @DisplayName("Should handle mixed content with letters, numbers, and symbols")
+        void shouldHandleMixedContent(String input, String expected) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("Should handle null and empty input gracefully")
+        void shouldHandleNullAndEmpty(String input) {
+            String result = RenderUtils.rot13(input);
+
+            if (input == null) {
+                assertThat(result).isEmpty();
+            } else {
+                assertThat(result).isEqualTo(input);
+            }
         }
 
         @Test
-        void rot13WithEmpty() {
-            assertThat(RenderUtils.rot13("")).isEmpty();
+        @DisplayName("Should only transform ASCII letters (A-Z, a-z)")
+        void shouldHandleOnlyAsciiLetters() {
+            // Verify that only ASCII A-Z and a-z are transformed
+            char[] asciiLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
+            char[] expectedRot13 = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm".toCharArray();
+
+            for (int i = 0; i < asciiLetters.length; i++) {
+                String input = String.valueOf(asciiLetters[i]);
+                String result = RenderUtils.rot13(input);
+                String expected = String.valueOf(expectedRot13[i]);
+
+                assertThat(result)
+                        .as("ASCII letter %c should transform to %c", asciiLetters[i], expectedRot13[i])
+                        .isEqualTo(expected);
+            }
+        }
+
+        @Test
+        @DisplayName("Should not transform non-ASCII letters (accented, Greek, Cyrillic, etc.)")
+        void shouldNotTransformNonAsciiLetters() {
+            String[] nonAsciiLetters = {
+                    "À", "Á", "Â", "Ã", "Ä", "Å", // Accented A
+                    "à", "á", "â", "ã", "ä", "å", // Accented a
+                    "Ç", "ç", "È", "É", "Ê", "Ë", // Other European
+                    "α", "β", "γ", "δ", "ε", "ζ", // Greek
+                    "А", "Б", "В", "Г", "Д", "Е"  // Cyrillic
+            };
+
+            for (String letter : nonAsciiLetters) {
+                String result = RenderUtils.rot13(letter);
+                assertThat(result)
+                        .as("Non-ASCII letter %s should remain unchanged", letter)
+                        .isEqualTo(letter);
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "Hello, Uryyb",
+                "WoRlD, JbEyQ",
+                "TeSt, GrFg",
+                "ROT13, EBG13",
+                "CamelCase, PnzryPnfr",
+                "MiXeD, ZvKrQ"
+        })
+        @DisplayName("Should preserve original case when transforming mixed-case strings")
+        void shouldPreserveCaseInMixedStrings(String input, String expected) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "😀, 😀",
+                "'Hello 😀', 'Uryyb 😀'",
+                "'Test 🌟 case', 'Grfg 🌟 pnfr'",
+                "'🚀 Launch', '🚀 Ynhapu'",
+                "Mix🎉ed, Zvk🎉rq"
+        })
+        @DisplayName("Should preserve emojis while transforming ASCII letters")
+        void shouldPreserveEmojis(String input, String expected) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "123",
+                "!@#$%^&*()",
+                "   ",
+                "\t\n\r",
+                ".,;:?!",
+                "[]{}()",
+                "+-*/=",
+                "<>|&"
+        })
+        @DisplayName("Should leave non-alphabetic characters unchanged")
+        void shouldPreserveNonAlphabeticCharacters(String input) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(input);
+        }
+
+        @Test
+        @DisplayName("Should preserve the original string length")
+        void shouldPreserveStringLength() {
+            String[] testCases = {
+                    "Hello World",
+                    "123ABC456def",
+                    "!@#TeStInG$%^",
+                    "Unicode café naïve",
+                    "Emoji 😀 test 🚀",
+                    "",
+                    "a",
+                    "ABC123!@#αβγ😀"
+            };
+
+            for (String testCase : testCases) {
+                String result = RenderUtils.rot13(testCase);
+                assertThat(result)
+                        .as("Length should be preserved for: %s", testCase)
+                        .hasSameSizeAs(testCase);
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "café, pnsé",
+                "naïve, anïir",
+                "résumé, eéfhzé",
+                "Ñoño, Ñbñb",
+                "αβγ, αβγ",
+                "中文, 中文",
+                "العربية, العربية",
+                "русский, русский",
+                "'Hello café', 'Uryyb pnsé'",
+                "'Test αβγ', 'Grfg αβγ'",
+                "Mix中ed, Zvk中rq"
+        })
+        @DisplayName("Should preserve Unicode characters while transforming ASCII letters")
+        void shouldPreserveUnicodeCharacters(String input, String expected) {
+            String result = RenderUtils.rot13(input);
+
+            assertThat(result).isEqualTo(expected);
         }
     }
 
