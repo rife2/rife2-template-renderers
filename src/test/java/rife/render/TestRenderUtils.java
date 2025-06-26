@@ -22,11 +22,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -136,6 +135,173 @@ class TestRenderUtils {
         @Test
         void capitalizeWordsWordWithUnicode() {
             assertEquals("Über Äpfel Éclair", RenderUtils.capitalizeWords("über äpfel éclair"));
+        }
+    }
+
+    @Nested
+    @DisplayName("Credit Card Validation Tests")
+    class CreditCardValidationTests {
+        @Nested
+        @DisplayName("Comprehensive Edge Cases")
+        class ComprehensiveEdgeCases {
+            static Stream<Arguments> cardLengthTestCases() {
+                return Stream.of(
+                        Arguments.of("1234567", false, "7 digits - too short"),
+                        Arguments.of("123456789", false, "9 digits - invalid Luhn"),
+                        Arguments.of("4532015112830366", true, "16 digits - standard Visa"),
+                        Arguments.of("378282246310005", true, "15 digits - AmEx"),
+                        Arguments.of("12345678901234567890", false, "20 digits - too long")
+                );
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should handle various card lengths with mixed results")
+            @MethodSource("cardLengthTestCases")
+            void shouldHandleVariousCardLengths(String creditCard, boolean expected, String description) {
+                assertThat(RenderUtils.validateCreditCard(creditCard))
+                        .as("Testing %s (%d digits): %s", description, creditCard.length(), creditCard)
+                        .isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        @DisplayName("Invalid Credit Cards")
+        class InvalidCreditCards {
+            @ParameterizedTest
+            @DisplayName("Should reject cards that fail Luhn algorithm")
+            @ValueSource(strings = {
+                    "4532015112830367",  // Last digit wrong
+                    "4532015112830365",  // Last digit wrong
+                    "1234567890123456",  // Sequential numbers
+                    "1111111111111111",  // All ones
+                    "4111111111111112",  // Valid format but wrong checksum
+                    "5431111111111112",  // Valid format but wrong checksum
+                    "6011601160116612",  // Valid format but wrong checksum
+                    "12345678",          // Too simple, fails Luhn
+                    "87654321098765432", // Random numbers, fails Luhn
+                    "4532015112830368",  // Close to valid but fails Luhn
+                    "40000015",          // 8 digits, fails Luhn
+                    "4000001234567890127" // 19 digits, fails Luhn
+            })
+            void shouldRejectLuhnFailures(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should reject null and empty strings")
+            @NullAndEmptySource
+            void shouldRejectNullAndEmpty(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should reject cards that are too long")
+            @ValueSource(strings = {
+                    "12345678901234567890",   // 20 digits
+                    "123456789012345678901",  // 21 digits
+                    "1234567890123456789012", // 22 digits
+                    "12345678901234567890123456789" // 29 digits
+            })
+            void shouldRejectTooLongCards(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should reject cards that are too short")
+            @ValueSource(strings = {
+                    "1234567",  // 7 digits
+                    "123456",   // 6 digits
+                    "12345",    // 5 digits
+                    "1234",     // 4 digits
+                    "1"         // 1 digit
+            })
+            void shouldRejectTooShortCards(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
+            }
+        }
+
+        @Nested
+        @DisplayName("Valid Credit Cards")
+        class ValidCreditCards {
+            @ParameterizedTest
+            @DisplayName("Should validate brand-specific patterns")
+            @CsvSource({
+                    "378734493671000, American Express Corporate",
+                    "371449635398431, American Express",
+                    "378282246310005, American Express",
+                    "3711 1111 1111 114, American Express",
+                    "5610591081018250, Australian BankCard",
+                    "5019717010103742, Dankort (PBS)",
+                    "5019346126415137, Dankort (PBS)",
+                    "30569309025904, Diners Club",
+                    "38520000023237, Diners Club",
+                    "3600 0000 0000 08, Diners",
+                    "6011000990139424, Discover",
+                    "6011111111111117, Discover",
+                    "3530111333300000, JCB",
+                    "3566002020360505, JCB",
+                    "2222 4000 1000 0008, Mastercard",
+                    "2222 4000 3000 0004, Mastercard",
+                    "2222 4000 5000 0009, Mastercard",
+                    "2222 4107 0000 0002, Mastercard",
+                    "2223 0000 4841 0010, Mastercard",
+                    "5100 0600 0000 0002, Mastercard",
+                    "5105105105105100, MasterCard",
+                    "5431 1111 1111 1111, MasterCard",
+                    "5431111188111101, MasterCard",
+                    "5453010000095323, MasterCard",
+                    "5555 5555 5555 4444, Mastercard",
+                    "5555555555554444, MasterCard",
+                    "6331101999990016, Switch/Solo (Paymentech)",
+                    "4000 1600 0000 0004, Visa",
+                    "4000 1800 0000 0002, Visa",
+                    "4012888888881881, Visa",
+                    "4111 1111 1111 1111, Visa",
+                    "4111111111111111, Visa",
+                    "4222222222222, Visa",
+                    "4988 0800 0000 0000, Visa",
+                    "4999999999999202, Visa"
+            })
+            void shouldValidateBrandSpecificPatterns(String creditCard, String brand) {
+                assertThat(RenderUtils.validateCreditCard(creditCard))
+                        .as("Validating %s card: %s", brand, creditCard)
+                        .isTrue();
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should validate common valid credit card numbers")
+            @ValueSource(strings = {
+                    "4532015112830366",  // Visa
+                    "4000056655665556",  // Visa
+                    "5555555555554444",  // Mastercard
+                    "5105105105105100",  // Mastercard
+                    "378282246310005",   // American Express
+                    "371449635398431",   // American Express
+                    "6011111111111117",  // Discover
+                    "6011000990139424",  // Discover
+                    "4111111111111111",  // Generic Visa
+                    "5431111111111111",  // Generic Mastercard
+                    "6011601160116611",  // Generic Discover
+                    "30569309025904",    // Diners Club
+                    "38520000023237"     // Diners Club
+            })
+            void shouldValidateCommonValidCreditCards(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isTrue();
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should validate valid credit card numbers with non-digits")
+            @ValueSource(strings = {
+                    "4505 4672 3366 6430",  // Visa
+                    "5189-5923-3915-0425",  // Mastercard
+                    "6011 1076-8252 0629",  // Discover
+                    "A123456789007",
+                    "B23456789\n0004",
+                    "345678901009***"
+            })
+            void shouldValidateCommonValidCreditCardsWithNonDigits(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isTrue();
+            }
         }
     }
 
@@ -761,35 +927,6 @@ class TestRenderUtils {
         @Test
         void rot13WithEmpty() {
             assertThat(RenderUtils.rot13("")).isEmpty();
-        }
-    }
-
-    @Nested
-    @DisplayName("Validate Credit Card")
-    class ValidateCreditCard {
-        @Test
-        void amexCreditCard() {
-            assertThat(RenderUtils.validateCreditCard("3433634926643302")).as("amex").isTrue();
-        }
-
-        @Test
-        void discoverCreditCard() {
-            assertThat(RenderUtils.validateCreditCard("6011 1076-8252 0629")).as("discover").isTrue();
-        }
-
-        @Test
-        void invalidCreditCard() {
-            assertThat(RenderUtils.validateCreditCard("0123456789012345")).as("invalid").isFalse();
-        }
-
-        @Test
-        void mastercardCreditCard() {
-            assertThat(RenderUtils.validateCreditCard("5189-5923-3915-0425")).as("mastercard").isTrue();
-        }
-
-        @Test
-        void visaCreditCard() {
-            assertThat(RenderUtils.validateCreditCard("4505 4672 3366 6430")).as("visa").isTrue();
         }
     }
 }
