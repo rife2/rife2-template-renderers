@@ -25,6 +25,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -1091,7 +1092,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should apply ROT13 transformation to basic ASCII letters")
         void shouldApplyRot13ToBasicStrings(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1131,7 +1132,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should correctly map the full alphabet (A-M ↔ N-Z)")
         void shouldCorrectlyMapAlphabet(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1148,7 +1149,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should handle mixed content with letters, numbers, and symbols")
         void shouldHandleMixedContent(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1157,7 +1158,7 @@ class TestRenderUtils {
         @NullAndEmptySource
         @DisplayName("Should handle null and empty input gracefully")
         void shouldHandleNullAndEmpty(String input) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             if (input == null) {
                 assertThat(result).isEmpty();
@@ -1178,7 +1179,7 @@ class TestRenderUtils {
                     var input = String.valueOf(asciiLetters[i]);
                     var result = RenderUtils.rot13(input);
                     var expected = String.valueOf(expectedRot13[i]);
-                    
+
                     softly.assertThat(result)
                             .as("ASCII letter %c should transform to %c", asciiLetters[i], expectedRot13[i])
                             .isEqualTo(expected);
@@ -1198,7 +1199,7 @@ class TestRenderUtils {
             };
 
             for (var letter : nonAsciiLetters) {
-                var result =  RenderUtils.rot13(letter);
+                var result = RenderUtils.rot13(letter);
                 assertThat(result)
                         .as("Non-ASCII letter %s should remain unchanged", letter)
                         .isEqualTo(letter);
@@ -1216,7 +1217,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve original case when transforming mixed-case strings")
         void shouldPreserveCaseInMixedStrings(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1231,7 +1232,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve emojis while transforming ASCII letters")
         void shouldPreserveEmojis(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1249,7 +1250,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should leave non-alphabetic characters unchanged")
         void shouldPreserveNonAlphabeticCharacters(String input) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(input);
         }
@@ -1269,7 +1270,7 @@ class TestRenderUtils {
             };
 
             for (String testCase : testCases) {
-                var result =  RenderUtils.rot13(testCase);
+                var result = RenderUtils.rot13(testCase);
                 assertThat(result)
                         .as("Length should be preserved for: %s", testCase)
                         .hasSameSizeAs(testCase);
@@ -1292,7 +1293,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve Unicode characters while transforming ASCII letters")
         void shouldPreserveUnicodeCharacters(String input, String expected) {
-            var result =  RenderUtils.rot13(input);
+            var result = RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1467,6 +1468,292 @@ class TestRenderUtils {
             var result = RenderUtils.swapCase(input);
 
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("Uptime Tests")
+    class UptimeTests {
+        private static final Properties PROPERTIES = new Properties();
+
+        static {
+            PROPERTIES.setProperty("year", " year ");
+            PROPERTIES.setProperty("years", " years ");
+            PROPERTIES.setProperty("month", " month ");
+            PROPERTIES.setProperty("months", " months ");
+            PROPERTIES.setProperty("week", " week ");
+            PROPERTIES.setProperty("weeks", " weeks ");
+            PROPERTIES.setProperty("day", " day ");
+            PROPERTIES.setProperty("days", " days ");
+            PROPERTIES.setProperty("hour", " hour ");
+            PROPERTIES.setProperty("hours", " hours ");
+            PROPERTIES.setProperty("minute", " minute");
+            PROPERTIES.setProperty("minutes", " minutes");
+        }
+
+        @ParameterizedTest
+        @DisplayName("Parametrized edge cases")
+        @CsvSource({
+                "0, '0 minute'",
+                "1000, '0 minute'",
+                "59000, '0 minute'",
+                "60000, '1 minute'",
+                "120000, '2 minutes'",
+                "3600000, '1 hour'",
+                "3660000, '1 hour 1 minute'",
+                "86400000, '1 day'",
+                "90000000, '1 day 1 hour'"
+        })
+        void edgeCases(long uptimeMs, String expected) {
+            assertThat(RenderUtils.uptime(uptimeMs, PROPERTIES))
+                    .isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Result should be trimmed")
+        void resultShouldBeTrimmed() {
+            // This test ensures the trim() at the end works correctly
+            var propsWithSpaces = new Properties();
+            propsWithSpaces.setProperty("minute", "  minute  ");
+
+            var result = RenderUtils.uptime(0, propsWithSpaces);
+            assertThat(result).isEqualTo("0  minute");
+            assertThat(result).doesNotStartWith(" ");
+            assertThat(result).doesNotEndWith(" ");
+        }
+
+        @Nested
+        @DisplayName("Basic time unit conversions")
+        class BasicTimeUnits {
+
+            @Test
+            @DisplayName("Exactly one hour")
+            void exactlyOneHour() {
+                long oneHour = TimeUnit.HOURS.toMillis(1);
+                assertThat(RenderUtils.uptime(oneHour, PROPERTIES))
+                        .isEqualTo("1 hour");
+            }
+
+            @Test
+            @DisplayName("Exactly one minute")
+            void exactlyOneMinute() {
+                long oneMinute = TimeUnit.MINUTES.toMillis(1);
+                assertThat(RenderUtils.uptime(oneMinute, PROPERTIES))
+                        .isEqualTo("1 minute");
+            }
+
+            @Test
+            @DisplayName("Hours and minutes")
+            void hoursAndMinutes() {
+                long twoHours30Minutes = TimeUnit.HOURS.toMillis(2) + TimeUnit.MINUTES.toMillis(30);
+                assertThat(RenderUtils.uptime(twoHours30Minutes, PROPERTIES))
+                        .isEqualTo("2 hours 30 minutes");
+            }
+
+            @Test
+            @DisplayName("Less than one minute should return '0 minute'")
+            void lessThanOneMinute() {
+                long thirtySeconds = TimeUnit.SECONDS.toMillis(30);
+                assertThat(RenderUtils.uptime(thirtySeconds, PROPERTIES))
+                        .isEqualTo("0 minute");
+            }
+
+            @Test
+            @DisplayName("Multiple hours")
+            void multipleHours() {
+                long threeHours = TimeUnit.HOURS.toMillis(3);
+                assertThat(RenderUtils.uptime(threeHours, PROPERTIES))
+                        .isEqualTo("3 hours");
+            }
+
+            @Test
+            @DisplayName("Multiple minutes")
+            void multipleMinutes() {
+                long fiveMinutes = TimeUnit.MINUTES.toMillis(5);
+                assertThat(RenderUtils.uptime(fiveMinutes, PROPERTIES))
+                        .isEqualTo("5 minutes");
+            }
+
+            @Test
+            @DisplayName("Zero uptime should return '0 minute'")
+            void zeroUptime() {
+                assertThat(RenderUtils.uptime(0, PROPERTIES))
+                        .isEqualTo("0 minute");
+            }
+        }
+
+        @Nested
+        @DisplayName("Boundary Tests")
+        class BoundaryConditions {
+            @Test
+            @DisplayName("Days boundary")
+            void daysBoundary() {
+                assertThat(RenderUtils.uptime(86399999, PROPERTIES)).isEqualTo("23 hours 59 minutes");
+                assertThat(RenderUtils.uptime(86400000, PROPERTIES)).isEqualTo("1 day");
+            }
+
+            @Test
+            @DisplayName("Hours boundary")
+            void hoursBoundary() {
+                assertThat(RenderUtils.uptime(3599999, PROPERTIES)).isEqualTo("59 minutes");
+                assertThat(RenderUtils.uptime(3600000, PROPERTIES)).isEqualTo("1 hour");
+            }
+
+            @Test
+            @DisplayName("Milliseconds boundary")
+            void millisecondsBoundary() {
+                assertThat(RenderUtils.uptime(59999, PROPERTIES)).isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(60000, PROPERTIES)).isEqualTo("1 minute");
+            }
+        }
+
+        @Nested
+        @DisplayName("Custom properties")
+        class CustomProperties {
+            @Test
+            @DisplayName("Custom singular and plural forms")
+            void customPluralForms() {
+                Properties customProps = new Properties();
+                customProps.setProperty("hour", "h");
+                customProps.setProperty("hours", "h");
+                customProps.setProperty("minute", "m");
+                customProps.setProperty("minutes", "m");
+
+                long uptime = TimeUnit.HOURS.toMillis(2) + TimeUnit.MINUTES.toMillis(30);
+                assertThat(RenderUtils.uptime(uptime, customProps))
+                        .isEqualTo("2h30m");
+            }
+
+            @Test
+            @DisplayName("Localized properties")
+            void localizedProperties() {
+                var spanishProps = new Properties();
+                spanishProps.setProperty("year", " año ");
+                spanishProps.setProperty("years", " años ");
+                spanishProps.setProperty("month", " mes ");
+                spanishProps.setProperty("months", " meses ");
+                spanishProps.setProperty("week", " semana ");
+                spanishProps.setProperty("weeks", " semanas ");
+                spanishProps.setProperty("day", " día ");
+                spanishProps.setProperty("days", " días ");
+                spanishProps.setProperty("hour", " hora ");
+                spanishProps.setProperty("hours", " horas ");
+                spanishProps.setProperty("minute", " minuto");
+                spanishProps.setProperty("minutes", " minutos");
+
+                long uptime = TimeUnit.DAYS.toMillis(700) + TimeUnit.DAYS.toMillis(8)
+                        + TimeUnit.HOURS.toMillis(3) + TimeUnit.MINUTES.toMillis(1);
+                assertThat(RenderUtils.uptime(uptime, spanishProps))
+                        .isEqualTo("1 año 11 meses 1 semana 6 días 3 horas 1 minuto");
+            }
+
+            @Test
+            @DisplayName("Missing properties should use defaults")
+            void missingPropertiesUseDefaults() {
+                Properties emptyProps = new Properties();
+                long oneHour = TimeUnit.HOURS.toMillis(1);
+                assertThat(RenderUtils.uptime(oneHour, emptyProps))
+                        .isEqualTo("1 hour");
+            }
+        }
+
+        @Nested
+        @DisplayName("Day-based calculations")
+        class DayBasedCalculations {
+            @Test
+            @DisplayName("Weeks, days, hours, and minutes")
+            void complexDayBasedUptime() {
+                long uptime = TimeUnit.DAYS.toMillis(10) + // 1 week, 3 days
+                        TimeUnit.HOURS.toMillis(5) +
+                        TimeUnit.MINUTES.toMillis(30);
+                assertThat(RenderUtils.uptime(uptime, PROPERTIES))
+                        .isEqualTo("1 week 3 days 5 hours 30 minutes");
+            }
+
+            @Test
+            @DisplayName("Exactly one day")
+            void exactlyOneDay() {
+                long oneDay = TimeUnit.DAYS.toMillis(1);
+                assertThat(RenderUtils.uptime(oneDay, PROPERTIES))
+                        .isEqualTo("1 day");
+            }
+
+            @Test
+            @DisplayName("One month (30 days)")
+            void exactlyOneMonth() {
+                long oneMonth = TimeUnit.DAYS.toMillis(30);
+                assertThat(RenderUtils.uptime(oneMonth, PROPERTIES))
+                        .isEqualTo("1 month");
+            }
+
+            @Test
+            @DisplayName("One week exactly")
+            void exactlyOneWeek() {
+                long oneWeek = TimeUnit.DAYS.toMillis(7);
+                assertThat(RenderUtils.uptime(oneWeek, PROPERTIES))
+                        .isEqualTo("1 week");
+            }
+
+            @Test
+            @DisplayName("Multiple days")
+            void multipleDays() {
+                long fiveDays = TimeUnit.DAYS.toMillis(5);
+                assertThat(RenderUtils.uptime(fiveDays, PROPERTIES))
+                        .isEqualTo("5 days");
+            }
+
+            @Test
+            @DisplayName("Multiple months")
+            void multipleMonths() {
+                long twoMonths = TimeUnit.DAYS.toMillis(60);
+                assertThat(RenderUtils.uptime(twoMonths, PROPERTIES))
+                        .isEqualTo("2 months");
+            }
+
+            @Test
+            @DisplayName("No minutes")
+            void noMinutes() {
+                long uptime = TimeUnit.SECONDS.toMillis(30);
+                assertThat(RenderUtils.uptime(uptime, PROPERTIES)).isEqualTo("0 minute");
+            }
+        }
+
+        @Nested
+        @DisplayName("Year-based calculations")
+        class YearBasedCalculations {
+
+            @Test
+            @DisplayName("Complex uptime with all units")
+            void complexUptimeAllUnits() {
+                long uptime = TimeUnit.DAYS.toMillis(400) + TimeUnit.MINUTES.toMillis(45);
+                assertThat(RenderUtils.uptime(uptime, PROPERTIES))
+                        .isEqualTo("1 year 1 month 5 days 45 minutes");
+            }
+
+            @Test
+            @DisplayName("Exactly one year")
+            void exactlyOneYear() {
+                long oneYear = TimeUnit.DAYS.toMillis(365);
+                assertThat(RenderUtils.uptime(oneYear, PROPERTIES))
+                        .isEqualTo("1 year");
+            }
+
+            @Test
+            @DisplayName("Multiple years")
+            void multipleYears() {
+                long twoYears = TimeUnit.DAYS.toMillis(730);
+                assertThat(RenderUtils.uptime(twoYears, PROPERTIES))
+                        .isEqualTo("2 years");
+            }
+
+            @Test
+            @DisplayName("Very large uptime")
+            void veryLargeUptime() {
+                long uptime = TimeUnit.DAYS.toMillis(10839) + TimeUnit.HOURS.toMillis(1)
+                        + TimeUnit.MINUTES.toMillis(5);
+                assertThat(RenderUtils.uptime(uptime, PROPERTIES))
+                        .isEqualTo("29 years 8 months 2 weeks 1 hour 5 minutes");
+            }
         }
     }
 }
