@@ -149,12 +149,16 @@ public class TemplateRenderersBuild extends Project {
 
     @Override
     public void test() throws Exception {
-        var op = testOperation().fromProject(this);
+        var op = testsBadgeOperation
+                .url(property("testsBadgeUrl"))
+                .apiKey(property("testsBadgeApiKey"))
+                .fromProject(this);
         op.testToolOptions().reportsDir(new File(TEST_RESULTS_DIR));
+
 
         Exception ex = null;
         try {
-            op.execute();
+            op.executeOnce();
         } catch (Exception e) {
             ex = e;
         }
