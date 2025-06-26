@@ -35,27 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class TestRenderUtils {
     static final String SAMPLE_GERMAN = "Möchten Sie ein paar Äpfel?";
 
-    @Test
-    void qrCode() {
-        assertThat(RenderUtils.qrCode("erik", "24")).as("svg")
-                .startsWith("<?xml").contains("<svg").contains("<desc>erik");
-    }
-
-    @Test
-    void qrCodeWithEmpty() {
-        assertThat(RenderUtils.qrCode("", "12")).as("empty").isEmpty();
-    }
-
-    @Test
-    void swapCase() {
-        assertThat(RenderUtils.swapCase(SAMPLE_GERMAN)).isEqualTo("mÖCHTEN sIE EIN PAAR äPFEL?");
-    }
-
-    @Test
-    void swapCaseWithEmpty() {
-        assertThat(RenderUtils.swapCase("")).isEmpty();
-    }
-
     @Nested
     @DisplayName("Abbreviate Tests")
     class AbbreviateTests {
@@ -906,6 +885,21 @@ class TestRenderUtils {
             assertThat(RenderUtils.normalize("foo  bar, <foo-bar>,foo:bar,foo;(bar), {foo} & bar=foo.bar[foo|bar]"))
                     .as("foo-bar")
                     .isEqualTo("foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar");
+        }
+    }
+
+    @Nested
+    @DisplayName("QR Code Tests")
+    class QrCodeTests {
+        @Test
+        void qrCode() {
+            assertThat(RenderUtils.qrCode("erik", "24")).as("svg")
+                    .startsWith("<?xml").contains("<svg").contains("<desc>erik");
+        }
+
+        @Test
+        void qrCodeWithEmpty() {
+            assertThat(RenderUtils.qrCode("", "12")).as("empty").isEmpty();
         }
     }
 
