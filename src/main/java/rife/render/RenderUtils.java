@@ -87,7 +87,7 @@ public final class RenderUtils {
     public static final DateTimeFormatter RFC_2822_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
-            "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/111.0";
+            "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0";
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
     //Pre-computed lookup for separator characters - much faster than indexOf
     private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
@@ -113,11 +113,7 @@ public final class RenderUtils {
     public static String abbreviate(String src, int max, String marker) {
         if (src == null || src.isBlank() || marker == null) {
             return src;
-        }
-
-        var len = src.length();
-
-        if (len <= max || max < 0) {
+        } else if (src.length() <= max || max < 0) {
             return src;
         }
 
@@ -132,8 +128,7 @@ public final class RenderUtils {
      */
     public static String beatTime(ZonedDateTime zonedDateTime) {
         var zdt = zonedDateTime.withZoneSameInstant(ZoneId.of("UTC+01:00"));
-        var beats = (int) ((zdt.getSecond() + (zdt.getMinute() * 60) +
-                (zdt.getHour() * 3600)) / 86.4);
+        var beats = (int) ((zdt.getSecond() + (zdt.getMinute() * 60) + (zdt.getHour() * 3600)) / 86.4);
         return String.format("@%03d", beats);
     }
 
@@ -144,30 +139,28 @@ public final class RenderUtils {
      * @return the capitalized {@code String}
      */
     public static String capitalizeWords(String src) {
-        if (src == null) {
-            return null;
-        } else if (src.isEmpty()) {
-            return "";
+        if (src == null || src.isBlank()) {
+            return src;
         }
 
-        final var length = src.length();
-        final var chars = new char[length];
+        final var sb = new StringBuilder(src.length());
         var capitalizeNext = true;
 
-        for (int i = 0; i < length; i++) {
-            final var c = src.charAt(i);
-            if (Character.isWhitespace(c)) {
+        final var codePoints = src.codePoints().toArray();
+
+        for (int codePoint : codePoints) {
+            if (Character.isWhitespace(codePoint)) {
                 capitalizeNext = true;
-                chars[i] = c;
+                sb.appendCodePoint(codePoint);
             } else if (capitalizeNext) {
-                chars[i] = Character.toUpperCase(c);
+                sb.appendCodePoint(Character.toUpperCase(codePoint));
                 capitalizeNext = false;
             } else {
-                chars[i] = Character.toLowerCase(c);
+                sb.appendCodePoint(Character.toLowerCase(codePoint));
             }
         }
 
-        return new String(chars);
+        return sb.toString();
     }
 
     /**
@@ -580,7 +573,6 @@ public final class RenderUtils {
      * @param src the {@code String} to swap the case of
      * @return the modified {@code String} or null
      */
-    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String swapCase(String src) {
         if (src == null || src.isEmpty()) {
             return "";
@@ -588,7 +580,8 @@ public final class RenderUtils {
 
         var result = new StringBuilder(src.length());
 
-        for (int i = 0; i < src.length(); /* incremented inside loop */) {
+        int i = 0;
+        while (i < src.length()) {
             int codePoint = src.codePointAt(i);
             int charCount = Character.charCount(codePoint);
             int convertedCodePoint = codePoint;

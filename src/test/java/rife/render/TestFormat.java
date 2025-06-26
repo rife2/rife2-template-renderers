@@ -54,7 +54,8 @@ class TestFormat {
         var t = TemplateFactory.HTML.get("mask");
         var foo = "374380141731053";
         t.setAttribute(TestCase.FOO, foo);
-        assertThat(t.getContent()).isEqualTo("3743&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;");
+        assertThat(t.getContent())
+                .isEqualTo("3743&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;");
     }
 
     @Test
@@ -62,7 +63,8 @@ class TestFormat {
         var t = TemplateFactory.HTML.get("normalize");
         var foo = "News for January 6, 2023 (Paris)";
         t.setValue(TestCase.FOO, foo);
-        assertThat(t.getContent()).isEqualTo("<a href=\"news/20230106/news-for-january-6-2023-paris\">" + foo + "</a>");
+        assertThat(t.getContent())
+                .isEqualTo("<a href=\"news/20230106/news-for-january-6-2023-paris\">" + foo + "</a>");
     }
 
     @Test
@@ -147,7 +149,8 @@ class TestFormat {
         void uptimeInFrench() {
             var t = TemplateFactory.HTML.get("uptime");
             t.setAttribute(Uptime.class.getName(), 547800300076L);
-            assertThat(t.getContent()).isEqualTo("17 ann&eacute;es, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
+            assertThat(t.getContent())
+                    .isEqualTo("17 ann&eacute;es, 4 mois, 2 semaines, 1 jour, 6 heures, 45 minutes");
         }
 
         @Test

@@ -29,8 +29,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class TestRenderUtils {
@@ -61,8 +59,7 @@ class TestRenderUtils {
 
         @Test
         void abbreviateWithMaxNegative() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, -1, ""))
-                    .isEqualTo(TestCase.SAMPLE_TEXT);
+            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, -1, "")).isEqualTo(TestCase.SAMPLE_TEXT);
         }
 
         @Test
@@ -74,45 +71,157 @@ class TestRenderUtils {
     @Nested
     @DisplayName("Capitalize Words Tests")
     class CapitalizeWordsTests {
-        @Test
-        void capitalizeWordsBlankInput() {
-            assertEquals("   ", RenderUtils.capitalizeWords("   "));
+        @ParameterizedTest
+        @DisplayName("Should handle accented characters and diacritics")
+        @CsvSource({
+                "'café naïve', 'Café Naïve'",
+                "'schön günstig', 'Schön Günstig'",
+                "'résumé français', 'Résumé Français'",
+                "'ñoño niño', 'Ñoño Niño'",
+                "'istanbul türkiye', 'Istanbul Türkiye'"
+        })
+        void shouldCapitalizeAccentedCharacters(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should capitalize basic ASCII words correctly")
+        @CsvSource({
+                "'hello world', 'Hello World'",
+                "'HELLO WORLD', 'Hello World'",
+                "'hELLo WoRLd', 'Hello World'",
+                "'hello', 'Hello'",
+                "'a', 'A'",
+                "'java programming', 'Java Programming'",
+                "'the quick brown fox', 'The Quick Brown Fox'"
+        })
+        void shouldCapitalizeBasicWords(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
 
         @Test
-        void capitalizeWordsMultipleWords() {
-            assertEquals("The Quick Brown Fox", RenderUtils.capitalizeWords("the quick brown fox"));
+        @DisplayName("Should handle complex surrogate pair scenarios")
+        void shouldHandleComplexSurrogatePairScenarios() {
+            // Test string with multiple surrogate pairs and regular characters
+            String input = "𝓱𝓮𝓵𝓵𝓸 world 🌟 test 𝕞𝕦𝕞𝕓𝕖𝔯";
+            String expected = "𝓱𝓮𝓵𝓵𝓸 World 🌟 Test 𝕞𝕦𝕞𝕓𝕖𝔯";
+
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
 
         @Test
-        void capitalizeWordsNullInput() {
-            assertNull(RenderUtils.capitalizeWords(null));
+        @DisplayName("Should handle complex Unicode casing rules (e.g., German ß)")
+        void shouldHandleComplexUnicodeCase() {
+            // German ß (sharp s) has special uppercasing rules
+            String input = "straße café";
+            String expected = "Straße Café";
+
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle emojis and special Unicode characters")
+        @CsvSource({
+                "'hello 🌟 world', 'Hello 🌟 World'",
+                "'test 🚀 rocket', 'Test 🚀 Rocket'",
+                "'café ☕ time', 'Café ☕ Time'",
+                "'👋 hello world 👋', '👋 Hello World 👋'"
+        })
+        void shouldHandleEmojisAndSpecialUnicodeCharacters(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle mathematical Unicode characters")
+        @CsvSource({
+                "'𝕙𝕖𝕝𝕝𝕠 𝕨𝕠𝕣𝕝𝕕', '𝕙𝕖𝕝𝕝𝕠 𝕨𝕠𝕣𝕝𝕕'", // Mathematical script letters
+                "'𝒽𝑒𝓁𝓁𝑜 𝓌𝑜𝓇𝓁𝒹', '𝒽𝑒𝓁𝓁𝑜 𝓌𝑜𝓇𝓁𝒹'"  // Mathematical script letters
+        })
+        void shouldHandleMathematicalUnicodeCharacters(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle non-Latin scripts appropriately")
+        @CsvSource({
+                "'こんにちは 世界', 'こんにちは 世界'",
+                "'привет мир', 'Привет Мир'",
+                "'مرحبا بالعالم', 'مرحبا بالعالم'",
+                "'שלום עולם', 'שלום עולם'"
+        })
+        void shouldHandleNonLatinScripts(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return unchanged for null, empty, or whitespace-only strings")
+        @NullAndEmptySource
+        @ValueSource(strings = {"   ", "\t", "\n", "\r\n"})
+        void shouldHandleNullEmptyAndWhitespaceOnlyStrings(String input) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(input);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "a, A",
+                "Z, Z",
+                "é, É",
+                "1, 1",
+                "' ', ' '"
+        })
+        @DisplayName("Should handle single character inputs correctly")
+        void shouldHandleSingleCharacter(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle punctuation, numbers, and special characters")
+        @CsvSource({
+                "'hello-world', 'Hello-world'",
+                "'test_case', 'Test_case'",
+                "'user@domain.com', 'User@domain.com'",
+                "'file.txt extension', 'File.txt Extension'",
+                "'123 numbers here', '123 Numbers Here'",
+                "'mix3d c4s3', 'Mix3d C4s3'"
+        })
+        void shouldHandleSpecialCharactersAndNumbers(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should handle surrogate pairs correctly")
+        @CsvSource({
+                "'𝐡𝐞𝐥𝐥𝐨 𝐰𝐨𝐫𝐥𝐝', '𝐡𝐞𝐥𝐥𝐨 𝐰𝐨𝐫𝐥𝐝'", // Mathematical bold letters (surrogate pairs)
+                "'hello 𝕨𝕠𝓇𝓁𝒹 test', 'Hello 𝕨𝕠𝓇𝓁𝒹 Test'", // Mixed ASCII and surrogate pairs
+                "'𝔞𝔟𝔠 𝔡𝔢𝔣', '𝔞𝔟𝔠 𝔡𝔢𝔣'", // Mathematical fraktur letters
+                "'🎯 hello 🚀 world', '🎯 Hello 🚀 World'", // Emojis as surrogate pairs
+                "'💻 programming 📱 mobile', '💻 Programming 📱 Mobile'"
+        })
+        void shouldHandleSurrogatePairs(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should preserve various types of whitespace")
+        @CsvSource({
+                "'hello  world', 'Hello  World'",
+                "'  hello world  ', '  Hello World  '",
+                "'hello\tworld', 'Hello\tWorld'",
+                "'hello\nworld', 'Hello\nWorld'",
+                "'hello\r\nworld', 'Hello\r\nWorld'",
+                "'a   b   c', 'A   B   C'"
+        })
+        void shouldHandleVariousWhitespaceCharacters(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
 
         @Test
-        void capitalizeWordsSingleWord() {
-            assertEquals("Hello", RenderUtils.capitalizeWords("hello"));
-        }
+        @DisplayName("Should perform well with very long strings")
+        void shouldHandleVeryLongStrings() {
+            String longInput = "word ".repeat(1000).trim();
+            String expectedOutput = "Word ".repeat(1000).trim();
 
-        @Test
-        void capitalizeWordsWordWithLeadingWhitespace() {
-            assertEquals(" Hello World", RenderUtils.capitalizeWords(" hello world"));
-        }
-
-        @Test
-        void capitalizeWordsWordWithMultipleWhitespaces() {
-            assertEquals("  The\tQuick   Brown\fFox  ",
-                    RenderUtils.capitalizeWords("  the\tquick   brown\ffox  "));
-        }
-
-        @Test
-        void capitalizeWordsWordWithTrailingWhitespace() {
-            assertEquals("Hello World ", RenderUtils.capitalizeWords("hello world "));
-        }
-
-        @Test
-        void capitalizeWordsWordWithUnicode() {
-            assertEquals("Über Äpfel Éclair", RenderUtils.capitalizeWords("über äpfel éclair"));
+            assertThat(RenderUtils.capitalizeWords(longInput)).isEqualTo(expectedOutput);
         }
     }
 
@@ -356,8 +465,7 @@ class TestRenderUtils {
         @ValueSource(strings = {"", "   ", "\t", "\n"})
         void encodeWhenSrcIsBlank(String blankSrc) {
             var p = createProperties("html"); // Properties are not empty
-            assertThat(RenderUtils.encode(blankSrc, p)).as("encode(%s)", blankSrc)
-                    .isEqualTo(blankSrc);
+            assertThat(RenderUtils.encode(blankSrc, p)).as("encode(%s)", blankSrc).isEqualTo(blankSrc);
         }
 
         @Test
@@ -566,7 +674,7 @@ class TestRenderUtils {
             @DisplayName("Should handle emoji and surrogate pairs correctly")
             void shouldHandleSurrogatePairs() {
                 String emoji = "😀"; // U+1F600, requires surrogate pair
-                String result = RenderUtils.encodeJs(emoji);
+                var result = RenderUtils.encodeJs(emoji);
 
                 assertThat(result)
                         .isEqualTo("\\uD83D\\uDE00")
@@ -871,12 +979,12 @@ class TestRenderUtils {
         @Test
         @DisplayName("Method should handle all combinations consistently")
         void allCombinationsConsistent() {
-            String input = "testing";
+            var input = "testing";
 
             // Test all combinations of fromStart boolean and various unmasked values
             for (boolean fromStart : new boolean[]{true, false}) {
                 for (int unmasked = -1; unmasked <= input.length() + 1; unmasked++) {
-                    String result = RenderUtils.mask(input, "*", unmasked, fromStart);
+                    var result = RenderUtils.mask(input, "*", unmasked, fromStart);
 
                     // Result should never be null for non-null input
                     assertThat(result).isNotNull();
@@ -895,7 +1003,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Different mask characters")
         class DifferentMaskCharacters {
-
             @Test
             @DisplayName("Multi-character mask string")
             void multiCharacterMask() {
@@ -915,7 +1022,11 @@ class TestRenderUtils {
                     "'hello'|'•'|2|true|'he•••'",
                     "'hello'|'_'|2|false|'___lo'"
             })
-            void variousMaskCharacters(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+            void variousMaskCharacters(String input,
+                                       String maskChar,
+                                       int unmasked,
+                                       boolean fromStart,
+                                       String expected) {
                 assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
             }
         }
@@ -923,7 +1034,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Edge cases and special scenarios")
         class EdgeCasesAndSpecialScenarios {
-
             @ParameterizedTest
             @DisplayName("Single character strings")
             @CsvSource({
@@ -932,7 +1042,11 @@ class TestRenderUtils {
                     "'a', '*', 0, true, '*'",
                     "'a', '#', 2, true, '#'"
             })
-            void singleCharacterStrings(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+            void singleCharacterStrings(String input,
+                                        String maskChar,
+                                        int unmasked,
+                                        boolean fromStart,
+                                        String expected) {
                 assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
             }
 
@@ -963,8 +1077,8 @@ class TestRenderUtils {
             @DisplayName("Very long strings")
             @ValueSource(ints = {100, 1000, 5000})
             void veryLongStrings(int length) {
-                String input = "a".repeat(length);
-                String result = RenderUtils.mask(input, "*", 5, true);
+                var input = "a".repeat(length);
+                var result = RenderUtils.mask(input, "*", 5, true);
 
                 assertThat(result).hasSize(length);
                 assertThat(result).startsWith("aaaaa");
@@ -975,7 +1089,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Full masking scenarios")
         class FullMasking {
-
             @ParameterizedTest
             @DisplayName("Unmasked >= length should fully mask")
             @CsvSource({
@@ -984,7 +1097,11 @@ class TestRenderUtils {
                     "'hello', '#', 5, false, '#####'",
                     "'test', 'X', 10, false, 'XXXX'"
             })
-            void unmaskedGreaterThanLengthFullyMasks(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+            void unmaskedGreaterThanLengthFullyMasks(String input,
+                                                     String maskChar,
+                                                     int unmasked,
+                                                     boolean fromStart,
+                                                     String expected) {
                 assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
             }
 
@@ -996,7 +1113,11 @@ class TestRenderUtils {
                     "'hello', '*', -5, false, '*****'",
                     "'test', '#', 0, false, '####'"
             })
-            void zeroOrNegativeUnmaskedFullyMasks(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+            void zeroOrNegativeUnmaskedFullyMasks(String input,
+                                                  String maskChar,
+                                                  int unmasked,
+                                                  boolean fromStart,
+                                                  String expected) {
                 assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
             }
         }
@@ -1004,7 +1125,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Null and empty input handling")
         class NullAndEmptyInput {
-
             @Test
             @DisplayName("Empty input should return empty string")
             void emptyInputReturnsEmpty() {
@@ -1023,7 +1143,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Partial masking from end")
         class PartialMaskingFromEnd {
-
             @ParameterizedTest
             @DisplayName("Mask first part, show last N characters")
             @CsvSource({
@@ -1047,7 +1166,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Partial masking from start")
         class PartialMaskingFromStart {
-
             @ParameterizedTest
             @DisplayName("Show first N characters, mask the rest")
             @CsvSource({
@@ -1071,7 +1189,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Real-world use cases")
         class RealWorldUseCases {
-
             @ParameterizedTest
             @DisplayName("Credit card masking")
             @CsvSource({
@@ -1777,60 +1894,52 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Basic time unit conversions")
         class BasicTimeUnits {
-
             @Test
             @DisplayName("Exactly one hour")
             void exactlyOneHour() {
                 long oneHour = TimeUnit.HOURS.toMillis(1);
-                assertThat(RenderUtils.uptime(oneHour, PROPERTIES))
-                        .isEqualTo("1 hour");
+                assertThat(RenderUtils.uptime(oneHour, PROPERTIES)).isEqualTo("1 hour");
             }
 
             @Test
             @DisplayName("Exactly one minute")
             void exactlyOneMinute() {
                 long oneMinute = TimeUnit.MINUTES.toMillis(1);
-                assertThat(RenderUtils.uptime(oneMinute, PROPERTIES))
-                        .isEqualTo("1 minute");
+                assertThat(RenderUtils.uptime(oneMinute, PROPERTIES)).isEqualTo("1 minute");
             }
 
             @Test
             @DisplayName("Hours and minutes")
             void hoursAndMinutes() {
                 long twoHours30Minutes = TimeUnit.HOURS.toMillis(2) + TimeUnit.MINUTES.toMillis(30);
-                assertThat(RenderUtils.uptime(twoHours30Minutes, PROPERTIES))
-                        .isEqualTo("2 hours 30 minutes");
+                assertThat(RenderUtils.uptime(twoHours30Minutes, PROPERTIES)).isEqualTo("2 hours 30 minutes");
             }
 
             @Test
             @DisplayName("Less than one minute should return '0 minute'")
             void lessThanOneMinute() {
                 long thirtySeconds = TimeUnit.SECONDS.toMillis(30);
-                assertThat(RenderUtils.uptime(thirtySeconds, PROPERTIES))
-                        .isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(thirtySeconds, PROPERTIES)).isEqualTo("0 minute");
             }
 
             @Test
             @DisplayName("Multiple hours")
             void multipleHours() {
                 long threeHours = TimeUnit.HOURS.toMillis(3);
-                assertThat(RenderUtils.uptime(threeHours, PROPERTIES))
-                        .isEqualTo("3 hours");
+                assertThat(RenderUtils.uptime(threeHours, PROPERTIES)).isEqualTo("3 hours");
             }
 
             @Test
             @DisplayName("Multiple minutes")
             void multipleMinutes() {
                 long fiveMinutes = TimeUnit.MINUTES.toMillis(5);
-                assertThat(RenderUtils.uptime(fiveMinutes, PROPERTIES))
-                        .isEqualTo("5 minutes");
+                assertThat(RenderUtils.uptime(fiveMinutes, PROPERTIES)).isEqualTo("5 minutes");
             }
 
             @Test
             @DisplayName("Zero uptime should return '0 minute'")
             void zeroUptime() {
-                assertThat(RenderUtils.uptime(0, PROPERTIES))
-                        .isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(0, PROPERTIES)).isEqualTo("0 minute");
             }
         }
 
@@ -1872,8 +1981,7 @@ class TestRenderUtils {
                 customProps.setProperty("minutes", "m");
 
                 long uptime = TimeUnit.HOURS.toMillis(2) + TimeUnit.MINUTES.toMillis(30);
-                assertThat(RenderUtils.uptime(uptime, customProps))
-                        .isEqualTo("2h30m");
+                assertThat(RenderUtils.uptime(uptime, customProps)).isEqualTo("2h30m");
             }
 
             @Test
@@ -1904,8 +2012,7 @@ class TestRenderUtils {
             void missingPropertiesUseDefaults() {
                 Properties emptyProps = new Properties();
                 long oneHour = TimeUnit.HOURS.toMillis(1);
-                assertThat(RenderUtils.uptime(oneHour, emptyProps))
-                        .isEqualTo("1 hour");
+                assertThat(RenderUtils.uptime(oneHour, emptyProps)).isEqualTo("1 hour");
             }
         }
 
@@ -1926,40 +2033,35 @@ class TestRenderUtils {
             @DisplayName("Exactly one day")
             void exactlyOneDay() {
                 long oneDay = TimeUnit.DAYS.toMillis(1);
-                assertThat(RenderUtils.uptime(oneDay, PROPERTIES))
-                        .isEqualTo("1 day");
+                assertThat(RenderUtils.uptime(oneDay, PROPERTIES)).isEqualTo("1 day");
             }
 
             @Test
             @DisplayName("One month (30 days)")
             void exactlyOneMonth() {
                 long oneMonth = TimeUnit.DAYS.toMillis(30);
-                assertThat(RenderUtils.uptime(oneMonth, PROPERTIES))
-                        .isEqualTo("1 month");
+                assertThat(RenderUtils.uptime(oneMonth, PROPERTIES)).isEqualTo("1 month");
             }
 
             @Test
             @DisplayName("One week exactly")
             void exactlyOneWeek() {
                 long oneWeek = TimeUnit.DAYS.toMillis(7);
-                assertThat(RenderUtils.uptime(oneWeek, PROPERTIES))
-                        .isEqualTo("1 week");
+                assertThat(RenderUtils.uptime(oneWeek, PROPERTIES)).isEqualTo("1 week");
             }
 
             @Test
             @DisplayName("Multiple days")
             void multipleDays() {
                 long fiveDays = TimeUnit.DAYS.toMillis(5);
-                assertThat(RenderUtils.uptime(fiveDays, PROPERTIES))
-                        .isEqualTo("5 days");
+                assertThat(RenderUtils.uptime(fiveDays, PROPERTIES)).isEqualTo("5 days");
             }
 
             @Test
             @DisplayName("Multiple months")
             void multipleMonths() {
                 long twoMonths = TimeUnit.DAYS.toMillis(60);
-                assertThat(RenderUtils.uptime(twoMonths, PROPERTIES))
-                        .isEqualTo("2 months");
+                assertThat(RenderUtils.uptime(twoMonths, PROPERTIES)).isEqualTo("2 months");
             }
 
             @Test
@@ -1973,7 +2075,6 @@ class TestRenderUtils {
         @Nested
         @DisplayName("Year-based calculations")
         class YearBasedCalculations {
-
             @Test
             @DisplayName("Complex uptime with all units")
             void complexUptimeAllUnits() {
@@ -1986,16 +2087,14 @@ class TestRenderUtils {
             @DisplayName("Exactly one year")
             void exactlyOneYear() {
                 long oneYear = TimeUnit.DAYS.toMillis(365);
-                assertThat(RenderUtils.uptime(oneYear, PROPERTIES))
-                        .isEqualTo("1 year");
+                assertThat(RenderUtils.uptime(oneYear, PROPERTIES)).isEqualTo("1 year");
             }
 
             @Test
             @DisplayName("Multiple years")
             void multipleYears() {
                 long twoYears = TimeUnit.DAYS.toMillis(730);
-                assertThat(RenderUtils.uptime(twoYears, PROPERTIES))
-                        .isEqualTo("2 years");
+                assertThat(RenderUtils.uptime(twoYears, PROPERTIES)).isEqualTo("2 years");
             }
 
             @Test
