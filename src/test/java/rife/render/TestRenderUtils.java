@@ -833,29 +833,246 @@ class TestRenderUtils {
     @Nested
     @DisplayName("Mask Tests")
     class MaskTests {
-        public static final String FOO = "4342256562440179";
-
         @Test
-        void maskWithDash() {
-            assertThat(RenderUtils.mask(FOO, "–", 22, true))
-                    .isEqualTo("––––––––––––––––");
+        @DisplayName("Method should handle all combinations consistently")
+        void allCombinationsConsistent() {
+            String input = "testing";
+
+            // Test all combinations of fromStart boolean and various unmasked values
+            for (boolean fromStart : new boolean[]{true, false}) {
+                for (int unmasked = -1; unmasked <= input.length() + 1; unmasked++) {
+                    String result = RenderUtils.mask(input, "*", unmasked, fromStart);
+
+                    // Result should never be null for non-null input
+                    assertThat(result).isNotNull();
+
+                    // Result should always have the same length as input
+                    assertThat(result).hasSize(input.length());
+
+                    // Result should contain only original characters or mask characters
+                    assertThat(result.chars().allMatch(c ->
+                            input.indexOf(c) >= 0 || c == '*'
+                    )).isTrue();
+                }
+            }
         }
 
-        @Test
-        void maskWithEmpty() {
-            assertThat(RenderUtils.mask("", " ", 2, false)).isEmpty();
+        @Nested
+        @DisplayName("Different mask characters")
+        class DifferentMaskCharacters {
+
+            @Test
+            @DisplayName("Multi-character mask string")
+            void multiCharacterMask() {
+                assertThat(RenderUtils.mask("hello", "**", 2, true))
+                        .isEqualTo("he******");
+                assertThat(RenderUtils.mask("test", "ab", 1, false))
+                        .isEqualTo("abababt");
+            }
+
+            @ParameterizedTest
+            @DisplayName("Various mask characters")
+            @CsvSource(delimiter = '|', value = {
+                    "'hello'|'*'|2|true|'he***'",
+                    "'hello'|'#'|2|true|'he###'",
+                    "'hello'|'X'|2|true|'heXXX'",
+                    "'hello'|'-'|2|true|'he---'",
+                    "'hello'|'•'|2|true|'he•••'",
+                    "'hello'|'_'|2|false|'___lo'"
+            })
+            void variousMaskCharacters(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
         }
 
-        @Test
-        void maskWithHtmlBuller() {
-            assertThat(RenderUtils.mask(FOO, "&bull;", -1, false)).isEqualTo(
-                    "&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;");
+        @Nested
+        @DisplayName("Edge cases and special scenarios")
+        class EdgeCasesAndSpecialScenarios {
+
+            @ParameterizedTest
+            @DisplayName("Single character strings")
+            @CsvSource({
+                    "'a', '*', 1, true, '*'",
+                    "'a', '*', 1, false, '*'",
+                    "'a', '*', 0, true, '*'",
+                    "'a', '#', 2, true, '#'"
+            })
+            void singleCharacterStrings(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+
+            @Test
+            @DisplayName("Special characters in input")
+            void specialCharactersInInput() {
+                assertThat(RenderUtils.mask("user@domain.com", "*", 4, true))
+                        .isEqualTo("user***********");
+
+                assertThat(RenderUtils.mask("123-45-6789", "#", 3, false))
+                        .isEqualTo("########789");
+
+                assertThat(RenderUtils.mask("!@#$%^&*()", "X", 2, true))
+                        .isEqualTo("!@XXXXXXXX");
+            }
+
+            @Test
+            @DisplayName("Unicode characters")
+            void unicodeCharacters() {
+                assertThat(RenderUtils.mask("héllo", "*", 2, true))
+                        .isEqualTo("hé***");
+
+                assertThat(RenderUtils.mask("🙂🙃😊😂", "*", 2, false))
+                        .isEqualTo("**😊😂");
+            }
+
+            @ParameterizedTest
+            @DisplayName("Very long strings")
+            @ValueSource(ints = {100, 1000, 5000})
+            void veryLongStrings(int length) {
+                String input = "a".repeat(length);
+                String result = RenderUtils.mask(input, "*", 5, true);
+
+                assertThat(result).hasSize(length);
+                assertThat(result).startsWith("aaaaa");
+                assertThat(result.substring(5)).isEqualTo("*".repeat(length - 5));
+            }
         }
 
-        @Test
-        void maskWithQuestionMark() {
-            assertThat(RenderUtils.mask(FOO, "?", 4, false)).as("mask=?")
-                    .isEqualTo("????????????0179");
+        @Nested
+        @DisplayName("Full masking scenarios")
+        class FullMasking {
+
+            @ParameterizedTest
+            @DisplayName("Unmasked >= length should fully mask")
+            @CsvSource({
+                    "'hi', '*', 2, true, '**'",
+                    "'hi', '*', 3, true, '**'",
+                    "'hello', '#', 5, false, '#####'",
+                    "'test', 'X', 10, false, 'XXXX'"
+            })
+            void unmaskedGreaterThanLengthFullyMasks(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+
+            @ParameterizedTest
+            @DisplayName("Zero or negative unmasked should fully mask")
+            @CsvSource({
+                    "'hello', '*', 0, true, '*****'",
+                    "'hello', '*', -1, true, '*****'",
+                    "'hello', '*', -5, false, '*****'",
+                    "'test', '#', 0, false, '####'"
+            })
+            void zeroOrNegativeUnmaskedFullyMasks(String input, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        @DisplayName("Null and empty input handling")
+        class NullAndEmptyInput {
+
+            @Test
+            @DisplayName("Empty input should return empty string")
+            void emptyInputReturnsEmpty() {
+                assertThat(RenderUtils.mask("", "*", 2, true)).isEmpty();
+                assertThat(RenderUtils.mask("", "*", 2, false)).isEmpty();
+            }
+
+            @Test
+            @DisplayName("Null input should return null")
+            void nullInputReturnsNull() {
+                assertThat(RenderUtils.mask(null, "*", 2, true)).isNull();
+                assertThat(RenderUtils.mask(null, "*", 2, false)).isNull();
+            }
+        }
+
+        @Nested
+        @DisplayName("Partial masking from end")
+        class PartialMaskingFromEnd {
+
+            @ParameterizedTest
+            @DisplayName("Mask first part, show last N characters")
+            @CsvSource({
+                    "'hello', '*', 1, false, '****o'",
+                    "'hello', '*', 2, false, '***lo'",
+                    "'hello', '*', 3, false, '**llo'",
+                    "'hello', '*', 4, false, '*ello'",
+                    "'password123', '#', 3, false, '########123'",
+                    "'ab', 'X', 1, false, 'Xb'",
+                    "'test@email.com', '*', 3, false, '***********com'"
+            })
+            void maskFirstShowLastCharacters(String input,
+                                             String maskChar,
+                                             int unmasked,
+                                             boolean fromStart,
+                                             String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        @DisplayName("Partial masking from start")
+        class PartialMaskingFromStart {
+
+            @ParameterizedTest
+            @DisplayName("Show first N characters, mask the rest")
+            @CsvSource({
+                    "'hello', '*', 1, true, 'h****'",
+                    "'hello', '*', 2, true, 'he***'",
+                    "'hello', '*', 3, true, 'hel**'",
+                    "'hello', '*', 4, true, 'hell*'",
+                    "'password123', '#', 4, true, 'pass#######'",
+                    "'ab', 'X', 1, true, 'aX'",
+                    "'test@email.com', '*', 4, true, 'test**********'"
+            })
+            void showFirstCharactersMaskRest(String input,
+                                             String maskChar,
+                                             int unmasked,
+                                             boolean fromStart,
+                                             String expected) {
+                assertThat(RenderUtils.mask(input, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+        }
+
+        @Nested
+        @DisplayName("Real-world use cases")
+        class RealWorldUseCases {
+
+            @ParameterizedTest
+            @DisplayName("Credit card masking")
+            @CsvSource({
+                    "'1234567890123456', '*', 4, false, '************3456'",
+                    "'4111-1111-1111-1111', '*', 4, false, '***************1111'",
+                    "'5555 5555 5555 4444', 'X', 4, false, 'XXXXXXXXXXXXXXX4444'"
+            })
+            void creditCardMasking(String cardNumber,
+                                   String maskChar,
+                                   int unmasked,
+                                   boolean fromStart,
+                                   String expected) {
+                assertThat(RenderUtils.mask(cardNumber, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+
+            @ParameterizedTest
+            @DisplayName("Email masking")
+            @CsvSource({
+                    "'john.doe@example.com', '*', 4, true, 'john****************'",
+                    "'user@domain.co.uk', '#', 2, true, 'us###############'",
+                    "'test.email@company.org', '*', 3, false, '*******************org'"
+            })
+            void emailMasking(String email, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(email, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
+
+            @ParameterizedTest
+            @DisplayName("Phone number masking")
+            @CsvSource({
+                    "'+1-555-123-4567', '*', 4, false, '***********4567'",
+                    "'(555) 123-4567', '#', 3, true, '(55###########'",
+                    "'555.123.4567', 'X', 4, false, 'XXXXXXXX4567'"
+            })
+            void phoneNumberMasking(String phone, String maskChar, int unmasked, boolean fromStart, String expected) {
+                assertThat(RenderUtils.mask(phone, maskChar, unmasked, fromStart)).isEqualTo(expected);
+            }
         }
     }
 

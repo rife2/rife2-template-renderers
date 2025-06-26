@@ -369,19 +369,28 @@ public final class RenderUtils {
             return src;
         }
 
-        var len = src.length();
-        var buff = new StringBuilder(len);
-        if (unmasked > 0 && unmasked < len) {
-            if (fromStart) {
-                buff.append(src, 0, unmasked);
-            }
-            buff.append(mask.repeat(len - unmasked));
-            if (!fromStart) {
-                buff.append(src.substring(len - unmasked));
-            }
-        } else {
-            buff.append(mask.repeat(len));
+        // Use codePointCount for proper Unicode support (counts actual characters, not UTF-16 units)
+        int codePointCount = src.codePointCount(0, src.length());
+
+        // Early return for full masking
+        if (unmasked <= 0 || unmasked >= codePointCount) {
+            return mask.repeat(codePointCount);
         }
+
+        var buff = new StringBuilder();
+
+        if (fromStart) {
+            // Show first N characters, mask the rest
+            int unmaskedEndIndex = src.offsetByCodePoints(0, unmasked);
+            buff.append(src, 0, unmaskedEndIndex)
+                    .append(mask.repeat(codePointCount - unmasked));
+        } else {
+            // Mask first part, show last N characters
+            int maskedEndIndex = src.offsetByCodePoints(0, codePointCount - unmasked);
+            buff.append(mask.repeat(codePointCount - unmasked))
+                    .append(src, maskedEndIndex, src.length());
+        }
+
         return buff.toString();
     }
 
