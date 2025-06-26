@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="rife.render.TemplateRenderersBuild testsBadgeOperation" />
+    </entry_points>
     <pattern value="rife.render.TemplateRenderersBuild" method="jacoco" />
     <pattern value="rife.render.TemplateRenderersBuild" method="pmd" />
     <pattern value="rife.render.ValueBean" method="setValue" />
