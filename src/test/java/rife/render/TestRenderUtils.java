@@ -475,6 +475,19 @@ class TestRenderUtils {
                 assertThat(RenderUtils.encodeJs("Hello\tWorld")).isEqualTo("Hello\\tWorld");
             }
 
+            @ParameterizedTest
+            @DisplayName("Should escape Unicode")
+            @CsvSource({
+                    "'世', '\\u4E16'",
+                    "'界', '\\u754C'",
+                    "'é', '\\u00E9'",
+                    "'ñ', '\\u00F1'",
+                    "'ü', '\\u00FC'"
+            })
+            void shouldEscapeUnicode(String input, String expected) {
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
             @Test
             @DisplayName("Should handle JavaScript code snippet")
             void shouldHandleJavaScriptCodeSnippet() {
@@ -504,6 +517,17 @@ class TestRenderUtils {
                         .contains("\\\\")
                         .contains("\\/")
                         .contains("\\n");
+            }
+
+            @ParameterizedTest
+            @DisplayName("Should handle mixed ASCII and Unicode content")
+            @CsvSource({
+                    "'Hello 世界', 'Hello \\u4E16\\u754C'",
+                    "'café-shop', 'caf\\u00E9-shop'",
+                    "'Price: €100', 'Price: \\u20AC100'"
+            })
+            void shouldHandleMixedContent(String input, String expected) {
+                assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
             @Test
@@ -536,6 +560,17 @@ class TestRenderUtils {
             void shouldHandleRegularText() {
                 var input = "Hello World 123 ABC xyz";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(input);
+            }
+
+            @Test
+            @DisplayName("Should handle emoji and surrogate pairs correctly")
+            void shouldHandleSurrogatePairs() {
+                String emoji = "😀"; // U+1F600, requires surrogate pair
+                String result = RenderUtils.encodeJs(emoji);
+
+                assertThat(result)
+                        .isEqualTo("\\uD83D\\uDE00")
+                        .hasSize(12);
             }
 
             @Test

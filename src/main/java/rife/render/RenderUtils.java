@@ -230,31 +230,54 @@ public final class RenderUtils {
             return src;
         }
 
-        int len = src.length();
-        var sb = new StringBuilder(len + (len >> 2)); // Pre-allocate ~25% extra capacity
+        var encoded = new StringBuilder(src.length() * 2);
 
-        for (int i = 0; i < len; i++) {
+        int i = 0;
+        while (i < src.length()) {
             char c = src.charAt(i);
+
             switch (c) {
-                case '\'' -> sb.append("\\'");
-                case '"' -> sb.append("\\\"");
-                case '\\' -> sb.append("\\\\");
-                case '/' -> sb.append("\\/");
-                case '\b' -> sb.append("\\b");
-                case '\n' -> sb.append("\\n");
-                case '\t' -> sb.append("\\t");
-                case '\f' -> sb.append("\\f");
-                case '\r' -> sb.append("\\r");
+                case '\\' -> encoded.append("\\\\");
+                case '"' -> encoded.append("\\\"");
+                case '/' -> encoded.append("\\/");
+                case '\'' -> encoded.append("\\'");
+                case '\r' -> encoded.append("\\r");
+                case '\n' -> encoded.append("\\n");
+                case '\t' -> encoded.append("\\t");
+                case '\f' -> encoded.append("\\f");
+                case '\b' -> encoded.append("\\b");
+                case '\u2028' -> // Line separator
+                        encoded.append("\\u2028");
+                case '\u2029' -> // Paragraph separator
+                        encoded.append("\\u2029");
                 default -> {
-                    if (c < 0x20 || c == 0x7F) {
-                        sb.append("\\u").append(String.format("%04x", (int) c));
+                    if (c <= 0x1F || c == 0x7F || (c >= 0x80 && c <= 0x9F)) {
+                        // Control characters
+                        encoded.append(String.format("\\u%04X", (int) c));
+                    } else if (c > 0x7F) {
+                        // Non-ASCII Unicode characters
+                        if (Character.isHighSurrogate(c) && i + 1 < src.length()) {
+                            // Handle surrogate pairs for characters outside BMP
+                            char lowSurrogate = src.charAt(i + 1);
+                            if (Character.isLowSurrogate(lowSurrogate)) {
+                                encoded.append(String.format("\\u%04X\\u%04X", (int) c, (int) lowSurrogate));
+                                i++; // Skip the low surrogate
+                            } else {
+                                encoded.append(String.format("\\u%04X", (int) c));
+                            }
+                        } else {
+                            encoded.append(String.format("\\u%04X", (int) c));
+                        }
                     } else {
-                        sb.append(c);
+                        // Regular character, no escaping needed
+                        encoded.append(c);
                     }
                 }
             }
+            i++;
         }
-        return sb.toString();
+
+        return encoded.toString();
     }
 
     /**
@@ -328,7 +351,6 @@ public final class RenderUtils {
      * @param src the {@code String} to convert
      * @return the converted {@code String}
      */
-    @SuppressWarnings("PMD.AvoidReassigningLoopVariables")
     public static String htmlEntities(String src) {
         if (src == null || src.isEmpty()) {
             return src;
@@ -338,7 +360,8 @@ public final class RenderUtils {
         var sb = new StringBuilder(len * 8); // Increased capacity estimate
 
         int codePoint;
-        for (int i = 0; i < len; ) {
+        int i = 0;
+        while (i < len) {
             codePoint = src.codePointAt(i);
 
             // Append the numeric character reference directly
