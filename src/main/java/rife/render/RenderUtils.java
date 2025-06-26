@@ -369,28 +369,19 @@ public final class RenderUtils {
             return src;
         }
 
-        // Use codePointCount for proper Unicode support (counts actual characters, not UTF-16 units)
-        int codePointCount = src.codePointCount(0, src.length());
-
-        // Early return for full masking
-        if (unmasked <= 0 || unmasked >= codePointCount) {
-            return mask.repeat(codePointCount);
-        }
-
-        var buff = new StringBuilder();
-
-        if (fromStart) {
-            // Show first N characters, mask the rest
-            int unmaskedEndIndex = src.offsetByCodePoints(0, unmasked);
-            buff.append(src, 0, unmaskedEndIndex)
-                    .append(mask.repeat(codePointCount - unmasked));
+        var len = src.length();
+        var buff = new StringBuilder(len);
+        if (unmasked > 0 && unmasked < len) {
+            if (fromStart) {
+                buff.append(src, 0, unmasked);
+            }
+            buff.append(mask.repeat(len - unmasked));
+            if (!fromStart) {
+                buff.append(src.substring(len - unmasked));
+            }
         } else {
-            // Mask first part, show last N characters
-            int maskedEndIndex = src.offsetByCodePoints(0, codePointCount - unmasked);
-            buff.append(mask.repeat(codePointCount - unmasked))
-                    .append(src, maskedEndIndex, src.length());
+            buff.append(mask.repeat(len));
         }
-
         return buff.toString();
     }
 
@@ -479,8 +470,7 @@ public final class RenderUtils {
         if (src == null || src.isBlank()) {
             return src;
         }
-        return fetchUrl(
-                String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
+        return fetchUrl(String.format("https://api.qrserver.com/v1/create-qr-code/?format=svg&size=%s&data=%s",
                         StringUtils.encodeUrl(size),
                         StringUtils.encodeUrl(src.trim())),
                 src);
@@ -609,49 +599,48 @@ public final class RenderUtils {
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static String uptime(long uptime, Properties properties) {
         var sb = new StringBuilder();
-        long remainingUptime = uptime;
 
-        long years = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 365;
-        remainingUptime -= TimeUnit.DAYS.toMillis(years * 365);
+        var days = TimeUnit.MILLISECONDS.toDays(uptime);
+        var years = days / 365;
+        days %= 365;
+        var months = days / 30;
+        days %= 30;
+        var weeks = days / 7;
+        days %= 7;
+        var hours = TimeUnit.MILLISECONDS.toHours(uptime) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(uptime));
+        var minutes = TimeUnit.MILLISECONDS.toMinutes(uptime) - TimeUnit.HOURS.toMinutes(
+                TimeUnit.MILLISECONDS.toHours(uptime));
 
         if (years > 0) {
             sb.append(years).append(plural(years, properties.getProperty("year", " year "),
                     properties.getProperty("years", " years ")));
         }
 
-        long months = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 30;
-        remainingUptime -= TimeUnit.DAYS.toMillis(months * 30);
-
         if (months > 0) {
             sb.append(months).append(plural(months, properties.getProperty("month", " month "),
                     properties.getProperty("months", " months ")));
         }
-
-        long weeks = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 7;
-        remainingUptime -= TimeUnit.DAYS.toMillis(weeks * 7);
 
         if (weeks > 0) {
             sb.append(weeks).append(plural(weeks, properties.getProperty("week", " week "),
                     properties.getProperty("weeks", " weeks ")));
         }
 
-        long days = TimeUnit.MILLISECONDS.toDays(remainingUptime);
-        remainingUptime -= TimeUnit.DAYS.toMillis(days);
-
         if (days > 0) {
             sb.append(days).append(plural(days, properties.getProperty("day", " day "),
                     properties.getProperty("days", " days ")));
         }
 
-        long hours = TimeUnit.MILLISECONDS.toHours(remainingUptime);
-        remainingUptime -= TimeUnit.HOURS.toMillis(hours);
-
         if (hours > 0) {
             sb.append(hours).append(plural(hours, properties.getProperty("hour", " hour "),
                     properties.getProperty("hours", " hours ")));
         }
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(remainingUptime);
-        if (minutes > 0 || sb.isEmpty()) { // Append minutes if there are any, or if no other units were appended
+
+        if (minutes == 0) {
+            if (years == 0 && months == 0 && weeks == 0 && days == 0 && hours == 0) {
+                sb.append(0).append(properties.getProperty("minute", " minute"));
+            }
+        } else {
             sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
                     properties.getProperty("minutes", " minutes")));
         }

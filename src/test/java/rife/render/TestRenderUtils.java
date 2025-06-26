@@ -33,8 +33,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class TestRenderUtils {
-    static final String SAMPLE_GERMAN = "Möchten Sie ein paar Äpfel?";
-
     @Nested
     @DisplayName("Abbreviate Tests")
     class AbbreviateTests {
@@ -863,28 +861,198 @@ class TestRenderUtils {
     @Nested
     @DisplayName("Normalize Tests")
     class NormalizeTests {
-        @Test
-        void normalize() {
-            assertThat(RenderUtils.normalize("News for January 6, 2023 (Paris)")).as("docs example")
-                    .isEqualTo("news-for-january-6-2023-paris");
+        @ParameterizedTest
+        @CsvSource({
+                "'hello', 'hello'",
+                "'HELLO', 'hello'",
+                "'Hello', 'hello'",
+                "'HeLLo', 'hello'",
+                "'ABC123', 'abc123'",
+                "'Test123', 'test123'"
+        })
+        @DisplayName("Should convert uppercase to lowercase")
+        void shouldConvertUppercaseToLowercase(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
 
         @Test
-        void normalizeWithGerman() {
-            assertThat(RenderUtils.normalize(SAMPLE_GERMAN)).as("greman")
-                    .isEqualTo("mochten-sie-ein-paar-apfel");
+        @DisplayName("Should handle common separators")
+        void shouldHandleCommonSeparators() {
+            try (var softly = new AutoCloseableSoftAssertions()) {
+                for (var sep : RenderUtils.COMMON_SEPARATORS) {
+                    softly.assertThat(RenderUtils.normalize("hello" + sep + "world"))
+                            .isEqualTo("hello-world");
+                }
+            }
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'Hello World!', 'hello-world'",
+                "'The Quick Brown Fox', 'the-quick-brown-fox'",
+                "'Java & Spring Boot', 'java-spring-boot'",
+                "'API_V2.0', 'api-v2-0'",
+                "'user@example.com', 'user-example-com'",
+                "'file-name.txt', 'file-name-txt'",
+                "'My-Awesome_Project', 'my-awesome-project'"
+        })
+        @DisplayName("Should handle complex real-world examples")
+        void shouldHandleComplexRealWorldExamples(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
 
         @Test
-        void normalizeWithMixedPunctuation() {
-            assertThat(RenderUtils.normalize(" &()-_=[{]}\\|;:,<.>/")).as("blank").isEmpty();
+        @DisplayName("Should handle empty result after normalization")
+        void shouldHandleEmptyResultAfterNormalization() {
+            assertThat(RenderUtils.normalize("世界")).isEqualTo("");
+            assertThat(RenderUtils.normalize("🙂🙃")).isEqualTo("");
+            assertThat(RenderUtils.normalize("αβγ")).isEqualTo("");
         }
 
         @Test
-        void normalizeWithMixedSeparators() {
-            assertThat(RenderUtils.normalize("foo  bar, <foo-bar>,foo:bar,foo;(bar), {foo} & bar=foo.bar[foo|bar]"))
-                    .as("foo-bar")
-                    .isEqualTo("foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar-foo-bar");
+        @DisplayName("Should handle long strings efficiently")
+        void shouldHandleLongStringsEfficiently() {
+            String longInput = "a".repeat(1000) + " " + "b".repeat(1000);
+            String expected = "a".repeat(1000) + "-" + "b".repeat(1000);
+
+            assertThat(RenderUtils.normalize(longInput)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "a, a",
+                "A, a",
+                "1, 1",
+                "' ', ''",
+                "&, ''"
+        })
+        @DisplayName("Should handle single character inputs")
+        void shouldHandleSingleCharacterInputs(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'héllo wörld', 'hello-world'",
+                "'café', 'cafe'",
+                "'naïve', 'naive'",
+                "'résumé', 'resume'",
+                "'Björk', 'bjork'",
+                "'François', 'francois'"
+        })
+        @DisplayName("Should normalize accented characters")
+        void shouldNormalizeAccentedCharacters(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'hello123world', 'hello123world'",
+                "'test-123-abc', 'test-123-abc'",
+                "'abc123def456', 'abc123def456'",
+                "'123hello456', '123hello456'",
+                "'123', '123'",
+                "'abc', 'abc'"
+        })
+        @DisplayName("Should preserve alphanumeric characters")
+        void shouldPreserveAlphanumericCharacters(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'hello世界world', 'helloworld'",
+                "'test中文test', 'testtest'",
+                "'café世界', 'cafe'",
+                "'🙂hello🙂', 'hello'",
+                "'αβγ hello δεζ', 'hello'"
+        })
+        @DisplayName("Should remove non-ASCII characters")
+        void shouldRemoveNonAsciiCharacters(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'hello   world', 'hello-world'",
+                "'hello&&&world', 'hello-world'",
+                "'hello()()world', 'hello-world'",
+                "'hello---world', 'hello-world'",
+                "'hello___world', 'hello-world'",
+                "'hello &- world', 'hello-world'",
+                "'hello.,;world', 'hello-world'",
+                "'hello   &&&   world', 'hello-world'"
+        })
+        @DisplayName("Should replace multiple consecutive separators with single hyphen")
+        void shouldReplaceMultipleSeparatorsWithSingleHyphen(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'hello world', 'hello-world'",
+                "'hello&world', 'hello-world'",
+                "'hello()world', 'hello-world'",
+                "'hello-world', 'hello-world'",
+                "'hello_world', 'hello-world'",
+                "'hello=[world', 'hello-world'",
+                "'hello{world}', 'hello-world'",
+                "'hello\\world', 'hello-world'",
+                "'hello|world', 'hello-world'",
+                "'hello;world', 'hello-world'",
+                "'hello:world', 'hello-world'",
+                "'hello,world', 'hello-world'",
+                "'hello<world>', 'hello-world'",
+                "'hello.world', 'hello-world'",
+                "'hello/world', 'hello-world'"
+        })
+        @DisplayName("Should replace single separators with hyphen")
+        void shouldReplaceSingleSeparatorsWithHyphen(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'   ', ''",
+                "'&&&', ''",
+                "'()()', ''",
+                "'---', ''",
+                "'___', ''",
+                "'.,;', ''",
+                "'   &&&   ', ''"
+        })
+        @DisplayName("Should return empty string when input contains only separators")
+        void shouldReturnEmptyStringWhenOnlySeparators(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should return empty when input is null")
+        void shouldReturnNullWhenInputIsNull() {
+            assertThat(RenderUtils.normalize(null)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "  ", "\t", "\n", " \t \n "})
+        @DisplayName("Should return empty when blank")
+        void shouldReturnOriginalBlank(String input) {
+            assertThat(RenderUtils.normalize(input)).isEmpty();
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "' hello world ', 'hello-world'",
+                "'  hello world  ', 'hello-world'",
+                "'&hello world&', 'hello-world'",
+                "'()hello world()', 'hello-world'",
+                "'---hello world---', 'hello-world'",
+                "'___hello world___', 'hello-world'",
+                "'.,;hello world.,;', 'hello-world'"
+        })
+        @DisplayName("Should strip leading and trailing separators")
+        void shouldStripLeadingAndTrailingSeparators(String input, String expected) {
+            assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
     }
 
@@ -923,7 +1091,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should apply ROT13 transformation to basic ASCII letters")
         void shouldApplyRot13ToBasicStrings(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -963,7 +1131,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should correctly map the full alphabet (A-M ↔ N-Z)")
         void shouldCorrectlyMapAlphabet(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -980,7 +1148,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should handle mixed content with letters, numbers, and symbols")
         void shouldHandleMixedContent(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -989,7 +1157,7 @@ class TestRenderUtils {
         @NullAndEmptySource
         @DisplayName("Should handle null and empty input gracefully")
         void shouldHandleNullAndEmpty(String input) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             if (input == null) {
                 assertThat(result).isEmpty();
@@ -1005,14 +1173,16 @@ class TestRenderUtils {
             char[] asciiLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".toCharArray();
             char[] expectedRot13 = "NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm".toCharArray();
 
-            for (int i = 0; i < asciiLetters.length; i++) {
-                String input = String.valueOf(asciiLetters[i]);
-                String result = RenderUtils.rot13(input);
-                String expected = String.valueOf(expectedRot13[i]);
-
-                assertThat(result)
-                        .as("ASCII letter %c should transform to %c", asciiLetters[i], expectedRot13[i])
-                        .isEqualTo(expected);
+            try (var softly = new AutoCloseableSoftAssertions()) {
+                for (int i = 0; i < asciiLetters.length; i++) {
+                    var input = String.valueOf(asciiLetters[i]);
+                    var result = RenderUtils.rot13(input);
+                    var expected = String.valueOf(expectedRot13[i]);
+                    
+                    softly.assertThat(result)
+                            .as("ASCII letter %c should transform to %c", asciiLetters[i], expectedRot13[i])
+                            .isEqualTo(expected);
+                }
             }
         }
 
@@ -1027,8 +1197,8 @@ class TestRenderUtils {
                     "А", "Б", "В", "Г", "Д", "Е"  // Cyrillic
             };
 
-            for (String letter : nonAsciiLetters) {
-                String result = RenderUtils.rot13(letter);
+            for (var letter : nonAsciiLetters) {
+                var result =  RenderUtils.rot13(letter);
                 assertThat(result)
                         .as("Non-ASCII letter %s should remain unchanged", letter)
                         .isEqualTo(letter);
@@ -1046,7 +1216,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve original case when transforming mixed-case strings")
         void shouldPreserveCaseInMixedStrings(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1061,7 +1231,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve emojis while transforming ASCII letters")
         void shouldPreserveEmojis(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
@@ -1079,7 +1249,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should leave non-alphabetic characters unchanged")
         void shouldPreserveNonAlphabeticCharacters(String input) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(input);
         }
@@ -1099,7 +1269,7 @@ class TestRenderUtils {
             };
 
             for (String testCase : testCases) {
-                String result = RenderUtils.rot13(testCase);
+                var result =  RenderUtils.rot13(testCase);
                 assertThat(result)
                         .as("Length should be preserved for: %s", testCase)
                         .hasSameSizeAs(testCase);
@@ -1122,7 +1292,7 @@ class TestRenderUtils {
         })
         @DisplayName("Should preserve Unicode characters while transforming ASCII letters")
         void shouldPreserveUnicodeCharacters(String input, String expected) {
-            String result = RenderUtils.rot13(input);
+            var result =  RenderUtils.rot13(input);
 
             assertThat(result).isEqualTo(expected);
         }
