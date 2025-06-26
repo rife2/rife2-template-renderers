@@ -929,4 +929,176 @@ class TestRenderUtils {
             assertThat(RenderUtils.rot13("")).isEmpty();
         }
     }
+
+    @Nested
+    @DisplayName("Swap Case Tests")
+    class SwapCaseTests {
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "hello",
+                "world",
+                "testing",
+                "lowercase"
+        })
+        @DisplayName("Should convert lowercase to uppercase")
+        void shouldConvertLowercaseToUppercase(String input) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(input.toUpperCase());
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "HELLO",
+                "WORLD",
+                "TESTING",
+                "UPPERCASE"
+        })
+        @DisplayName("Should convert uppercase to lowercase")
+        void shouldConvertUppercaseToLowercase(String input) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(input.toLowerCase());
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "' ', ' '",
+                "A, a",
+                "z, Z",
+                "AaAaAa, aAaAaA",
+                "123456, 123456",
+                "!@#$%^, !@#$%^",
+                "aA1bB2cC3, Aa1Bb2Cc3"
+        })
+        @DisplayName("Should handle edge cases")
+        void shouldHandleEdgeCases(String input, String expected) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "a, A",
+                "Z, z",
+                "1, 1",
+                "!, !"
+        })
+        @DisplayName("Should handle single character input")
+        void shouldHandleSingleCharacter(String input, String expected) {
+            assertThat(RenderUtils.swapCase(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "'hello, WORLD!', 'HELLO, world!'",
+                "Test@123, tEST@123",
+                "a1B2c3D4, A1b2C3d4",
+                "!@#$%^&*(), !@#$%^&*()",
+                "Mix3d C4s3!, mIX3D c4S3!"
+        })
+        @DisplayName("Should handle special characters")
+        void shouldHandleSpecialCharacters(String input, String expected) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "café, CAFÉ",
+                "NAÏVE, naïve",
+                "résumé, RÉSUMÉ",
+                "Ñoño, ñOÑO",
+                "αβγ, ΑΒΓ",
+                "ΑΒΓ, αβγ"
+        })
+        @DisplayName("Should handle Unicode characters")
+        void shouldHandleUnicodeCharacters(String input, String expected) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "' ', ' '",
+                "'\t', '\t'",
+                "'\n', '\n'",
+                "'\r', '\r'",
+                "a b, A B",
+                "'hello\tWorld\n', 'HELLO\twORLD\n'"
+        })
+        @DisplayName("Should handle whitespace characters")
+        void shouldHandleWhitespaceCharacters(String input, String expected) {
+            assertThat(RenderUtils.swapCase(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "123",
+                "!@#$%",
+                "   ",
+                "123abc",
+                "ABC123",
+                "hello123WORLD"
+        })
+        @DisplayName("Should preserve numbers and special characters")
+        void shouldPreserveNonAlphabeticCharacters(String input) {
+            var result = RenderUtils.swapCase(input);
+
+            if (input.chars().noneMatch(Character::isLetter)) {
+                assertThat(result).isEqualTo(input);
+            } else {
+                assertThat(result).hasSize(input.length());
+                for (int i = 0; i < input.length(); i++) {
+                    char inputChar = input.charAt(i);
+                    char resultChar = result.charAt(i);
+                    if (!Character.isLetter(inputChar)) {
+                        assertThat(resultChar).isEqualTo(inputChar);
+                    }
+                }
+            }
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "Hello World",
+                "123ABC456def",
+                "!@#TeStInG$%^",
+                "αβγδεζ",
+                ""
+        })
+        @DisplayName("Should preserve string length")
+        void shouldPreserveStringLength(String testCase) {
+            var result = RenderUtils.swapCase(testCase);
+            assertThat(result).hasSize(testCase.length());
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @DisplayName("Should return empty string for null or empty input")
+        void shouldReturnEmptyStringForNullOrEmpty(String input) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEmpty();
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "Hello, hELLO",
+                "WoRlD, wOrLd",
+                "TeSt, tEsT",
+                "jAvA, JaVa",
+                "hELLo WoRLD, HellO wOrld",
+                "ThE QuIcK bRoWn FoX, tHe qUiCk BrOwN fOx"
+        })
+        @DisplayName("Should swap case for mixed case input")
+        void shouldSwapMixedCase(String input, String expected) {
+            var result = RenderUtils.swapCase(input);
+
+            assertThat(result).isEqualTo(expected);
+        }
+    }
 }
