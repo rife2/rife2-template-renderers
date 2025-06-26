@@ -22,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -34,17 +35,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class TestRenderUtils {
     static final String SAMPLE_GERMAN = "Möchten Sie ein paar Äpfel?";
-
-    @Test
-    void htmlEntities() {
-        assertThat(RenderUtils.htmlEntities(SAMPLE_GERMAN)).isEqualTo(
-                "&#77;&#246;&#99;&#104;&#116;&#101;&#110;&#32;&#83;&#105;&#101;&#32;&#101;&#105;&#110;&#32;&#112;&#97;&#97;&#114;&#32;&#196;&#112;&#102;&#101;&#108;&#63;");
-    }
-
-    @Test
-    void htmlEntitiesWithEmpty() {
-        assertThat(RenderUtils.htmlEntities("")).isEmpty();
-    }
 
     @Test
     void qrCode() {
@@ -444,6 +434,255 @@ class TestRenderUtils {
         @Test
         void fetchUrlWithInvalidUrl() {
             assertThat(RenderUtils.fetchUrl("blah", DEFAULT)).isEqualTo(DEFAULT);
+        }
+    }
+
+    @Nested
+    @DisplayName("HTML Entities Tests")
+    class HtmlEntitiesTests {
+        @Test
+        @DisplayName("Should be consistent across multiple calls")
+        void shouldBeConsistentAcrossMultipleCalls() {
+            var input = "Hello 世界! <test>";
+            var result1 = RenderUtils.htmlEntities(input);
+            var result2 = RenderUtils.htmlEntities(input);
+
+            assertThat(result1).isEqualTo(result2);
+        }
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "a", "A", "1", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
+                "_", "+", "=", "[", "]", "{", "}", "|", "\\", ":", ";", "\"", "'",
+                "<", ">", ",", ".", "?", "/", "~", "`"
+        })
+        @DisplayName("Should encode all printable ASCII characters")
+        void shouldEncodeAllPrintableAsciiCharacters(String character) {
+            var result = RenderUtils.htmlEntities(character);
+
+            assertThat(result)
+                    .isNotNull()
+                    .startsWith("&#")
+                    .endsWith(";")
+                    .matches("&#\\d+;");
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "A, &#65;",
+                "a, &#97;",
+                "0, &#48;",
+                "!, &#33;",
+                "@, &#64;"
+        })
+        @DisplayName("Should encode various ASCII characters correctly")
+        void shouldEncodeAsciiCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should encode control characters")
+        void shouldEncodeControlCharacters() {
+            assertThat(RenderUtils.htmlEntities("\u0000")).isEqualTo("&#0;");
+            assertThat(RenderUtils.htmlEntities("\u0001")).isEqualTo("&#1;");
+            assertThat(RenderUtils.htmlEntities("\u001F")).isEqualTo("&#31;");
+            assertThat(RenderUtils.htmlEntities("\u007F")).isEqualTo("&#127;");
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "😀, &#128512;",
+                "🌍, &#127757;",
+                "❤️, &#10084;&#65039;"
+        })
+        @DisplayName("Should encode emoji characters")
+        void shouldEncodeEmojiCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should encode HTML tag completely")
+        void shouldEncodeHtmlTag() {
+            var input = "<div>";
+            var expected = "&#60;&#100;&#105;&#118;&#62;";
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "á, &#225;",
+                "é, &#233;",
+                "ñ, &#241;",
+                "ü, &#252;"
+        })
+        @DisplayName("Should encode Latin extended characters")
+        void shouldEncodeLatinExtendedCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should encode mixed content")
+        void shouldEncodeMixedContent() {
+            var input = "Hello 世界! <test>";
+            var expected = "&#72;&#101;&#108;&#108;&#111;&#32;&#19990;&#30028;&#33;&#32;&#60;&#116;&#101;&#115;&#116;&#62;";
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should encode multiple ASCII characters")
+        void shouldEncodeMultipleAsciiCharacters() {
+            assertThat(RenderUtils.htmlEntities("Hello"))
+                    .isEqualTo("&#72;&#101;&#108;&#108;&#111;");
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "123, &#49;&#50;&#51;",
+                "0, &#48;",
+                "9, &#57;"
+        })
+        @DisplayName("Should encode numbers correctly")
+        void shouldEncodeNumbers(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "A, &#65;",
+                "a, &#97;",
+                "0, &#48;"
+        })
+        @DisplayName("Should encode single ASCII character")
+        void shouldEncodeSingleAsciiCharacter(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "<, &#60;",
+                ">, &#62;",
+                "&, &#38;",
+                "\", &#34;",
+                "\"'\", &#34;&#39;&#34;"
+        })
+        @DisplayName("Should encode special HTML characters")
+        void shouldEncodeSpecialHtmlCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "世, &#19990;",
+                "界, &#30028;",
+                "한, &#54620;",
+                "국, &#44397;"
+        })
+        @DisplayName("Should encode Unicode characters")
+        void shouldEncodeUnicodeCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "' ', &#32;",
+                "'\t', &#9;",
+                "'\n', &#10;",
+                "'\r', &#13;",
+        })
+        @DisplayName("Should encode whitespace characters")
+        void shouldEncodeWhitespaceCharacters(String input, String expected) {
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should handle complete HTML document snippet")
+        void shouldHandleHtmlDocumentSnippet() {
+            var input = "<html><body>Hello & 世界</body></html>";
+            var expected = "&#60;&#104;&#116;&#109;&#108;&#62;&#60;&#98;&#111;&#100;&#121;&#62;" +
+                    "&#72;&#101;&#108;&#108;&#111;&#32;&#38;&#32;&#19990;&#30028;" +
+                    "&#60;&#47;&#98;&#111;&#100;&#121;&#62;&#60;&#47;&#104;&#116;&#109;&#108;&#62;";
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should handle JavaScript code snippet")
+        void shouldHandleJavaScriptSnippet() {
+            var input = "alert('Hello');";
+            var expected = "&#97;&#108;&#101;&#114;&#116;&#40;&#39;&#72;&#101;&#108;&#108;&#111;&#39;&#41;&#59;";
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should handle long string efficiently")
+        void shouldHandleLongString() {
+            var input = "Test<>&\"'".repeat(1000);
+            var result = RenderUtils.htmlEntities(input);
+
+            assertThat(result)
+                    .isNotNull()
+                    .isNotEmpty()
+                    .startsWith("&#84;&#101;&#115;&#116;") // "Test"
+                    .contains("&#60;") // <
+                    .contains("&#62;") // >
+                    .contains("&#38;") // &
+                    .contains("&#34;") // "
+                    .contains("&#39;"); // '
+        }
+
+        @Test
+        @DisplayName("Should handle string with mixed emoji and text")
+        void shouldHandleMixedEmojiAndText() {
+            var input = "Hello 😀 World 🌍!";
+            assertThat(RenderUtils.htmlEntities(input))
+                    .contains("&#72;&#101;&#108;&#108;&#111;") // Hello
+                    .contains("&#128512;") // 😀
+                    .contains("&#87;&#111;&#114;&#108;&#100;") // World
+                    .contains("&#127757;") // 🌍
+                    .contains("&#33;"); // !
+        }
+
+        @Test
+        @DisplayName("Should handle edge case with only special characters")
+        void shouldHandleOnlySpecialCharacters() {
+            var input = "<>&\"'";
+            var expected = "&#60;&#62;&#38;&#34;&#39;";
+            assertThat(RenderUtils.htmlEntities(input)).isEqualTo(expected);
+        }
+
+        @Test
+        @DisplayName("Should handle surrogate pairs correctly")
+        void shouldHandleSurrogatePairs() {
+            // Musical symbol (requires surrogate pair)
+            var musicalNote = "𝄞"; // U+1D11E
+            assertThat(RenderUtils.htmlEntities(musicalNote)).isEqualTo("&#119070;");
+
+            // Another high Unicode character
+            var mathSymbol = "𝒳"; // U+1D4B3
+            assertThat(RenderUtils.htmlEntities(mathSymbol)).isEqualTo("&#119987;");
+        }
+
+        @Test
+        @DisplayName("Should preserve character order in output")
+        void shouldPreserveCharacterOrder() {
+            var input = "ABC";
+            var result = RenderUtils.htmlEntities(input);
+
+            assertThat(result)
+                    .startsWith("&#65;") // A
+                    .contains("&#66;")   // B (should be in middle)
+                    .endsWith("&#67;");  // C
+        }
+
+        @Test
+        @DisplayName("Should return empty string for empty input")
+        void shouldReturnEmptyStringForEmptyInput() {
+            assertThat(RenderUtils.htmlEntities("")).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should return null for null input")
+        void shouldReturnNullForNullInput() {
+            assertThat(RenderUtils.htmlEntities(null)).isNull();
         }
     }
 
