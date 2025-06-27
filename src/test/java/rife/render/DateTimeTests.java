@@ -23,7 +23,7 @@ import rife.template.TemplateFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
-class TestDateTime {
+class DateTimeTests {
     @Test
     void bestTime() {
         var t = TemplateFactory.HTML.get("beatTime");

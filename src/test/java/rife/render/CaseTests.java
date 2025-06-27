@@ -23,7 +23,7 @@ import rife.tools.Localization;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class TestCase {
+class CaseTests {
     static final String FOO = "foo";
     static final String SAMPLE_TEXT = "This is a test.";
 

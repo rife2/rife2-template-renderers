@@ -26,18 +26,18 @@ import rife.template.TemplateFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-class TestFormat {
+class FormatTests {
     @Test
     void abbreviate() {
         var t = TemplateFactory.TXT.get("abbreviate");
-        t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
+        t.setAttribute(CaseTests.FOO, CaseTests.SAMPLE_TEXT);
         assertThat(t.getContent()).endsWith("...").hasSize(8);
     }
 
     @Test
     void abbreviateHtml() {
         var t = TemplateFactory.HTML.get("abbreviate");
-        t.setAttribute(TestCase.FOO, TestCase.SAMPLE_TEXT);
+        t.setAttribute(CaseTests.FOO, CaseTests.SAMPLE_TEXT);
         assertThat(t.getContent()).hasSize(19);
     }
 
@@ -45,7 +45,7 @@ class TestFormat {
     void mask() {
         var t = TemplateFactory.TXT.get("mask");
         var foo = "374380141731053";
-        t.setAttribute(TestCase.FOO, foo);
+        t.setAttribute(CaseTests.FOO, foo);
         assertThat(t.getContent()).isEqualTo("***************");
     }
 
@@ -53,7 +53,7 @@ class TestFormat {
     void maskHtml() {
         var t = TemplateFactory.HTML.get("mask");
         var foo = "374380141731053";
-        t.setAttribute(TestCase.FOO, foo);
+        t.setAttribute(CaseTests.FOO, foo);
         assertThat(t.getContent())
                 .isEqualTo("3743&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;");
     }
@@ -62,7 +62,7 @@ class TestFormat {
     void normalize() {
         var t = TemplateFactory.HTML.get("normalize");
         var foo = "News for January 6, 2023 (Paris)";
-        t.setValue(TestCase.FOO, foo);
+        t.setValue(CaseTests.FOO, foo);
         assertThat(t.getContent())
                 .isEqualTo("<a href=\"news/20230106/news-for-january-6-2023-paris\">" + foo + "</a>");
     }
@@ -73,7 +73,7 @@ class TestFormat {
     void qrCode() {
         var t = TemplateFactory.SVG.get("qrCode");
         var foo = "https://example.com/";
-        t.setAttribute(TestCase.FOO, foo);
+        t.setAttribute(CaseTests.FOO, foo);
         assertThat(t.getContent()).startsWith("<?xml").contains("<desc>" + foo + "</desc").contains("width=\"200\"");
     }
 
@@ -84,9 +84,9 @@ class TestFormat {
         var t = TemplateFactory.HTML.get("shortenUrl");
         var url = "https://example.com/";
         var shortUrl = "https://is.gd/AG3Hwv";
-        t.setValue(TestCase.FOO, url);
+        t.setValue(CaseTests.FOO, url);
         assertThat(t.getContent()).isEqualTo(String.format("<a href=\"%s\">%s</a>", shortUrl, url));
-        t.setValue(TestCase.FOO, TestCase.FOO);
+        t.setValue(CaseTests.FOO, CaseTests.FOO);
         assertThat(t.getContent()).isEqualTo("<a href=\"foo\">foo</a>");
     }
 
@@ -96,42 +96,42 @@ class TestFormat {
         @Test
         void amexCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "374380141731053");
+            t.setAttribute(CaseTests.FOO, "374380141731053");
             assertThat(t.getContent()).isEqualTo("1053");
         }
 
         @Test
         void creditCardWithEmpty() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "");
+            t.setAttribute(CaseTests.FOO, "");
             assertThat(t.getContent()).isEmpty();
         }
 
         @Test
         void discoverCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "6011 1076-8252 0629");
+            t.setAttribute(CaseTests.FOO, "6011 1076-8252 0629");
             assertThat(t.getContent()).isEqualTo("0629");
         }
 
         @Test
         void invalidCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "000000000000001");
+            t.setAttribute(CaseTests.FOO, "000000000000001");
             assertThat(t.getContent()).isEmpty();
         }
 
         @Test
         void mastercardCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "5130-3899-9169-8324");
+            t.setAttribute(CaseTests.FOO, "5130-3899-9169-8324");
             assertThat(t.getContent()).isEqualTo("8324");
         }
 
         @Test
         void visaCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
-            t.setAttribute(TestCase.FOO, "4342 2565 6244 0179");
+            t.setAttribute(CaseTests.FOO, "4342 2565 6244 0179");
             assertThat(t.getContent()).isEqualTo("0179");
         }
     }

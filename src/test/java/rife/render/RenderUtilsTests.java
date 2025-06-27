@@ -31,13 +31,13 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
-class TestRenderUtils {
+class RenderUtilsTests {
     @Nested
     @DisplayName("Abbreviate Tests")
     class AbbreviateTests {
         @Test
         void abbreviateWithEllipsis() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, 10, "…"))
+            assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 10, "…"))
                     .isEqualTo("This is a…");
         }
 
@@ -48,23 +48,23 @@ class TestRenderUtils {
 
         @Test
         void abbreviateWithMarker() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, 12, "..."))
+            assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 12, "..."))
                     .isEqualTo("This is a...");
         }
 
         @Test
         void abbreviateWithMax() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, 9, "")).isEqualTo("This is a");
+            assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 9, "")).isEqualTo("This is a");
         }
 
         @Test
         void abbreviateWithMaxNegative() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, -1, "")).isEqualTo(TestCase.SAMPLE_TEXT);
+            assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, -1, "")).isEqualTo(CaseTests.SAMPLE_TEXT);
         }
 
         @Test
         void abbreviateWithMaxZero() {
-            assertThat(RenderUtils.abbreviate(TestCase.SAMPLE_TEXT, 0, "")).isEmpty();
+            assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 0, "")).isEmpty();
         }
     }
 
@@ -477,7 +477,7 @@ class TestRenderUtils {
         @Test
         void encodeWithInvalidFormat() {
             var p = createProperties("blah");
-            assertThat(RenderUtils.encode(TestCase.SAMPLE_TEXT, p)).isEqualTo(TestCase.SAMPLE_TEXT);
+            assertThat(RenderUtils.encode(CaseTests.SAMPLE_TEXT, p)).isEqualTo(CaseTests.SAMPLE_TEXT);
         }
 
         @Test
