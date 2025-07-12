@@ -80,7 +80,7 @@
         <exclude name="AvoidFieldNameMatchingTypeName"/>
         <exclude name="AvoidLiteralsInIfCondition"/>
         <exclude name="NullAssignment"/>
-         <exclude name="UseLocaleWithCaseConversions"/>
+        <exclude name="UseLocaleWithCaseConversions"/>
     </rule>
 
     <rule ref="category/java/errorprone.xml/AssignmentInOperand">
