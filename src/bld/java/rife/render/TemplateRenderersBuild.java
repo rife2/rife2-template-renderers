@@ -66,9 +66,9 @@ public class TemplateRenderersBuild extends Project {
                 .link("https://rife2.github.io/rife2/");
 
         publishOperation()
-                .repository(version.isSnapshot() ? SONATYPE_SNAPSHOTS
+                .repository(version.isSnapshot() ? CENTRAL_SNAPSHOTS
                         .withCredentials(property("sonatypeUser"), property("sonatypePassword"))
-                        : SONATYPE_RELEASES
+                        : CENTRAL_RELEASES
                         .withCredentials(property("sonatypeUser"), property("sonatypePassword")))
                 .repository(version.isSnapshot() ? RIFE2_SNAPSHOTS
                         .withCredentials(property("rife2Username"), property("rife2Password"))
