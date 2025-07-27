@@ -22,11 +22,12 @@ import rife.tools.StringUtils;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.text.Normalizer;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -88,6 +89,9 @@ public final class RenderUtils {
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0";
+    private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
+            .connectTimeout(Duration.ofSeconds(10))
+            .build();
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
     //Pre-computed lookup for separator characters - much faster than indexOf
     private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
@@ -282,32 +286,32 @@ public final class RenderUtils {
      */
     public static String fetchUrl(String url, String defaultContent) {
         try {
-            var fetchUrl = new URL(url);
-            HttpURLConnection connection = null;
-            try {
-                connection = (HttpURLConnection) fetchUrl.openConnection();
-                connection.setRequestProperty("User-Agent", DEFAULT_USER_AGENT);
-                var code = connection.getResponseCode();
-                if (code >= 200 && code <= 399) {
-                    try (var inputStream = connection.getInputStream()) {
-                        return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                    }
-                } else {
-                    if (LOGGER.isLoggable(Level.WARNING)) {
-                        LOGGER.warning("A " + code + " status code was returned by " + fetchUrl.getHost());
-                    }
-                }
-            } catch (IOException ioe) {
+            var uri = URI.create(url);
+            var request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("User-Agent", DEFAULT_USER_AGENT)
+                    .timeout(Duration.ofSeconds(30))
+                    .GET()
+                    .build();
+
+            var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            var statusCode = response.statusCode();
+
+            if (statusCode >= 200 && statusCode <= 399) {
+                return response.body();
+            } else {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(Level.WARNING, "An IO error occurred while connecting to " + fetchUrl.getHost(), ioe);
-                }
-            } finally {
-                if (connection != null) {
-                    connection.disconnect();
+                    LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
                 }
             }
-        } catch (MalformedURLException ignored) {
-            // do nothing
+        } catch (IllegalArgumentException | NullPointerException e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
+            }
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
+            }
         }
 
         return defaultContent;

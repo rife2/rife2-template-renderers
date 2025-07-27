@@ -705,7 +705,7 @@ class RenderUtilsTests {
         @Test
         void fetchUrl() {
             assertThat(RenderUtils.fetchUrl("https://postman-echo.com/get?foo=bar", DEFAULT))
-                    .contains("\"foo\":\"bar\"");
+                    .contains("\"foo\": \"bar\"");
         }
 
         @Test
