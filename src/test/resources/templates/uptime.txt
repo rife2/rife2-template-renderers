@@ -1,8 +1,6 @@
-{{v render:rife.render.Uptime/}}
-{{v render:rife.render.Uptime:spanish}}
+{{v render:rife.render.Uptime/}} {{v render:rife.render.Uptime:spanish}}
 minute=\ minuto
-minutes=\ minutos\
+minutes=\ minutos
 week=\ week
 weeks=\ semanas
-{{/v}}
-{{v render:rife.render.Uptime:plain}}{{/v}}
+{{/v}} {{v render:rife.render.Uptime:plain}}{{/v}}

@@ -142,7 +142,7 @@ class FormatTests {
         @Test
         void uptime() {
             var t = TemplateFactory.TXT.get("uptime");
-            assertThat(t.getContent()).isEqualTo("0 minute\n0 minuto\n0 minute");
+            assertThat(t.getContent()).isEqualTo("0 minute 0 minuto 0 minute");
         }
 
         @Test
@@ -178,7 +178,7 @@ class FormatTests {
         void uptimeInWeeks() {
             var t = TemplateFactory.TXT.get("uptime");
             t.setAttribute(Uptime.class.getName(), 1209600000L);
-            assertThat(t.getContent()).isEqualTo("2 weeks\n2 semanas\n2 weeks");
+            assertThat(t.getContent()).isEqualTo("2 weeks 2 semanas 2 weeks");
         }
 
         @Test

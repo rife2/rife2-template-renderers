@@ -1,3 +1,1 @@
-<test>
-    <foo>{{v render:rife.render.EncodeXml:foo/}}</foo>
-</test>
+<test><foo>{{v render:rife.render.EncodeXml:foo/}}</foo></test>

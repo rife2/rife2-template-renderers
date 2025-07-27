@@ -88,7 +88,7 @@ class EncodeTests {
     void encodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(CaseTests.FOO, "This is a \"•test\"");
-        assertThat(t.getContent()).isEqualTo("{\n    \"foo\": \"This is a \\\"\\u2022test\\\"\"\n}");
+        assertThat(t.getContent()).isEqualTo("{ \"foo\": \"This is a \\\"\\u2022test\\\"\" }");
     }
 
     @Test
@@ -142,6 +142,6 @@ class EncodeTests {
     void encodeXml() {
         var t = TemplateFactory.XML.get("encodeXml");
         t.setAttribute(CaseTests.FOO, "a test &");
-        assertThat(t.getContent()).isEqualTo("<test>\n    <foo>a test &amp;</foo>\n</test>");
+        assertThat(t.getContent()).isEqualTo("<test><foo>a test &amp;</foo></test>");
     }
 }
