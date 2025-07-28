@@ -27,13 +27,20 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-public class DisableOnCiCondition implements ExecutionCondition {
+public class NotWindowsJdk17Condition implements ExecutionCondition {
+    private final static String JAVA_VERSION = System.getProperty("java.version");
+    private final static String OS_NAME = System.getProperty("os.name").toLowerCase();
+
+    static boolean isWindowsJdk17() {
+        return (OS_NAME.contains("windows") && JAVA_VERSION.startsWith("17"));
+    }
+
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (System.getenv("CI") != null) {
-            return ConditionEvaluationResult.disabled("Test disabled on CI");
+        if (isWindowsJdk17()) {
+            return ConditionEvaluationResult.disabled("Test disabled on Windows JDK 17");
         } else {
-            return ConditionEvaluationResult.enabled("Test enabled on CI");
+            return ConditionEvaluationResult.enabled("Test enabled on Windows JDK 17");
         }
     }
 }

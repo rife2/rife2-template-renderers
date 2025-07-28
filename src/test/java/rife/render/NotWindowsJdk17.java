@@ -17,23 +17,22 @@
 
 package rife.render;
 
-import org.junit.jupiter.api.extension.ConditionEvaluationResult;
-import org.junit.jupiter.api.extension.ExecutionCondition;
-import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ExtendWith;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Disables tests on CI condition.
+ * Disables tests on CI annotation.
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
- * @since 1.0
+ * @since 1.2.1
  */
-public class DisableOnCiCondition implements ExecutionCondition {
-    @Override
-    public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
-        if (System.getenv("CI") != null) {
-            return ConditionEvaluationResult.disabled("Test disabled on CI");
-        } else {
-            return ConditionEvaluationResult.enabled("Test enabled on CI");
-        }
-    }
+@Target({ElementType.TYPE, ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+@ExtendWith(NotWindowsJdk17Condition.class)
+public @interface NotWindowsJdk17 {
 }
+

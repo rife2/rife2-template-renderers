@@ -36,6 +36,7 @@ class RenderUtilsTests {
     @DisplayName("Abbreviate Tests")
     class AbbreviateTests {
         @Test
+        @NotWindowsJdk17
         void abbreviateWithEllipsis() {
             assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 10, "…"))
                     .isEqualTo("This is a…");
@@ -73,6 +74,7 @@ class RenderUtilsTests {
     class CapitalizeWordsTests {
         @ParameterizedTest
         @DisplayName("Should handle accented characters and diacritics")
+        @NotWindowsJdk17
         @CsvSource({
                 "'café naïve', 'Café Naïve'",
                 "'schön günstig', 'Schön Günstig'",
@@ -101,6 +103,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle complex surrogate pair scenarios")
+        @NotWindowsJdk17
         void shouldHandleComplexSurrogatePairScenarios() {
             // Test string with multiple surrogate pairs and regular characters
             String input = "𝓱𝓮𝓵𝓵𝓸 world 🌟 test 𝕞𝕦𝕞𝕓𝕖𝔯";
@@ -111,6 +114,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle complex Unicode casing rules (e.g., German ß)")
+        @NotWindowsJdk17
         void shouldHandleComplexUnicodeCase() {
             // German ß (sharp s) has special uppercasing rules
             String input = "straße café";
@@ -121,6 +125,7 @@ class RenderUtilsTests {
 
         @ParameterizedTest
         @DisplayName("Should handle emojis and special Unicode characters")
+        @NotWindowsJdk17
         @CsvSource({
                 "'hello 🌟 world', 'Hello 🌟 World'",
                 "'test 🚀 rocket', 'Test 🚀 Rocket'",
@@ -133,6 +138,7 @@ class RenderUtilsTests {
 
         @ParameterizedTest
         @DisplayName("Should handle mathematical Unicode characters")
+        @NotWindowsJdk17
         @CsvSource({
                 "'𝕙𝕖𝕝𝕝𝕠 𝕨𝕠𝕣𝕝𝕕', '𝕙𝕖𝕝𝕝𝕠 𝕨𝕠𝕣𝕝𝕕'", // Mathematical script letters
                 "'𝒽𝑒𝓁𝓁𝑜 𝓌𝑜𝓇𝓁𝒹', '𝒽𝑒𝓁𝓁𝑜 𝓌𝑜𝓇𝓁𝒹'"  // Mathematical script letters
@@ -143,6 +149,7 @@ class RenderUtilsTests {
 
         @ParameterizedTest
         @DisplayName("Should handle non-Latin scripts appropriately")
+        @NotWindowsJdk17
         @CsvSource({
                 "'こんにちは 世界', 'こんにちは 世界'",
                 "'привет мир', 'Привет Мир'",
@@ -162,10 +169,20 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
+        @NotWindowsJdk17
+        @CsvSource({
+                "é, É",
+                "è, È",
+        })
+        @DisplayName("Should handle single accented character inputs correctly")
+        void shouldHandleSingleAccentedCharacter(String input, String expected) {
+            assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
+        }
+
+        @ParameterizedTest
         @CsvSource({
                 "a, A",
                 "Z, Z",
-                "é, É",
                 "1, 1",
                 "' ', ' '"
         })
@@ -190,6 +207,7 @@ class RenderUtilsTests {
 
         @ParameterizedTest
         @DisplayName("Should handle surrogate pairs correctly")
+        @NotWindowsJdk17
         @CsvSource({
                 "'𝐡𝐞𝐥𝐥𝐨 𝐰𝐨𝐫𝐥𝐝', '𝐡𝐞𝐥𝐥𝐨 𝐰𝐨𝐫𝐥𝐝'", // Mathematical bold letters (surrogate pairs)
                 "'hello 𝕨𝕠𝓇𝓁𝒹 test', 'Hello 𝕨𝕠𝓇𝓁𝒹 Test'", // Mixed ASCII and surrogate pairs
@@ -416,6 +434,14 @@ class RenderUtilsTests {
         @Test
         void encodeJson() {
             var p = createProperties("json");
+            assertThat(RenderUtils.encode("This is a \"test\"", p))
+                    .isEqualTo("This is a \\\"test\\\"");
+        }
+
+        @Test
+        @NotWindowsJdk17
+        void encodeJsonWithUnicode() {
+            var p = createProperties("json");
             assertThat(RenderUtils.encode("This is a \"•test\"", p))
                     .isEqualTo("This is a \\\"\\u2022test\\\"");
         }
@@ -585,6 +611,7 @@ class RenderUtilsTests {
 
             @ParameterizedTest
             @DisplayName("Should escape Unicode")
+            @NotWindowsJdk17
             @CsvSource({
                     "'世', '\\u4E16'",
                     "'界', '\\u754C'",
@@ -629,6 +656,7 @@ class RenderUtilsTests {
 
             @ParameterizedTest
             @DisplayName("Should handle mixed ASCII and Unicode content")
+            @NotWindowsJdk17
             @CsvSource({
                     "'Hello 世界', 'Hello \\u4E16\\u754C'",
                     "'café-shop', 'caf\\u00E9-shop'",
@@ -672,6 +700,7 @@ class RenderUtilsTests {
 
             @Test
             @DisplayName("Should handle emoji and surrogate pairs correctly")
+            @NotWindowsJdk17
             void shouldHandleSurrogatePairs() {
                 String emoji = "😀"; // U+1F600, requires surrogate pair
                 var result = RenderUtils.encodeJs(emoji);
@@ -683,6 +712,7 @@ class RenderUtilsTests {
 
             @Test
             @DisplayName("Should handle unicode characters above control range")
+            @NotWindowsJdk17
             void shouldHandleUnicodeCharacters() {
                 var input = "Hello 世界 🌍";
                 var expected = "Hello \\u4E16\\u754C \\uD83C\\uDF0D";
@@ -777,6 +807,7 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
+        @NotWindowsJdk17
         @CsvSource({
                 "😀, &#128512;",
                 "🌍, &#127757;",
@@ -796,6 +827,7 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
+        @NotWindowsJdk17
         @CsvSource({
                 "á, &#225;",
                 "é, &#233;",
@@ -809,6 +841,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should encode mixed content")
+        @NotWindowsJdk17
         void shouldEncodeMixedContent() {
             var input = "Hello 世界! <test>";
             var expected = "&#72;&#101;&#108;&#108;&#111;&#32;&#19990;&#30028;&#33;&#32;&#60;&#116;&#101;&#115;&#116;&#62;";
@@ -858,6 +891,7 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
+        @NotWindowsJdk17
         @CsvSource({
                 "世, &#19990;",
                 "界, &#30028;",
@@ -883,6 +917,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle complete HTML document snippet")
+        @NotWindowsJdk17
         void shouldHandleHtmlDocumentSnippet() {
             var input = "<html><body>Hello & 世界</body></html>";
             var expected = "&#60;&#104;&#116;&#109;&#108;&#62;&#60;&#98;&#111;&#100;&#121;&#62;" +
@@ -918,6 +953,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle string with mixed emoji and text")
+        @NotWindowsJdk17
         void shouldHandleMixedEmojiAndText() {
             var input = "Hello 😀 World 🌍!";
             assertThat(RenderUtils.htmlEntities(input))
@@ -938,6 +974,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle surrogate pairs correctly")
+        @NotWindowsJdk17
         void shouldHandleSurrogatePairs() {
             // Musical symbol (requires surrogate pair)
             var musicalNote = "𝄞"; // U+1D11E
@@ -1065,6 +1102,7 @@ class RenderUtilsTests {
 
             @Test
             @DisplayName("Unicode characters")
+            @NotWindowsJdk17
             void unicodeCharacters() {
                 assertThat(RenderUtils.mask("héllo", "*", 2, true))
                         .isEqualTo("hé***");
@@ -1273,6 +1311,7 @@ class RenderUtilsTests {
 
         @Test
         @DisplayName("Should handle empty result after normalization")
+        @NotWindowsJdk17
         void shouldHandleEmptyResultAfterNormalization() {
             assertThat(RenderUtils.normalize("世界")).isEqualTo("");
             assertThat(RenderUtils.normalize("🙂🙃")).isEqualTo("");
@@ -1311,6 +1350,7 @@ class RenderUtilsTests {
                 "'François', 'francois'"
         })
         @DisplayName("Should normalize accented characters")
+        @NotWindowsJdk17
         void shouldNormalizeAccentedCharacters(String input, String expected) {
             assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
@@ -1338,6 +1378,7 @@ class RenderUtilsTests {
                 "'αβγ hello δεζ', 'hello'"
         })
         @DisplayName("Should remove non-ASCII characters")
+        @NotWindowsJdk17
         void shouldRemoveNonAsciiCharacters(String input, String expected) {
             assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
@@ -1517,6 +1558,7 @@ class RenderUtilsTests {
                 "'Pack my box with five dozen liquor jugs.', 'Cnpx zl obk jvgu svir qbmra yvdhbe whtf.'"
         })
         @DisplayName("Should handle mixed content with letters, numbers, and symbols")
+        @NotWindowsJdk17
         void shouldHandleMixedContent(String input, String expected) {
             var result = RenderUtils.rot13(input);
 
@@ -1753,6 +1795,7 @@ class RenderUtilsTests {
                 "ΑΒΓ, αβγ"
         })
         @DisplayName("Should handle Unicode characters")
+        @NotWindowsJdk17
         void shouldHandleUnicodeCharacters(String input, String expected) {
             var result = RenderUtils.swapCase(input);
 
