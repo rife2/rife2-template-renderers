@@ -50,14 +50,20 @@ public class TemplateRenderersBuild extends Project {
         javaRelease = 17;
         downloadSources = true;
         autoDownloadPurge = true;
-        repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
+
+        repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES, RIFE2_SNAPSHOTS);
 
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
         scope(test)
-                .include(dependency("org.junit.jupiter", "junit-jupiter", version(5, 13, 4)))
-                .include(dependency("org.junit.platform", "junit-platform-console-standalone", version(1, 13, 4)))
-                .include(dependency("org.assertj", "assertj-core", version(3, 27, 3)));
+                .include(dependency("com.uwyn.rife2", "bld-extensions-testing-helpers",
+                        version(0, 9, 0, "SNAPSHOT")))
+                .include(dependency("org.junit.jupiter", "junit-jupiter",
+                        version(5, 13, 4)))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone",
+                        version(1, 13, 4)))
+                .include(dependency("org.assertj", "assertj-core",
+                        version(3, 27, 4)));
 
         javadocOperation().javadocOptions()
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
