@@ -32,7 +32,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -629,51 +628,37 @@ public final class RenderUtils {
     @SuppressWarnings("UnnecessaryUnicodeEscape")
     public static String uptime(long uptime, Properties properties) {
         var sb = new StringBuilder();
-        long remainingUptime = uptime;
+        long remaining = uptime;
 
-        long years = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 365;
-        remainingUptime -= TimeUnit.DAYS.toMillis(years * 365);
+        // Time unit definitions with exact conversions
+        long[] divisors = {
+                365L * 24 * 60 * 60 * 1000,  // milliseconds in a year (approximate)
+                30L * 24 * 60 * 60 * 1000,   // milliseconds in a month (approximate)
+                7L * 24 * 60 * 60 * 1000,    // milliseconds in a week
+                24L * 60 * 60 * 1000,        // milliseconds in a day
+                60L * 60 * 1000,             // milliseconds in an hour
+                60L * 1000                   // milliseconds in a minute
+        };
 
-        if (years > 0) {
-            sb.append(years).append(plural(years, properties.getProperty("year", " year "),
-                    properties.getProperty("years", " years ")));
+        String[] singularKeys = {"year", "month", "week", "day", "hour", "minute"};
+        String[] pluralKeys = {"years", "months", "weeks", "days", "hours", "minutes"};
+        String[] defaultSingular = {" year ", " month ", " week ", " day ", " hour ", " minute"};
+        String[] defaultPlural = {" years ", " months ", " weeks ", " days ", " hours ", " minutes"};
+
+        for (int i = 0; i < divisors.length; i++) {
+            long value = remaining / divisors[i];
+
+            if (value > 0) {
+                remaining %= divisors[i];
+                sb.append(value).append(plural(value,
+                        properties.getProperty(singularKeys[i], defaultSingular[i]),
+                        properties.getProperty(pluralKeys[i], defaultPlural[i])));
+            }
         }
 
-        long months = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 30;
-        remainingUptime -= TimeUnit.DAYS.toMillis(months * 30);
-
-        if (months > 0) {
-            sb.append(months).append(plural(months, properties.getProperty("month", " month "),
-                    properties.getProperty("months", " months ")));
-        }
-
-        long weeks = TimeUnit.MILLISECONDS.toDays(remainingUptime) / 7;
-        remainingUptime -= TimeUnit.DAYS.toMillis(weeks * 7);
-
-        if (weeks > 0) {
-            sb.append(weeks).append(plural(weeks, properties.getProperty("week", " week "),
-                    properties.getProperty("weeks", " weeks ")));
-        }
-
-        long days = TimeUnit.MILLISECONDS.toDays(remainingUptime);
-        remainingUptime -= TimeUnit.DAYS.toMillis(days);
-
-        if (days > 0) {
-            sb.append(days).append(plural(days, properties.getProperty("day", " day "),
-                    properties.getProperty("days", " days ")));
-        }
-
-        long hours = TimeUnit.MILLISECONDS.toHours(remainingUptime);
-        remainingUptime -= TimeUnit.HOURS.toMillis(hours);
-
-        if (hours > 0) {
-            sb.append(hours).append(plural(hours, properties.getProperty("hour", " hour "),
-                    properties.getProperty("hours", " hours ")));
-        }
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(remainingUptime);
-        if (minutes > 0 || sb.isEmpty()) { // Append minutes if there are any, or if no other units were appended
-            sb.append(minutes).append(plural(minutes, properties.getProperty("minute", " minute"),
-                    properties.getProperty("minutes", " minutes")));
+        // If no units were added, add 0 minutes
+        if (sb.isEmpty()) {
+            sb.append('0').append(properties.getProperty("minutes", " minutes"));
         }
 
         return sb.toString().trim();
