@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023-2024 the original author or authors.
+ *  Copyright 2023-2025 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -15,23 +15,10 @@
  *
  */
 
-package rife.render;
-
-import org.junit.jupiter.api.extension.ExtendWith;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Disables tests on CI annotation.
+ * Provides a collection of <a href="https://rife.com/">RIFE2</a> template renderers.
  *
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
-@Target({ElementType.TYPE, ElementType.METHOD})
-@Retention(RetentionPolicy.RUNTIME)
-@ExtendWith(DisableOnCiCondition.class)
-public @interface DisabledOnCi {
-}
+package rife.render;
