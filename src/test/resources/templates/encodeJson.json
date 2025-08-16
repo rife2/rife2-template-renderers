@@ -1,1 +1,3 @@
-{ "foo": "{{v render:rife.render.EncodeJson:foo/}}" }
+{
+    "foo": "{{v render:rife.render.EncodeJson:foo/}}"
+}

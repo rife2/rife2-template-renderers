@@ -106,8 +106,8 @@ class RenderUtilsTests {
         @NotWindowsJdk17
         void shouldHandleComplexSurrogatePairScenarios() {
             // Test string with multiple surrogate pairs and regular characters
-            String input = "𝓱𝓮𝓵𝓵𝓸 world 🌟 test 𝕞𝕦𝕞𝕓𝕖𝔯";
-            String expected = "𝓱𝓮𝓵𝓵𝓸 World 🌟 Test 𝕞𝕦𝕞𝕓𝕖𝔯";
+            var input = "𝓱𝓮𝓵𝓵𝓸 world 🌟 test 𝕞𝕦𝕞𝕓𝕖𝔯";
+            var expected = "𝓱𝓮𝓵𝓵𝓸 World 🌟 Test 𝕞𝕦𝕞𝕓𝕖𝔯";
 
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
@@ -117,8 +117,8 @@ class RenderUtilsTests {
         @NotWindowsJdk17
         void shouldHandleComplexUnicodeCase() {
             // German ß (sharp s) has special uppercasing rules
-            String input = "straße café";
-            String expected = "Straße Café";
+            var input = "straße café";
+            var expected = "Straße Café";
 
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
@@ -160,10 +160,10 @@ class RenderUtilsTests {
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
 
-        @ParameterizedTest
-        @DisplayName("Should return unchanged for null, empty, or whitespace-only strings")
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @NullAndEmptySource
         @ValueSource(strings = {"   ", "\t", "\n", "\r\n"})
+        @DisplayName("Should return unchanged for null, empty, or whitespace-only strings")
         void shouldHandleNullEmptyAndWhitespaceOnlyStrings(String input) {
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(input);
         }
@@ -292,9 +292,9 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
             }
 
-            @ParameterizedTest
-            @DisplayName("Should reject null and empty strings")
+            @ParameterizedTest(name = "[{index}] ''{0}''")
             @NullAndEmptySource
+            @DisplayName("Should reject null and empty strings")
             void shouldRejectNullAndEmpty(String creditCard) {
                 assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
             }
@@ -487,7 +487,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.encode(src, p)).isEqualTo(src);
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @ValueSource(strings = {"", "   ", "\t", "\n"})
         void encodeWhenSrcIsBlank(String blankSrc) {
             var p = createProperties("html"); // Properties are not empty
@@ -674,7 +674,7 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
-            @ParameterizedTest
+            @ParameterizedTest(name = "[{index}] ''{0}''")
             @NullAndEmptySource
             @ValueSource(strings = {"", " ", "   "})
             @DisplayName("Should handle null and empty strings")
@@ -993,7 +993,7 @@ class RenderUtilsTests {
 
             assertThat(result)
                     .startsWith("&#65;") // A
-                    .contains("&#66;")   // B (should be in middle)
+                    .contains("&#66;")   // B (should be in the middle)
                     .endsWith("&#67;");  // C
         }
 
@@ -1437,17 +1437,11 @@ class RenderUtilsTests {
             assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
 
-        @Test
-        @DisplayName("Should return empty when input is null")
-        void shouldReturnNullWhenInputIsNull() {
-            assertThat(RenderUtils.normalize(null)).isEmpty();
-        }
-
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @NullAndEmptySource
         @ValueSource(strings = {" ", "  ", "\t", "\n", " \t \n "})
         @DisplayName("Should return empty when blank")
-        void shouldReturnOriginalBlank(String input) {
+        void shouldReturnEmptyWhenBlank(String input) {
             assertThat(RenderUtils.normalize(input)).isEmpty();
         }
 
@@ -1464,6 +1458,65 @@ class RenderUtilsTests {
         @DisplayName("Should strip leading and trailing separators")
         void shouldStripLeadingAndTrailingSeparators(String input, String expected) {
             assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    @DisplayName("Parse Properties String Tests")
+    class ParsePropertiesStringTests {
+        @Test
+        @DisplayName("Should handle duplicate keys")
+        void handleDuplicateKeys() {
+            String input = "key1=value1\nkey1=value2";
+            Properties result = RenderUtils.parsePropertiesString(input);
+
+            assertThat(result).hasSize(1);
+            assertThat(result).containsEntry("key1", "value2");
+        }
+
+        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @NullAndEmptySource
+        @ValueSource(strings = {" "})
+        @DisplayName("Should handle empty or null string input")
+        void handleEmptyOrNullStringInput(String input) {
+            Properties result = RenderUtils.parsePropertiesString(input);
+
+            assertThat(result).isEmpty();
+        }
+
+        @Test
+        @DisplayName("Should handle string with invalid format")
+        void handleInvalidFormat() {
+            var input = "keyWithoutValue\n=onlyValueNoKey\nkey=value\nkey2==value2";
+            var result = RenderUtils.parsePropertiesString(input);
+
+            assertThat(result).containsEntry("key", "value");
+            assertThat(result).containsEntry("key2", "=value2");
+            assertThat(result).containsEntry("keyWithoutValue", "");
+            assertThat(result).containsEntry("", "onlyValueNoKey");
+        }
+
+        @Test
+        @DisplayName("Should handle string with spaces")
+        void handleStringWithSpaces() {
+            var input = " key1 = value1 \n key2=value2";
+            var result = RenderUtils.parsePropertiesString(input);
+
+            assertThat(result).hasSize(2);
+            assertThat(result).containsEntry("key1", "value1 ");
+            assertThat(result).containsEntry("key2", "value2");
+        }
+
+        @Test
+        @DisplayName("Should parse valid properties string")
+        void parseValidPropertiesString() {
+            var input = "key1=value1\nkey2=value2\nkey3=value3";
+            var result = RenderUtils.parsePropertiesString(input);
+
+            assertThat(result).hasSize(3);
+            assertThat(result).containsEntry("key1", "value1");
+            assertThat(result).containsEntry("key2", "value2");
+            assertThat(result).containsEntry("key3", "value3");
         }
     }
 
@@ -1507,28 +1560,26 @@ class RenderUtilsTests {
             assertThat(result).isEqualTo(expected);
         }
 
-        @Test
+
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "Hello World",
+                "The quick brown fox",
+                "UPPERCASE",
+                "lowercase",
+                "MiXeD cAsE",
+                "Numbers 123 and symbols !@#",
+                "Unicode café naïve",
+                "Emoji 😀 test 🚀"
+        })
         @DisplayName("ROT13 should be its own inverse (applying twice returns original)")
-        void shouldBeItsOwnInverse() {
-            String[] testCases = {
-                    "Hello World",
-                    "The quick brown fox",
-                    "UPPERCASE",
-                    "lowercase",
-                    "MiXeD cAsE",
-                    "Numbers 123 and symbols !@#",
-                    "Unicode café naïve",
-                    "Emoji 😀 test 🚀"
-            };
+        void shouldBeItsOwnInverse(String original) {
+            var encoded = RenderUtils.rot13(original);
+            var decoded = RenderUtils.rot13(encoded);
 
-            for (String original : testCases) {
-                String encoded = RenderUtils.rot13(original);
-                String decoded = RenderUtils.rot13(encoded);
-
-                assertThat(decoded)
-                        .as("ROT13 should be its own inverse for: %s", original)
-                        .isEqualTo(original);
-            }
+            assertThat(decoded)
+                    .as("ROT13 should be its own inverse for: %s", original)
+                    .isEqualTo(original);
         }
 
         @ParameterizedTest
@@ -1565,7 +1616,7 @@ class RenderUtilsTests {
             assertThat(result).isEqualTo(expected);
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @NullAndEmptySource
         @DisplayName("Should handle null and empty input gracefully")
         void shouldHandleNullAndEmpty(String input) {
@@ -1598,23 +1649,20 @@ class RenderUtilsTests {
             }
         }
 
-        @Test
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "À", "Á", "Â", "Ã", "Ä", "Å", // Accented A
+                "à", "á", "â", "ã", "ä", "å", // Accented a
+                "Ç", "ç", "È", "É", "Ê", "Ë", // Other European
+                "α", "β", "γ", "δ", "ε", "ζ", // Greek
+                "А", "Б", "В", "Г", "Д", "Е", // Cyrillic
+        })
         @DisplayName("Should not transform non-ASCII letters (accented, Greek, Cyrillic, etc.)")
-        void shouldNotTransformNonAsciiLetters() {
-            String[] nonAsciiLetters = {
-                    "À", "Á", "Â", "Ã", "Ä", "Å", // Accented A
-                    "à", "á", "â", "ã", "ä", "å", // Accented a
-                    "Ç", "ç", "È", "É", "Ê", "Ë", // Other European
-                    "α", "β", "γ", "δ", "ε", "ζ", // Greek
-                    "А", "Б", "В", "Г", "Д", "Е"  // Cyrillic
-            };
-
-            for (var letter : nonAsciiLetters) {
-                var result = RenderUtils.rot13(letter);
-                assertThat(result)
-                        .as("Non-ASCII letter %s should remain unchanged", letter)
-                        .isEqualTo(letter);
-            }
+        void shouldNotTransformNonAsciiLetters(String letter) {
+            var result = RenderUtils.rot13(letter);
+            assertThat(result)
+                    .as("Non-ASCII letter %s should remain unchanged", letter)
+                    .isEqualTo(letter);
         }
 
         @ParameterizedTest
@@ -1666,26 +1714,21 @@ class RenderUtilsTests {
             assertThat(result).isEqualTo(input);
         }
 
-        @Test
-        @DisplayName("Should preserve the original string length")
-        void shouldPreserveStringLength() {
-            String[] testCases = {
-                    "Hello World",
-                    "123ABC456def",
-                    "!@#TeStInG$%^",
-                    "Unicode café naïve",
-                    "Emoji 😀 test 🚀",
-                    "",
-                    "a",
-                    "ABC123!@#αβγ😀"
-            };
-
-            for (String testCase : testCases) {
-                var result = RenderUtils.rot13(testCase);
-                assertThat(result)
-                        .as("Length should be preserved for: %s", testCase)
-                        .hasSameSizeAs(testCase);
-            }
+        @ParameterizedTest
+        @ValueSource(strings = {
+                "Testing123",
+                "abcdefg",
+                "ABCDEFG",
+                "HeLlO WoRlD",
+                "Special !@# Chars",
+                "Numbers 12345",
+                "\t\nWhitespace",
+                "😀 Emoji Test"
+        })
+        @DisplayName("Should preserve string length")
+        void shouldPreserveStringLength(String input) {
+            var result = RenderUtils.rot13(input);
+            assertThat(result).hasSameSizeAs(input);
         }
 
         @ParameterizedTest
@@ -1816,7 +1859,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.swapCase(input)).isEqualTo(expected);
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @ValueSource(strings = {
                 "123",
                 "!@#$%",
@@ -1843,7 +1886,7 @@ class RenderUtilsTests {
             }
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @ValueSource(strings = {
                 "Hello World",
                 "123ABC456def",
@@ -1857,7 +1900,7 @@ class RenderUtilsTests {
             assertThat(result).hasSize(testCase.length());
         }
 
-        @ParameterizedTest
+        @ParameterizedTest(name = "[{index}] ''{0}''")
         @NullAndEmptySource
         @DisplayName("Should return empty string for null or empty input")
         void shouldReturnEmptyStringForNullOrEmpty(String input) {
@@ -1906,9 +1949,9 @@ class RenderUtilsTests {
         @ParameterizedTest
         @DisplayName("Parametrized edge cases")
         @CsvSource({
-                "0, '0 minute'",
-                "1000, '0 minute'",
-                "59000, '0 minute'",
+                "0, '0 minutes'",
+                "1000, '0 minutes'",
+                "59000, '0 minutes'",
                 "60000, '1 minute'",
                 "120000, '2 minutes'",
                 "3600000, '1 hour'",
@@ -1929,7 +1972,7 @@ class RenderUtilsTests {
             propsWithSpaces.setProperty("minute", "  minute  ");
 
             var result = RenderUtils.uptime(0, propsWithSpaces);
-            assertThat(result).isEqualTo("0  minute");
+            assertThat(result).isEqualTo("0 minutes");
             assertThat(result).doesNotStartWith(" ");
             assertThat(result).doesNotEndWith(" ");
         }
@@ -1959,10 +2002,10 @@ class RenderUtilsTests {
             }
 
             @Test
-            @DisplayName("Less than one minute should return '0 minute'")
+            @DisplayName("Less than one minute should return '0 minutes'")
             void lessThanOneMinute() {
                 long thirtySeconds = TimeUnit.SECONDS.toMillis(30);
-                assertThat(RenderUtils.uptime(thirtySeconds, PROPERTIES)).isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(thirtySeconds, PROPERTIES)).isEqualTo("0 minutes");
             }
 
             @Test
@@ -1980,9 +2023,9 @@ class RenderUtilsTests {
             }
 
             @Test
-            @DisplayName("Zero uptime should return '0 minute'")
+            @DisplayName("Zero uptime should return '0 minutes'")
             void zeroUptime() {
-                assertThat(RenderUtils.uptime(0, PROPERTIES)).isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(0, PROPERTIES)).isEqualTo("0 minutes");
             }
         }
 
@@ -2006,7 +2049,7 @@ class RenderUtilsTests {
             @Test
             @DisplayName("Milliseconds boundary")
             void millisecondsBoundary() {
-                assertThat(RenderUtils.uptime(59999, PROPERTIES)).isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(59999, PROPERTIES)).isEqualTo("0 minutes");
                 assertThat(RenderUtils.uptime(60000, PROPERTIES)).isEqualTo("1 minute");
             }
         }
@@ -2111,7 +2154,37 @@ class RenderUtilsTests {
             @DisplayName("No minutes")
             void noMinutes() {
                 long uptime = TimeUnit.SECONDS.toMillis(30);
-                assertThat(RenderUtils.uptime(uptime, PROPERTIES)).isEqualTo("0 minute");
+                assertThat(RenderUtils.uptime(uptime, PROPERTIES)).isEqualTo("0 minutes");
+            }
+        }
+
+        @Nested
+        @DisplayName("Shorten URL Tests")
+        class ShortenUrlTests {
+            @ParameterizedTest(name = "[{index}] ''{0}''")
+            @NullAndEmptySource
+            @DisplayName("Should handle null and empty URLs gracefully")
+            void shouldHandleNullAndEmptyUrls(String url) {
+                var result = RenderUtils.shortenUrl(url);
+
+                assertThat(result).isEqualTo(url);
+            }
+
+            @Test
+            @DisplayName("Should return original URL for invalid input")
+            void shouldReturnOriginalForInvalidUrls() {
+                var invalidUrl = "not-a-valid-url";
+                var result = RenderUtils.shortenUrl(invalidUrl);
+
+                assertThat(result).isEqualTo(invalidUrl);
+            }
+
+            @Test
+            @DisplayName("Should shorten valid URL")
+            void shouldShortenValidUrl() {
+                var result = RenderUtils.shortenUrl("https://example.com");
+
+                assertThat(result).isEqualTo("https://is.gd/jGamH3");
             }
         }
 

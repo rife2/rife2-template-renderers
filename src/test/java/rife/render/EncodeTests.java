@@ -85,14 +85,6 @@ class EncodeTests {
     }
 
     @Test
-    @NotWindowsJdk17
-    void encodeJsonWithUnicode() {
-        var t = TemplateFactory.JSON.get("encodeJson");
-        t.setAttribute(CaseTests.FOO, "This is a \"•test\"");
-        assertThat(t.getContent()).isEqualTo("{ \"foo\": \"This is a \\\"\\u2022test\\\"\" }");
-    }
-
-    @Test
     void encodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(CaseTests.FOO, "This is a \"test\"");
@@ -104,6 +96,14 @@ class EncodeTests {
         var t = TemplateFactory.HTML.get("encodeJson");
         t.setAttribute(CaseTests.FOO, "\"<test>\"");
         assertThat(t.getContent()).isEqualTo("\\&quot;&lt;test&gt;\\&quot;");
+    }
+
+    @Test
+    @NotWindowsJdk17
+    void encodeJsonWithUnicode() {
+        var t = TemplateFactory.JSON.get("encodeJson");
+        t.setAttribute(CaseTests.FOO, "This is a \"•test\"");
+        assertThat(t.getContent()).isEqualTo("{ \"foo\": \"This is a \\\"\\u2022test\\\"\" }");
     }
 
     @Test
