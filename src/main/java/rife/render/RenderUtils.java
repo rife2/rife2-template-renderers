@@ -34,6 +34,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 /**
  * Collection of utility-type methods commonly used by the renderers.
@@ -94,6 +95,7 @@ public final class RenderUtils {
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
     //Pre-computed lookup for separator characters - much faster than indexOf
     private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
+    private static final Pattern URL_MATCH = Pattern.compile("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*");
 
     static {
         for (char c : COMMON_SEPARATORS) {
@@ -563,7 +565,7 @@ public final class RenderUtils {
      * @return the short URL
      */
     public static String shortenUrl(String url) {
-        if (url == null || url.isBlank() || !url.matches("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*")) {
+        if (url == null || url.isBlank() || !URL_MATCH.matcher(url).matches()) {
             return url;
         }
         return fetchUrl(String.format("https://is.gd/create.php?format=simple&url=%s",

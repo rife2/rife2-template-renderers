@@ -143,7 +143,7 @@ class FormatTests {
         @Test
         void uptime() {
             var t = TemplateFactory.TXT.get("uptime");
-            assertThat(t.getContent()).isEqualTo("0 minute 0 minuto 0 minute");
+            assertThat(t.getContent()).isEqualTo("0 minutes 0 minutos 0 minutes");
         }
 
         @Test
@@ -193,7 +193,7 @@ class FormatTests {
         void uptimeWithZero() {
             var t = TemplateFactory.JSON.get("uptime");
             t.setAttribute(Uptime.class.getName(), 0L);
-            assertThat(t.getContent()).isEqualTo("0 minute");
+            assertThat(t.getContent()).isEqualTo("0 minutes");
         }
     }
 }
