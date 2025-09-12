@@ -28,8 +28,8 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.0
  */
 public class NotWindowsJdk17Condition implements ExecutionCondition {
-    private final static String JAVA_VERSION = System.getProperty("java.version");
-    private final static String OS_NAME = System.getProperty("os.name").toLowerCase();
+    private static final String JAVA_VERSION = System.getProperty("java.version");
+    private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
 
     static boolean isWindowsJdk17() {
         return (OS_NAME.contains("windows") && JAVA_VERSION.startsWith("17"));

@@ -78,7 +78,7 @@ public final class RenderUtils {
      *
      * @see <a href="https://en.wikipedia.org/wiki/ISO_8601">ISO 8601</a>
      */
-    static public final DateTimeFormatter ISO_8601_YEAR_FORMATTER =
+    public static final DateTimeFormatter ISO_8601_YEAR_FORMATTER =
             DateTimeFormatter.ofPattern("yyyy").withLocale(Localization.getLocale());
     /**
      * RFC 2822 date and time formatter.
