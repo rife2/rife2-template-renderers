@@ -19,10 +19,7 @@ package rife.render;
 
 import rife.bld.BuildCommand;
 import rife.bld.Project;
-import rife.bld.extension.ExecOperation;
-import rife.bld.extension.JacocoReportOperation;
-import rife.bld.extension.PmdOperation;
-import rife.bld.extension.TestsBadgeOperation;
+import rife.bld.extension.*;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
@@ -154,6 +151,14 @@ public class TemplateRenderersBuild extends Project {
                         .execute();
             }
         }
+    }
+
+    @BuildCommand(summary = "Runs the JUnit reporter")
+    public void reporter() throws Exception {
+        new JUnitReporterOperation()
+                .fromProject(this)
+                .failOnSummary(true)
+                .execute();
     }
 
     @Override

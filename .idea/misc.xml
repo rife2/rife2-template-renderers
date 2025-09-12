@@ -7,6 +7,8 @@
     <pattern value="rife.render.TemplateRenderersBuild" method="jacoco" />
     <pattern value="rife.render.TemplateRenderersBuild" method="pmd" />
     <pattern value="rife.render.ValueBean" method="setValue" />
+    <pattern value="rife.render.TemplateRenderersBuild" method="reporter" />
+    <pattern value="rife.render.TemplateRenderersBuild" />
   </component>
   <component name="PDMPlugin">
     <option name="customRuleSets">

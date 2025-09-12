@@ -27,7 +27,12 @@ jobs:
         run: ./bld download
 
       - name: Run tests
+        continue-on-error: true
         run: >-
           ./bld compile test
           -DtestsBadgeUrl=https://rife2.com/tests-badge/update/com.uwyn.rife2/rife2-renderers
           -DtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
+
+      - name: Run reporter
+        if: ${{ failure() }}
+        run: ./bld reporter -all
