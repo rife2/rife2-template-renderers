@@ -60,6 +60,7 @@ public class TemplateRenderersBuild extends Project {
                 .include(dependency("com.uwyn.rife2", "bld-extensions-testing-helpers",
                         version(0, 9, 4)))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
+                        version(5, 3, 0)))
                 .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", junit))
                 .include(dependency("org.assertj", "assertj-core",

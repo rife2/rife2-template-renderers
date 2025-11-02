@@ -287,6 +287,7 @@ public final class RenderUtils {
      * @return the url content, or empty
      */
     @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public static String fetchUrl(String url, String defaultContent) {
         try {
             var uri = URI.create(url);
