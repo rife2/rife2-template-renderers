@@ -26,13 +26,16 @@ jobs:
       - name: Download dependencies
         run: ./bld download
 
+      - name: Compile source code
+        run: ./bld compile
+
       - name: Run tests
-        continue-on-error: true
+        id: tests
         run: >-
-          ./bld compile test
+          ./bld test
           -DtestsBadgeUrl=https://rife2.com/tests-badge/update/com.uwyn.rife2/rife2-renderers
           -DtestsBadgeApiKey=${{ secrets.TESTS_BADGE_API_KEY }}
 
       - name: Run reporter
-        if: ${{ failure() }}
-        run: ./bld reporter -all
+        if: always() && steps.tests.outcome == 'failure'
+        run: ./bld reporter --all
