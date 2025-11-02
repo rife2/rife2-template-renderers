@@ -19,15 +19,16 @@ package rife.render;
 
 import rife.bld.BuildCommand;
 import rife.bld.Project;
-import rife.bld.extension.*;
+import rife.bld.extension.JUnitReporterOperation;
+import rife.bld.extension.JacocoReportOperation;
+import rife.bld.extension.PmdOperation;
+import rife.bld.extension.TestsBadgeOperation;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
 import rife.bld.publish.PublishScm;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
@@ -114,19 +115,7 @@ public class TemplateRenderersBuild extends Project {
     public void jacoco() throws Exception {
         var op = new JacocoReportOperation().fromProject(this);
         op.testToolOptions("--reports-dir=" + TEST_RESULTS_DIR);
-
-        Exception ex = null;
-        try {
-            op.execute();
-        } catch (Exception e) {
-            ex = e;
-        }
-
-        renderWithXunitViewer();
-
-        if (ex != null) {
-            throw ex;
-        }
+        op.execute();
     }
 
     @BuildCommand(summary = "Runs PMD analysis")
@@ -136,23 +125,6 @@ public class TemplateRenderersBuild extends Project {
                 .failOnViolation(true)
                 .ruleSets("config/pmd.xml")
                 .execute();
-    }
-
-    private void renderWithXunitViewer() throws Exception {
-        var npmPackagesEnv = System.getenv("NPM_PACKAGES");
-        if (npmPackagesEnv != null && !npmPackagesEnv.isEmpty()) {
-            var xunitViewer = Path.of(npmPackagesEnv, "bin", "xunit-viewer").toFile();
-            if (xunitViewer.exists() && xunitViewer.canExecute()) {
-                var reportsDir = "build/reports/tests/test/";
-
-                Files.createDirectories(Path.of(reportsDir));
-
-                new ExecOperation()
-                        .fromProject(this)
-                        .command(xunitViewer.getPath(), "-r", TEST_RESULTS_DIR, "-o", reportsDir + "index.html")
-                        .execute();
-            }
-        }
     }
 
     @BuildCommand(summary = "Runs the JUnit reporter")
@@ -170,19 +142,6 @@ public class TemplateRenderersBuild extends Project {
                 .apiKey(property("testsBadgeApiKey"))
                 .fromProject(this);
         op.testToolOptions().reportsDir(new File(TEST_RESULTS_DIR));
-
-
-        Exception ex = null;
-        try {
-            op.executeOnce();
-        } catch (Exception e) {
-            ex = e;
-        }
-
-        renderWithXunitViewer();
-
-        if (ex != null) {
-            throw ex;
-        }
+        op.executeOnce();
     }
 }
