@@ -31,8 +31,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static rife.bld.dependencies.Repository.*;
-import static rife.bld.dependencies.Scope.compile;
-import static rife.bld.dependencies.Scope.test;
+import static rife.bld.dependencies.Scope.*;
 import static rife.bld.operations.JavadocOptions.DocLinkOption.NO_MISSING;
 
 public class TemplateRenderersBuild extends Project {
@@ -52,6 +51,9 @@ public class TemplateRenderersBuild extends Project {
 
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
+        scope(provided)
+                .include(dependency("com.github.spotbugs", "spotbugs-annotations",
+                        version(4, 9, 8)));
         scope(test)
                 .include(dependency("com.uwyn.rife2", "bld-extensions-testing-helpers",
                         version(0, 9, 0, "SNAPSHOT")))

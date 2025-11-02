@@ -17,6 +17,7 @@
 
 package rife.render;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import rife.tools.Localization;
 import rife.tools.StringUtils;
 
@@ -43,11 +44,6 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 public final class RenderUtils {
-    /**
-     * Common separators.
-     */
-    public static final char[] COMMON_SEPARATORS =
-            {' ', '&', '(', ')', '-', '_', '=', '[', '{', ']', '}', '\\', '|', ';', ':', ',', '<', '.', '>', '/', '@'};
     /**
      * The encoding property.
      */
@@ -87,6 +83,11 @@ public final class RenderUtils {
      */
     public static final DateTimeFormatter RFC_2822_FORMATTER =
             DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss zzz").withLocale(Localization.getLocale());
+    /**
+     * Common separators.
+     */
+    static final char[] COMMON_SEPARATORS =
+            {' ', '&', '(', ')', '-', '_', '=', '[', '{', ']', '}', '\\', '|', ';', ':', ',', '<', '.', '>', '/', '@'};
     private static final String DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0";
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
@@ -285,6 +286,7 @@ public final class RenderUtils {
      * @param defaultContent the default content to return if none fetched
      * @return the url content, or empty
      */
+    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
     public static String fetchUrl(String url, String defaultContent) {
         try {
             var uri = URI.create(url);
