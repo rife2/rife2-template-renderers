@@ -49,6 +49,7 @@ public class TemplateRenderersBuild extends Project {
 
         repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES, RIFE2_SNAPSHOTS);
 
+        var junit = version(6, 0, 1);
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
         scope(provided)
@@ -62,6 +63,8 @@ public class TemplateRenderersBuild extends Project {
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone",
                         version(1, 13, 4)))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
+                .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
+                .include(dependency("org.junit.platform", "junit-platform-console-standalone", junit))
                 .include(dependency("org.assertj", "assertj-core",
                         version(3, 27, 4)));
 
