@@ -61,6 +61,7 @@ public class TemplateRenderersBuild extends Project {
                         version(5, 13, 4)))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone",
                         version(1, 13, 4)))
+                .include(dependency("com.squareup.okhttp3", "mockwebserver",
                 .include(dependency("org.assertj", "assertj-core",
                         version(3, 27, 4)));
 

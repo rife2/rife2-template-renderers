@@ -17,13 +17,18 @@
 
 package rife.render;
 
+import mockwebserver3.MockResponse;
+import mockwebserver3.MockWebServer;
+import okhttp3.Headers;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 
+import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -731,16 +736,29 @@ class RenderUtilsTests {
     @DisplayName("FetchUrl Tests")
     class FetchUrlTests {
         private static final String DEFAULT = "default";
+        private static final MockWebServer MOCK_WEB_SERVER = new MockWebServer();
+
+        @BeforeEach
+        void beforeEach() throws IOException {
+            MOCK_WEB_SERVER.start();
+        }
 
         @Test
         void fetchUrl() {
-            assertThat(RenderUtils.fetchUrl("https://postman-echo.com/get?foo=bar", DEFAULT))
-                    .contains("\"foo\": \"bar\"");
+            var foobar = "foobar";
+            MOCK_WEB_SERVER.enqueue(
+                    new MockResponse(200, Headers.EMPTY, foobar)
+            );
+            assertThat(RenderUtils.fetchUrl(MOCK_WEB_SERVER.url("/").toString(), DEFAULT))
+                    .isEqualTo(foobar);
         }
 
         @Test
         void fetchUrlWith404() {
-            assertThat(RenderUtils.fetchUrl("https://www.google.com/404", DEFAULT)).isEqualTo(DEFAULT);
+            MOCK_WEB_SERVER.enqueue(
+                    new MockResponse.Builder().code(404).build()
+            );
+            assertThat(RenderUtils.fetchUrl(MOCK_WEB_SERVER.url("/").toString(), DEFAULT)).isEqualTo(DEFAULT);
         }
 
         @Test
