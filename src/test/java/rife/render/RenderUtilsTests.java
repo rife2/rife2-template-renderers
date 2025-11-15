@@ -418,16 +418,16 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Encoding Tests")
     class EncodingTests {
-        private Properties createProperties(String encodingType) {
-            var props = new Properties();
-            props.setProperty(RenderUtils.ENCODING_PROPERTY, encodingType);
-            return props;
-        }
-
         @Test
         void encodeHtml() {
             var p = createProperties("html");
             assertThat(RenderUtils.encode("<a test &>", p)).isEqualTo("&lt;a test &amp;&gt;");
+        }
+
+        private Properties createProperties(String encodingType) {
+            var props = new Properties();
+            props.setProperty(RenderUtils.ENCODING_PROPERTY, encodingType);
+            return props;
         }
 
         @Test

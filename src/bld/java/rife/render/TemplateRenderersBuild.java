@@ -19,10 +19,7 @@ package rife.render;
 
 import rife.bld.BuildCommand;
 import rife.bld.Project;
-import rife.bld.extension.JUnitReporterOperation;
-import rife.bld.extension.JacocoReportOperation;
-import rife.bld.extension.PmdOperation;
-import rife.bld.extension.TestsBadgeOperation;
+import rife.bld.extension.*;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
@@ -108,6 +105,16 @@ public class TemplateRenderersBuild extends Project {
                         .signPassphrase(property("signPassphrase")));
     }
 
+    @Override
+    public void test() throws Exception {
+        var op = testsBadgeOperation
+                .url(property("testsBadgeUrl"))
+                .apiKey(property("testsBadgeApiKey"))
+                .fromProject(this);
+        op.testToolOptions().reportsDir(new File(TEST_RESULTS_DIR));
+        op.executeOnce();
+    }
+
     public static void main(String[] args) {
         new TemplateRenderersBuild().start(args);
     }
@@ -136,13 +143,11 @@ public class TemplateRenderersBuild extends Project {
                 .execute();
     }
 
-    @Override
-    public void test() throws Exception {
-        var op = testsBadgeOperation
-                .url(property("testsBadgeUrl"))
-                .apiKey(property("testsBadgeApiKey"))
-                .fromProject(this);
-        op.testToolOptions().reportsDir(new File(TEST_RESULTS_DIR));
-        op.executeOnce();
+    @BuildCommand(summary = "Runs SpotBugs on this project")
+    public void spotbugs() throws Exception {
+        new SpotBugsOperation()
+                .fromProject(this)
+                .home("/opt/spotbugs")
+                .execute();
     }
 }

@@ -280,48 +280,6 @@ public final class RenderUtils {
     }
 
     /**
-     * Fetches the content (body) of a URL.
-     *
-     * @param url            the URL {@code String}
-     * @param defaultContent the default content to return if none fetched
-     * @return the url content, or empty
-     */
-    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public static String fetchUrl(String url, String defaultContent) {
-        try {
-            var uri = URI.create(url);
-            var request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .header("User-Agent", DEFAULT_USER_AGENT)
-                    .timeout(Duration.ofSeconds(30))
-                    .GET()
-                    .build();
-
-            var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            var statusCode = response.statusCode();
-
-            if (statusCode >= 200 && statusCode <= 399) {
-                return response.body();
-            } else {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
-                }
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
-            }
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
-            }
-        }
-
-        return defaultContent;
-    }
-
-    /**
      * <p>Returns the last 4 digits a credit card number.</p>
      *
      * <ul>
@@ -344,6 +302,48 @@ public final class RenderUtils {
         } else {
             return "";
         }
+    }
+
+    /**
+     * Validates a credit card number using the Luhn algorithm.
+     *
+     * @param cc the credit card number
+     * @return {@code true} if the credit card number is valid
+     */
+    public static boolean validateCreditCard(String cc) {
+        if (cc == null) {
+            return false;
+        }
+
+        int len = cc.length();
+        if (len < 8 || len > 19) {
+            return false;
+        }
+
+        int sum = 0;
+        boolean second = false;
+
+        // Process from right to left
+        for (int i = len - 1; i >= 0; i--) {
+            char c = cc.charAt(i);
+
+            // Process only digits
+            if (c >= '0' && c <= '9') {
+                int digit = c - '0';
+
+                if (second) {
+                    digit <<= 1; // Multiply by 2 using bit shift
+                    if (digit > 9) {
+                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
+                    }
+                }
+
+                sum += digit;
+                second = !second;
+            }
+        }
+
+        return sum % 10 == 0;
     }
 
     /**
@@ -373,10 +373,6 @@ public final class RenderUtils {
         }
 
         return sb.toString();
-    }
-
-    private static boolean isCommonSeparator(char c) {
-        return c < SEPARATOR_LOOKUP.length && SEPARATOR_LOOKUP[c];
     }
 
     /**
@@ -458,6 +454,10 @@ public final class RenderUtils {
         return sb.toString();
     }
 
+    private static boolean isCommonSeparator(char c) {
+        return c < SEPARATOR_LOOKUP.length && SEPARATOR_LOOKUP[c];
+    }
+
     /**
      * Returns a new {@code Properties} containing the properties specified in the given {@code String}.
      *
@@ -477,22 +477,6 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns the plural form of a word, if count &gt; 1.
-     *
-     * @param count  the count
-     * @param word   the singular word
-     * @param plural the plural word
-     * @return the singular or plural {@code String}
-     */
-    public static String plural(final long count, final String word, final String plural) {
-        if (count > 1) {
-            return plural;
-        } else {
-            return word;
-        }
-    }
-
-    /**
      * Generates an SVG QR Code from the given {@code String} using <a href="https://goqr.me/">goQR.me</a>.
      *
      * @param src  the data {@code String}
@@ -508,6 +492,48 @@ public final class RenderUtils {
                         StringUtils.encodeUrl(size),
                         StringUtils.encodeUrl(src.trim())),
                 src);
+    }
+
+    /**
+     * Fetches the content (body) of a URL.
+     *
+     * @param url            the URL {@code String}
+     * @param defaultContent the default content to return if none fetched
+     * @return the url content, or empty
+     */
+    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public static String fetchUrl(String url, String defaultContent) {
+        try {
+            var uri = URI.create(url);
+            var request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("User-Agent", DEFAULT_USER_AGENT)
+                    .timeout(Duration.ofSeconds(30))
+                    .GET()
+                    .build();
+
+            var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            var statusCode = response.statusCode();
+
+            if (statusCode >= 200 && statusCode <= 399) {
+                return response.body();
+            } else {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
+                }
+            }
+        } catch (IllegalArgumentException | NullPointerException e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
+            }
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
+            }
+        }
+
+        return defaultContent;
     }
 
     /**
@@ -670,44 +696,18 @@ public final class RenderUtils {
     }
 
     /**
-     * Validates a credit card number using the Luhn algorithm.
+     * Returns the plural form of a word, if count &gt; 1.
      *
-     * @param cc the credit card number
-     * @return {@code true} if the credit card number is valid
+     * @param count  the count
+     * @param word   the singular word
+     * @param plural the plural word
+     * @return the singular or plural {@code String}
      */
-    public static boolean validateCreditCard(String cc) {
-        if (cc == null) {
-            return false;
+    public static String plural(final long count, final String word, final String plural) {
+        if (count > 1) {
+            return plural;
+        } else {
+            return word;
         }
-
-        int len = cc.length();
-        if (len < 8 || len > 19) {
-            return false;
-        }
-
-        int sum = 0;
-        boolean second = false;
-
-        // Process from right to left
-        for (int i = len - 1; i >= 0; i--) {
-            char c = cc.charAt(i);
-
-            // Process only digits
-            if (c >= '0' && c <= '9') {
-                int digit = c - '0';
-
-                if (second) {
-                    digit <<= 1; // Multiply by 2 using bit shift
-                    if (digit > 9) {
-                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
-                    }
-                }
-
-                sum += digit;
-                second = !second;
-            }
-        }
-
-        return sum % 10 == 0;
     }
 }

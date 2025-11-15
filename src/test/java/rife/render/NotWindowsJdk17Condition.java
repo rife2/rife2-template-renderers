@@ -31,10 +31,6 @@ public class NotWindowsJdk17Condition implements ExecutionCondition {
     private static final String JAVA_VERSION = System.getProperty("java.version");
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
 
-    static boolean isWindowsJdk17() {
-        return (OS_NAME.contains("windows") && JAVA_VERSION.startsWith("17"));
-    }
-
     @Override
     public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
         if (isWindowsJdk17()) {
@@ -42,5 +38,9 @@ public class NotWindowsJdk17Condition implements ExecutionCondition {
         } else {
             return ConditionEvaluationResult.enabled("Test enabled on Windows JDK 17");
         }
+    }
+
+    static boolean isWindowsJdk17() {
+        return (OS_NAME.contains("windows") && JAVA_VERSION.startsWith("17"));
     }
 }
