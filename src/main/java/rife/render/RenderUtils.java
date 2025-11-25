@@ -98,6 +98,15 @@ public final class RenderUtils {
     private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
     private static final Pattern URL_MATCH = Pattern.compile("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*");
 
+    private static final UptimeUnit[] UPTIME_UNITS = {
+            new UptimeUnit(365L * 24 * 60 * 60 * 1000, "year", "years", " year ", " years "),
+            new UptimeUnit(30L * 24 * 60 * 60 * 1000, "month", "months", " month ", " months "),
+            new UptimeUnit(7L * 24 * 60 * 60 * 1000, "week", "weeks", " week ", " weeks "),
+            new UptimeUnit(24L * 60 * 60 * 1000, "day", "days", " day ", " days "),
+            new UptimeUnit(60L * 60 * 1000, "hour", "hours", " hour ", " hours "),
+            new UptimeUnit(60L * 1000, "minute", "minutes", " minute", " minutes")
+    };
+
     static {
         for (char c : COMMON_SEPARATORS) {
             SEPARATOR_LOOKUP[c] = true;
@@ -106,6 +115,58 @@ public final class RenderUtils {
 
     private RenderUtils() {
         // no-op
+    }
+
+    /**
+     * <p>Returns the formatted server uptime.</p>
+     *
+     * <p>The default Properties are:</p>
+     *
+     * <pre>
+     * year=\ year\u29F5u0020
+     * years=\ years\u29F5u0020
+     * month=\ month\u29F5u0020
+     * months=\ months\u29F5u0020
+     * week=\ week\u29F5u0020
+     * weeks=\ weeks\u29F5u0020
+     * day=\ day\u29F5u0020
+     * days=\ days\u29F5u0020
+     * hour=\ hour\u29F5u0020
+     * hours=\ hours\u29F5u0020
+     * minute=\ minute
+     * minutes=\ minutes
+     * </pre>
+     *
+     * @param uptime     the uptime in milliseconds
+     * @param properties the format properties
+     * @return the formatted uptime
+     */
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
+    public static String uptime(long uptime, Properties properties) {
+        var sb = new StringBuilder();
+        long remaining = uptime;
+
+        for (UptimeUnit unit : UPTIME_UNITS) {
+            long value = remaining / unit.divisor;
+
+            if (value > 0) {
+                remaining %= unit.divisor;
+                sb.append(value).append(plural(value,
+                        properties.getProperty(unit.singularKey, unit.defaultSingular),
+                        properties.getProperty(unit.pluralKey, unit.defaultPlural)));
+            }
+        }
+
+        // If no units were added, add 0 minutes
+        if (sb.isEmpty()) {
+            sb.append('0').append(properties.getProperty("minutes", " minutes"));
+        }
+
+        return sb.toString().trim();
+    }
+
+    private record UptimeUnit(long divisor, String singularKey, String pluralKey, String defaultSingular,
+                              String defaultPlural) {
     }
 
     /**
@@ -630,69 +691,6 @@ public final class RenderUtils {
             i += charCount;
         }
         return result.toString();
-    }
-
-    /**
-     * <p>Returns the formatted server uptime.</p>
-     *
-     * <p>The default Properties are:</p>
-     *
-     * <pre>
-     * year=\ year\u29F5u0020
-     * years=\ years\u29F5u0020
-     * month=\ month\u29F5u0020
-     * months=\ months\u29F5u0020
-     * week=\ week\u29F5u0020
-     * weeks=\ weeks\u29F5u0020
-     * day=\ day\u29F5u0020
-     * days=\ days\u29F5u0020
-     * hour=\ hour\u29F5u0020
-     * hours=\ hours\u29F5u0020
-     * minute=\ minute
-     * minutes=\ minutes
-     * </pre>
-     *
-     * @param uptime     the uptime in milliseconds
-     * @param properties the format properties
-     * @return the formatted uptime
-     */
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    public static String uptime(long uptime, Properties properties) {
-        var sb = new StringBuilder();
-        long remaining = uptime;
-
-        // Time unit definitions with exact conversions
-        long[] divisors = {
-                365L * 24 * 60 * 60 * 1000,  // milliseconds in a year (approximate)
-                30L * 24 * 60 * 60 * 1000,   // milliseconds in a month (approximate)
-                7L * 24 * 60 * 60 * 1000,    // milliseconds in a week
-                24L * 60 * 60 * 1000,        // milliseconds in a day
-                60L * 60 * 1000,             // milliseconds in an hour
-                60L * 1000                   // milliseconds in a minute
-        };
-
-        String[] singularKeys = {"year", "month", "week", "day", "hour", "minute"};
-        String[] pluralKeys = {"years", "months", "weeks", "days", "hours", "minutes"};
-        String[] defaultSingular = {" year ", " month ", " week ", " day ", " hour ", " minute"};
-        String[] defaultPlural = {" years ", " months ", " weeks ", " days ", " hours ", " minutes"};
-
-        for (int i = 0; i < divisors.length; i++) {
-            long value = remaining / divisors[i];
-
-            if (value > 0) {
-                remaining %= divisors[i];
-                sb.append(value).append(plural(value,
-                        properties.getProperty(singularKeys[i], defaultSingular[i]),
-                        properties.getProperty(pluralKeys[i], defaultPlural[i])));
-            }
-        }
-
-        // If no units were added, add 0 minutes
-        if (sb.isEmpty()) {
-            sb.append('0').append(properties.getProperty("minutes", " minutes"));
-        }
-
-        return sb.toString().trim();
     }
 
     /**
