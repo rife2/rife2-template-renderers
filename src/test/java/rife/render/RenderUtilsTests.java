@@ -21,12 +21,12 @@ import mockwebserver3.MockResponse;
 import mockwebserver3.MockWebServer;
 import okhttp3.Headers;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
+import rife.bld.extension.testing.RandomRange;
+import rife.bld.extension.testing.RandomRangeResolver;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SuppressWarnings("PMD.AvoidDuplicateLiterals")
+@SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TestClassWithoutTestCases"})
 class RenderUtilsTests {
     @Nested
     @DisplayName("Abbreviate Tests")
@@ -165,7 +165,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(expected);
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {"   ", "\t", "\n", "\r\n"})
         @DisplayName("Should return unchanged for null, empty, or whitespace-only strings")
@@ -297,7 +297,7 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
             }
 
-            @ParameterizedTest(name = "[{index}] ''{0}''")
+            @ParameterizedTest
             @NullAndEmptySource
             @DisplayName("Should reject null and empty strings")
             void shouldRejectNullAndEmpty(String creditCard) {
@@ -492,7 +492,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.encode(src, p)).isEqualTo(src);
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @ValueSource(strings = {"", "   ", "\t", "\n"})
         void encodeWhenSrcIsBlank(String blankSrc) {
             var p = createProperties("html"); // Properties are not empty
@@ -679,7 +679,7 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
-            @ParameterizedTest(name = "[{index}] ''{0}''")
+            @ParameterizedTest
             @NullAndEmptySource
             @ValueSource(strings = {"", " ", "   "})
             @DisplayName("Should handle null and empty strings")
@@ -1088,6 +1088,7 @@ class RenderUtilsTests {
 
         @Nested
         @DisplayName("Edge cases and special scenarios")
+        @ExtendWith(RandomRangeResolver.class)
         class EdgeCasesAndSpecialScenarios {
             @ParameterizedTest
             @DisplayName("Single character strings")
@@ -1129,9 +1130,9 @@ class RenderUtilsTests {
                         .isEqualTo("**😊😂");
             }
 
-            @ParameterizedTest
+            @RepeatedTest(3)
             @DisplayName("Very long strings")
-            @ValueSource(ints = {100, 1000, 5000})
+            @RandomRange(min = 500, max = 5000)
             void veryLongStrings(int length) {
                 var input = "a".repeat(length);
                 var result = RenderUtils.mask(input, "*", 5, true);
@@ -1455,7 +1456,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.normalize(input)).isEqualTo(expected);
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" ", "  ", "\t", "\n", " \t \n "})
         @DisplayName("Should return empty when blank")
@@ -1492,7 +1493,7 @@ class RenderUtilsTests {
             assertThat(result).containsEntry("key1", "value2");
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" "})
         @DisplayName("Should handle empty or null string input")
@@ -1634,7 +1635,7 @@ class RenderUtilsTests {
             assertThat(result).isEqualTo(expected);
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @NullAndEmptySource
         @DisplayName("Should handle null and empty input gracefully")
         void shouldHandleNullAndEmpty(String input) {
@@ -1877,7 +1878,7 @@ class RenderUtilsTests {
             assertThat(RenderUtils.swapCase(input)).isEqualTo(expected);
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @ValueSource(strings = {
                 "123",
                 "!@#$%",
@@ -1904,7 +1905,7 @@ class RenderUtilsTests {
             }
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @ValueSource(strings = {
                 "Hello World",
                 "123ABC456def",
@@ -1918,7 +1919,7 @@ class RenderUtilsTests {
             assertThat(result).hasSize(testCase.length());
         }
 
-        @ParameterizedTest(name = "[{index}] ''{0}''")
+        @ParameterizedTest
         @NullAndEmptySource
         @DisplayName("Should return empty string for null or empty input")
         void shouldReturnEmptyStringForNullOrEmpty(String input) {
@@ -2179,7 +2180,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Shorten URL Tests")
         class ShortenUrlTests {
-            @ParameterizedTest(name = "[{index}] ''{0}''")
+            @ParameterizedTest
             @NullAndEmptySource
             @DisplayName("Should handle null and empty URLs gracefully")
             void shouldHandleNullAndEmptyUrls(String url) {
