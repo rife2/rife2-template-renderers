@@ -88,10 +88,7 @@ class EncodeTests {
     void encodeJson() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(CaseTests.FOO, "This is a \"test\"");
-        assertThat(t.getContent()).isEqualTo("""
-                {
-                  "foo": "This is a \\"test\\""
-                }""");
+        assertThat(t.getContent()).isEqualTo(String.format("{%n  \"foo\": \"This is a \\\"test\\\"\"%n}"));
     }
 
     @Test
@@ -106,10 +103,7 @@ class EncodeTests {
     void encodeJsonWithUnicode() {
         var t = TemplateFactory.JSON.get("encodeJson");
         t.setAttribute(CaseTests.FOO, "This is a \"•test\"");
-        assertThat(t.getContent()).isEqualTo("""
-                {
-                  "foo": "This is a \\"\\u2022test\\""
-                }""");
+        assertThat(t.getContent()).isEqualTo(String.format("{%n  \"foo\": \"This is a \\\"\\u2022test\\\"\"%n}"));
     }
 
     @Test
@@ -156,9 +150,6 @@ class EncodeTests {
     void encodeXml() {
         var t = TemplateFactory.XML.get("encodeXml");
         t.setAttribute(CaseTests.FOO, "a test &");
-        assertThat(t.getContent()).isEqualTo("""
-                <test>
-                    <foo>a test &amp;</foo>
-                </test>""");
+        assertThat(t.getContent()).isEqualTo(String.format("<test>%n    <foo>a test &amp;</foo>%n</test>"));
     }
 }
