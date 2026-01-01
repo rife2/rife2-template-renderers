@@ -1,5 +1,5 @@
 /*
- *  Copyright 2023-2024 the original author or authors.
+ *  Copyright 2023-2026 the original author or authors.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *   you may not use this file except in compliance with the License.
@@ -96,8 +96,6 @@ public final class RenderUtils {
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
     //Pre-computed lookup for separator characters - much faster than indexOf
     private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
-    private static final Pattern URL_MATCH = Pattern.compile("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*");
-
     private static final UptimeUnit[] UPTIME_UNITS = {
             new UptimeUnit(365L * 24 * 60 * 60 * 1000, "year", "years", " year ", " years "),
             new UptimeUnit(30L * 24 * 60 * 60 * 1000, "month", "months", " month ", " months "),
@@ -106,6 +104,7 @@ public final class RenderUtils {
             new UptimeUnit(60L * 60 * 1000, "hour", "hours", " hour ", " hours "),
             new UptimeUnit(60L * 1000, "minute", "minutes", " minute", " minutes")
     };
+    private static final Pattern URL_MATCH = Pattern.compile("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*");
 
     static {
         for (char c : COMMON_SEPARATORS) {
@@ -115,58 +114,6 @@ public final class RenderUtils {
 
     private RenderUtils() {
         // no-op
-    }
-
-    /**
-     * <p>Returns the formatted server uptime.</p>
-     *
-     * <p>The default Properties are:</p>
-     *
-     * <pre>
-     * year=\ year\u29F5u0020
-     * years=\ years\u29F5u0020
-     * month=\ month\u29F5u0020
-     * months=\ months\u29F5u0020
-     * week=\ week\u29F5u0020
-     * weeks=\ weeks\u29F5u0020
-     * day=\ day\u29F5u0020
-     * days=\ days\u29F5u0020
-     * hour=\ hour\u29F5u0020
-     * hours=\ hours\u29F5u0020
-     * minute=\ minute
-     * minutes=\ minutes
-     * </pre>
-     *
-     * @param uptime     the uptime in milliseconds
-     * @param properties the format properties
-     * @return the formatted uptime
-     */
-    @SuppressWarnings("UnnecessaryUnicodeEscape")
-    public static String uptime(long uptime, Properties properties) {
-        var sb = new StringBuilder();
-        long remaining = uptime;
-
-        for (UptimeUnit unit : UPTIME_UNITS) {
-            long value = remaining / unit.divisor;
-
-            if (value > 0) {
-                remaining %= unit.divisor;
-                sb.append(value).append(plural(value,
-                        properties.getProperty(unit.singularKey, unit.defaultSingular),
-                        properties.getProperty(unit.pluralKey, unit.defaultPlural)));
-            }
-        }
-
-        // If no units were added, add 0 minutes
-        if (sb.isEmpty()) {
-            sb.append('0').append(properties.getProperty("minutes", " minutes"));
-        }
-
-        return sb.toString().trim();
-    }
-
-    private record UptimeUnit(long divisor, String singularKey, String pluralKey, String defaultSingular,
-                              String defaultPlural) {
     }
 
     /**
@@ -341,6 +288,48 @@ public final class RenderUtils {
     }
 
     /**
+     * Fetches the content (body) of a URL.
+     *
+     * @param url            the URL {@code String}
+     * @param defaultContent the default content to return if none fetched
+     * @return the url content, or empty
+     */
+    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
+    @SuppressWarnings("PMD.AvoidCatchingGenericException")
+    public static String fetchUrl(String url, String defaultContent) {
+        try {
+            var uri = URI.create(url);
+            var request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("User-Agent", DEFAULT_USER_AGENT)
+                    .timeout(Duration.ofSeconds(30))
+                    .GET()
+                    .build();
+
+            var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+            var statusCode = response.statusCode();
+
+            if (statusCode >= 200 && statusCode <= 399) {
+                return response.body();
+            } else {
+                if (LOGGER.isLoggable(Level.WARNING)) {
+                    LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
+                }
+            }
+        } catch (IllegalArgumentException | NullPointerException e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
+            }
+        } catch (Exception e) {
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
+            }
+        }
+
+        return defaultContent;
+    }
+
+    /**
      * <p>Returns the last 4 digits a credit card number.</p>
      *
      * <ul>
@@ -363,48 +352,6 @@ public final class RenderUtils {
         } else {
             return "";
         }
-    }
-
-    /**
-     * Validates a credit card number using the Luhn algorithm.
-     *
-     * @param cc the credit card number
-     * @return {@code true} if the credit card number is valid
-     */
-    public static boolean validateCreditCard(String cc) {
-        if (cc == null) {
-            return false;
-        }
-
-        int len = cc.length();
-        if (len < 8 || len > 19) {
-            return false;
-        }
-
-        int sum = 0;
-        boolean second = false;
-
-        // Process from right to left
-        for (int i = len - 1; i >= 0; i--) {
-            char c = cc.charAt(i);
-
-            // Process only digits
-            if (c >= '0' && c <= '9') {
-                int digit = c - '0';
-
-                if (second) {
-                    digit <<= 1; // Multiply by 2 using bit shift
-                    if (digit > 9) {
-                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
-                    }
-                }
-
-                sum += digit;
-                second = !second;
-            }
-        }
-
-        return sum % 10 == 0;
     }
 
     /**
@@ -434,6 +381,10 @@ public final class RenderUtils {
         }
 
         return sb.toString();
+    }
+
+    private static boolean isCommonSeparator(char c) {
+        return c < SEPARATOR_LOOKUP.length && SEPARATOR_LOOKUP[c];
     }
 
     /**
@@ -515,10 +466,6 @@ public final class RenderUtils {
         return sb.toString();
     }
 
-    private static boolean isCommonSeparator(char c) {
-        return c < SEPARATOR_LOOKUP.length && SEPARATOR_LOOKUP[c];
-    }
-
     /**
      * Returns a new {@code Properties} containing the properties specified in the given {@code String}.
      *
@@ -538,6 +485,22 @@ public final class RenderUtils {
     }
 
     /**
+     * Returns the plural form of a word, if count &gt; 1.
+     *
+     * @param count  the count
+     * @param word   the singular word
+     * @param plural the plural word
+     * @return the singular or plural {@code String}
+     */
+    public static String plural(final long count, final String word, final String plural) {
+        if (count > 1) {
+            return plural;
+        } else {
+            return word;
+        }
+    }
+
+    /**
      * Generates an SVG QR Code from the given {@code String} using <a href="https://goqr.me/">goQR.me</a>.
      *
      * @param src  the data {@code String}
@@ -553,48 +516,6 @@ public final class RenderUtils {
                         StringUtils.encodeUrl(size),
                         StringUtils.encodeUrl(src.trim())),
                 src);
-    }
-
-    /**
-     * Fetches the content (body) of a URL.
-     *
-     * @param url            the URL {@code String}
-     * @param defaultContent the default content to return if none fetched
-     * @return the url content, or empty
-     */
-    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
-    public static String fetchUrl(String url, String defaultContent) {
-        try {
-            var uri = URI.create(url);
-            var request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .header("User-Agent", DEFAULT_USER_AGENT)
-                    .timeout(Duration.ofSeconds(30))
-                    .GET()
-                    .build();
-
-            var response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
-            var statusCode = response.statusCode();
-
-            if (statusCode >= 200 && statusCode <= 399) {
-                return response.body();
-            } else {
-                if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
-                }
-            }
-        } catch (IllegalArgumentException | NullPointerException e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
-            }
-        } catch (Exception e) {
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
-            }
-        }
-
-        return defaultContent;
     }
 
     /**
@@ -694,18 +615,96 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns the plural form of a word, if count &gt; 1.
+     * <p>Returns the formatted server uptime.</p>
      *
-     * @param count  the count
-     * @param word   the singular word
-     * @param plural the plural word
-     * @return the singular or plural {@code String}
+     * <p>The default Properties are:</p>
+     *
+     * <pre>
+     * year=\ year\u29F5u0020
+     * years=\ years\u29F5u0020
+     * month=\ month\u29F5u0020
+     * months=\ months\u29F5u0020
+     * week=\ week\u29F5u0020
+     * weeks=\ weeks\u29F5u0020
+     * day=\ day\u29F5u0020
+     * days=\ days\u29F5u0020
+     * hour=\ hour\u29F5u0020
+     * hours=\ hours\u29F5u0020
+     * minute=\ minute
+     * minutes=\ minutes
+     * </pre>
+     *
+     * @param uptime     the uptime in milliseconds
+     * @param properties the format properties
+     * @return the formatted uptime
      */
-    public static String plural(final long count, final String word, final String plural) {
-        if (count > 1) {
-            return plural;
-        } else {
-            return word;
+    @SuppressWarnings("UnnecessaryUnicodeEscape")
+    public static String uptime(long uptime, Properties properties) {
+        var sb = new StringBuilder();
+        long remaining = uptime;
+
+        for (UptimeUnit unit : UPTIME_UNITS) {
+            long value = remaining / unit.divisor;
+
+            if (value > 0) {
+                remaining %= unit.divisor;
+                sb.append(value).append(plural(value,
+                        properties.getProperty(unit.singularKey, unit.defaultSingular),
+                        properties.getProperty(unit.pluralKey, unit.defaultPlural)));
+            }
         }
+
+        // If no units were added, add 0 minutes
+        if (sb.isEmpty()) {
+            sb.append('0').append(properties.getProperty("minutes", " minutes"));
+        }
+
+        return sb.toString().trim();
+    }
+
+    /**
+     * Validates a credit card number using the Luhn algorithm.
+     *
+     * @param cc the credit card number
+     * @return {@code true} if the credit card number is valid
+     */
+    public static boolean validateCreditCard(String cc) {
+        if (cc == null) {
+            return false;
+        }
+
+        int len = cc.length();
+        if (len < 8 || len > 19) {
+            return false;
+        }
+
+        int sum = 0;
+        boolean second = false;
+
+        // Process from right to left
+        for (int i = len - 1; i >= 0; i--) {
+            char c = cc.charAt(i);
+
+            // Process only digits
+            if (c >= '0' && c <= '9') {
+                int digit = c - '0';
+
+                if (second) {
+                    digit <<= 1; // Multiply by 2 using bit shift
+                    if (digit > 9) {
+                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
+                    }
+                }
+
+                sum += digit;
+                second = !second;
+            }
+        }
+
+        return sum % 10 == 0;
+    }
+
+    private record UptimeUnit(long divisor, String singularKey, String pluralKey, String defaultSingular,
+                              String defaultPlural) {
     }
 }
