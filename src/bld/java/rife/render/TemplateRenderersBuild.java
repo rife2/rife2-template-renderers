@@ -48,7 +48,7 @@ public class TemplateRenderersBuild extends Project {
 
         repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_RELEASES);
 
-        var junit = version(6, 0, 1);
+        var junit = version(6, 0, 2);
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
         scope(provided)
