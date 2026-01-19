@@ -20,6 +20,7 @@ package rife.render;
 import rife.bld.BuildCommand;
 import rife.bld.Project;
 import rife.bld.extension.*;
+import rife.bld.extension.tools.IOUtils;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
@@ -33,8 +34,8 @@ import static rife.bld.dependencies.Scope.*;
 import static rife.bld.operations.JavadocOptions.DocLinkOption.NO_MISSING;
 
 public class TemplateRenderersBuild extends Project {
-    static final String TEST_RESULTS_DIR = "build/test-results/test/";
     private final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
+    final File testResultsDirectory = IOUtils.resolveFile(buildDirectory(), "test-results", "test");
 
     public TemplateRenderersBuild() {
         pkg = "rife.render";
@@ -111,7 +112,7 @@ public class TemplateRenderersBuild extends Project {
                 .url(property("testsBadgeUrl"))
                 .apiKey(property("testsBadgeApiKey"))
                 .fromProject(this);
-        op.testToolOptions().reportsDir(new File(TEST_RESULTS_DIR));
+        op.testToolOptions().reportsDir(testResultsDirectory);
         op.executeOnce();
     }
 
@@ -122,7 +123,7 @@ public class TemplateRenderersBuild extends Project {
     @BuildCommand(summary = "Generates JaCoCo Reports")
     public void jacoco() throws Exception {
         var op = new JacocoReportOperation().fromProject(this);
-        op.testToolOptions("--reports-dir=" + TEST_RESULTS_DIR);
+        op.testToolOptions("--reports-dir=" + testResultsDirectory.getAbsolutePath());
         op.execute();
     }
 
