@@ -34,8 +34,9 @@ import static rife.bld.dependencies.Scope.*;
 import static rife.bld.operations.JavadocOptions.DocLinkOption.NO_MISSING;
 
 public class TemplateRenderersBuild extends Project {
-    private final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
+
     final File testResultsDirectory = IOUtils.resolveFile(buildDirectory(), "test-results", "test");
+    private final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
 
     public TemplateRenderersBuild() {
         pkg = "rife.render";

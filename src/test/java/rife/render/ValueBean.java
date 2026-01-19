@@ -18,6 +18,7 @@
 package rife.render;
 
 public class ValueBean {
+
     private String value;
 
     ValueBean(String value) {

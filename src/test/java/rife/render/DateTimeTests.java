@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 
 class DateTimeTests {
+
     @Test
     void bestTime() {
         var t = TemplateFactory.HTML.get("beatTime");

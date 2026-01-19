@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class Normalize implements ValueRenderer {
+
     /**
      * Returns the template value normalized for inclusion in a URL path.
      *

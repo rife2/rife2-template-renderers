@@ -44,6 +44,7 @@ import java.util.regex.Pattern;
  * @since 1.0
  */
 public final class RenderUtils {
+
     /**
      * The encoding property.
      */
@@ -706,5 +707,6 @@ public final class RenderUtils {
 
     private record UptimeUnit(long divisor, String singularKey, String pluralKey, String defaultSingular,
                               String defaultPlural) {
+
     }
 }

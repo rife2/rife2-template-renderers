@@ -37,6 +37,7 @@ import rife.tools.StringUtils;
  * @since 1.0
  */
 public class EncodeJson implements ValueRenderer {
+
     /**
      * Returns the template value encoded to JSON.
      *

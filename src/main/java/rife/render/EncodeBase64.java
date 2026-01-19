@@ -39,6 +39,7 @@ import java.nio.charset.StandardCharsets;
  * @since 1.0
  */
 public class EncodeBase64 implements ValueRenderer {
+
     /**
      * Returns the template value encoded to Base64.
      *

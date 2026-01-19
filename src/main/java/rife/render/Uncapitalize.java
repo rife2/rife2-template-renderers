@@ -36,6 +36,7 @@ import rife.tools.StringUtils;
  * @since 1.0
  */
 public class Uncapitalize implements ValueRenderer {
+
     /**
      * Returns the un-capitalized template value.
      *

@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class Abbreviate implements ValueRenderer {
+
     /**
      * <p>Returns the template value abbreviated with ellipses.</p>
      *

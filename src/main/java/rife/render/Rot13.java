@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class Rot13 implements ValueRenderer {
+
     /**
      * Returns the template value translated to/from ROT13.
      *

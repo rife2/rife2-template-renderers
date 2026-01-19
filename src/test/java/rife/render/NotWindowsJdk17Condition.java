@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
  * @since 1.0
  */
 public class NotWindowsJdk17Condition implements ExecutionCondition {
+
     private static final String JAVA_VERSION = System.getProperty("java.version");
     private static final String OS_NAME = System.getProperty("os.name").toLowerCase();
 

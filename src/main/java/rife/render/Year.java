@@ -37,6 +37,7 @@ import java.time.ZonedDateTime;
  * @since 1.0
  */
 public class Year implements ValueRenderer {
+
     /**
      * Renders the current year.
      *

@@ -37,6 +37,7 @@ import java.time.ZonedDateTime;
  * @since 1.0
  */
 public class DateTimeRfc2822 implements ValueRenderer {
+
     /**
      * Returns the current date and time in RFC 2822 format.
      *

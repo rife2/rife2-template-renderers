@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 class FormatTests {
+
     @Test
     void abbreviate() {
         var t = TemplateFactory.TXT.get("abbreviate");
@@ -94,6 +95,7 @@ class FormatTests {
     @Nested
     @DisplayName("Credit Card Format Tests")
     class CreditCardFormatTests {
+
         @Test
         void amexCreditCard() {
             var t = TemplateFactory.TXT.get("formatCreditCard");
@@ -140,6 +142,7 @@ class FormatTests {
     @Nested
     @DisplayName("Uptime Tests")
     class UptimeTests {
+
         @Test
         void uptime() {
             var t = TemplateFactory.TXT.get("uptime");

@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.2
  */
 public class CapitalizeWords implements ValueRenderer {
+
     /**
      * Returns the template value by capitalizing it.
      *

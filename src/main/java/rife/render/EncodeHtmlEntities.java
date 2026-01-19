@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class EncodeHtmlEntities implements ValueRenderer {
+
     /**
      * Returns the template value encoded to HTML decimal entities.
      *

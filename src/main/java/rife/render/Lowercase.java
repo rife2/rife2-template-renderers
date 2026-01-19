@@ -36,6 +36,7 @@ import rife.tools.Localization;
  * @since 1.0
  */
 public class Lowercase implements ValueRenderer {
+
     /**
      * Returns the template value converted to lowercase.
      *

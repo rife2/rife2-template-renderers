@@ -23,6 +23,7 @@ import rife.template.TemplateFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class EncodeTests {
+
     @Test
     void decodeRot13() {
         var t = TemplateFactory.TXT.get("rot13");

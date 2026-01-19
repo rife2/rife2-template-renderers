@@ -37,6 +37,7 @@ import java.time.ZonedDateTime;
  * @since 1.0
  */
 public class BeatTime implements ValueRenderer {
+
     /**
      * Returns the current time in Swatch Internet (.beat) Time format.
      *

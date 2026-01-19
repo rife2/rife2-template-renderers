@@ -37,9 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TestClassWithoutTestCases"})
 class RenderUtilsTests {
+
     @Nested
     @DisplayName("Abbreviate Tests")
     class AbbreviateTests {
+
         @Test
         @NotWindowsJdk17
         void abbreviateWithEllipsis() {
@@ -77,6 +79,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Capitalize Words Tests")
     class CapitalizeWordsTests {
+
         @ParameterizedTest
         @DisplayName("Should handle accented characters and diacritics")
         @NotWindowsJdk17
@@ -251,9 +254,11 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Credit Card Validation Tests")
     class CreditCardValidationTests {
+
         @Nested
         @DisplayName("Comprehensive Edge Cases")
         class ComprehensiveEdgeCases {
+
             static Stream<Arguments> cardLengthTestCases() {
                 return Stream.of(
                         Arguments.of("1234567", false, "7 digits - too short"),
@@ -277,6 +282,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Invalid Credit Cards")
         class InvalidCreditCards {
+
             @ParameterizedTest
             @DisplayName("Should reject cards that fail Luhn algorithm")
             @ValueSource(strings = {
@@ -333,6 +339,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Valid Credit Cards")
         class ValidCreditCards {
+
             @ParameterizedTest
             @DisplayName("Should validate brand-specific patterns")
             @CsvSource({
@@ -418,16 +425,17 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Encoding Tests")
     class EncodingTests {
-        @Test
-        void encodeHtml() {
-            var p = createProperties("html");
-            assertThat(RenderUtils.encode("<a test &>", p)).isEqualTo("&lt;a test &amp;&gt;");
-        }
 
         private Properties createProperties(String encodingType) {
             var props = new Properties();
             props.setProperty(RenderUtils.ENCODING_PROPERTY, encodingType);
             return props;
+        }
+
+        @Test
+        void encodeHtml() {
+            var p = createProperties("html");
+            assertThat(RenderUtils.encode("<a test &>", p)).isEqualTo("&lt;a test &amp;&gt;");
         }
 
         @Test
@@ -521,6 +529,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Encode JavaScript Tests")
         class EncodeJavaScriptTests {
+
             @Test
             @DisplayName("Should be consistent with multiple calls")
             void shouldBeConsistentWithMultipleCalls() {
@@ -735,6 +744,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("FetchUrl Tests")
     class FetchUrlTests {
+
         private static final String DEFAULT = "default";
         private static final MockWebServer MOCK_WEB_SERVER = new MockWebServer();
 
@@ -775,6 +785,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("HTML Entities Tests")
     class HtmlEntitiesTests {
+
         @Test
         @DisplayName("Should be consistent across multiple calls")
         void shouldBeConsistentAcrossMultipleCalls() {
@@ -1031,6 +1042,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Mask Tests")
     class MaskTests {
+
         @Test
         @DisplayName("Method should handle all combinations consistently")
         void allCombinationsConsistent() {
@@ -1058,6 +1070,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Different mask characters")
         class DifferentMaskCharacters {
+
             @Test
             @DisplayName("Multi-character mask string")
             void multiCharacterMask() {
@@ -1090,6 +1103,7 @@ class RenderUtilsTests {
         @DisplayName("Edge cases and special scenarios")
         @ExtendWith(RandomRangeResolver.class)
         class EdgeCasesAndSpecialScenarios {
+
             @ParameterizedTest
             @DisplayName("Single character strings")
             @CsvSource({
@@ -1146,6 +1160,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Full masking scenarios")
         class FullMasking {
+
             @ParameterizedTest
             @DisplayName("Unmasked >= length should fully mask")
             @CsvSource({
@@ -1182,6 +1197,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Null and empty input handling")
         class NullAndEmptyInput {
+
             @Test
             @DisplayName("Empty input should return empty string")
             void emptyInputReturnsEmpty() {
@@ -1200,6 +1216,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Partial masking from end")
         class PartialMaskingFromEnd {
+
             @ParameterizedTest
             @DisplayName("Mask first part, show last N characters")
             @CsvSource({
@@ -1223,6 +1240,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Partial masking from start")
         class PartialMaskingFromStart {
+
             @ParameterizedTest
             @DisplayName("Show first N characters, mask the rest")
             @CsvSource({
@@ -1246,6 +1264,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Real-world use cases")
         class RealWorldUseCases {
+
             @ParameterizedTest
             @DisplayName("Credit card masking")
             @CsvSource({
@@ -1288,6 +1307,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Normalize Tests")
     class NormalizeTests {
+
         @ParameterizedTest
         @CsvSource({
                 "'hello', 'hello'",
@@ -1483,6 +1503,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Parse Properties String Tests")
     class ParsePropertiesStringTests {
+
         @Test
         @DisplayName("Should handle duplicate keys")
         void handleDuplicateKeys() {
@@ -1542,6 +1563,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("QR Code Tests")
     class QrCodeTests {
+
         @Test
         void qrCode() {
             assertThat(RenderUtils.qrCode("erik", "24")).as("svg")
@@ -1557,6 +1579,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("ROT13 Tests")
     class Rot13Tests {
+
         @ParameterizedTest
         @CsvSource({
                 "a, n",
@@ -1775,6 +1798,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Swap Case Tests")
     class SwapCaseTests {
+
         @ParameterizedTest
         @ValueSource(strings = {
                 "hello",
@@ -1948,6 +1972,7 @@ class RenderUtilsTests {
     @Nested
     @DisplayName("Uptime Tests")
     class UptimeTests {
+
         private static final Properties PROPERTIES = new Properties();
 
         static {
@@ -1999,6 +2024,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Basic time unit conversions")
         class BasicTimeUnits {
+
             @Test
             @DisplayName("Exactly one hour")
             void exactlyOneHour() {
@@ -2051,6 +2077,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Boundary Tests")
         class BoundaryConditions {
+
             @Test
             @DisplayName("Days boundary")
             void daysBoundary() {
@@ -2076,6 +2103,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Custom properties")
         class CustomProperties {
+
             @Test
             @DisplayName("Custom singular and plural forms")
             void customPluralForms() {
@@ -2124,6 +2152,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Day-based calculations")
         class DayBasedCalculations {
+
             @Test
             @DisplayName("Weeks, days, hours, and minutes")
             void complexDayBasedUptime() {
@@ -2180,6 +2209,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Shorten URL Tests")
         class ShortenUrlTests {
+
             @ParameterizedTest
             @NullAndEmptySource
             @DisplayName("Should handle null and empty URLs gracefully")
@@ -2210,6 +2240,7 @@ class RenderUtilsTests {
         @Nested
         @DisplayName("Year-based calculations")
         class YearBasedCalculations {
+
             @Test
             @DisplayName("Complex uptime with all units")
             void complexUptimeAllUnits() {

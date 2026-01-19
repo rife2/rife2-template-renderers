@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class Trim implements ValueRenderer {
+
     /**
      * Renders the template value by removing leading and trailing whitespace.
      *

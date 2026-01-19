@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class QrCode implements ValueRenderer {
+
     /**
      * Returns the template value encoded as an SVG QR Code.
      *

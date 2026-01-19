@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class FormatCreditCard implements ValueRenderer {
+
     /**
      * Returns the last 4 digits of the template credit number value.
      *

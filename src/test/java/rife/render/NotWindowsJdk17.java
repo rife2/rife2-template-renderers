@@ -34,5 +34,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @ExtendWith(NotWindowsJdk17Condition.class)
 public @interface NotWindowsJdk17 {
+
 }
 

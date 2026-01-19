@@ -35,6 +35,7 @@ import rife.template.ValueRenderer;
  * @since 1.0
  */
 public class SwapCase implements ValueRenderer {
+
     /**
      * Returns the template value with swapped case.
      *
