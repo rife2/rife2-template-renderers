@@ -20,7 +20,7 @@ package rife.render;
 import rife.bld.BuildCommand;
 import rife.bld.Project;
 import rife.bld.extension.*;
-import rife.bld.extension.tools.IOUtils;
+import rife.bld.extension.tools.IOTools;
 import rife.bld.publish.PublishDeveloper;
 import rife.bld.publish.PublishInfo;
 import rife.bld.publish.PublishLicense;
@@ -35,7 +35,7 @@ import static rife.bld.operations.JavadocOptions.DocLinkOption.NO_MISSING;
 
 public class TemplateRenderersBuild extends Project {
 
-    final File testResultsDirectory = IOUtils.resolveFile(buildDirectory(), "test-results", "test");
+    final File testResultsDirectory = IOTools.resolveFile(buildDirectory(), "test-results", "test");
     private final TestsBadgeOperation testsBadgeOperation = new TestsBadgeOperation();
 
     public TemplateRenderersBuild() {
@@ -57,7 +57,7 @@ public class TemplateRenderersBuild extends Project {
                         version(4, 9, 8)));
         scope(test)
                 .include(dependency("com.uwyn.rife2", "bld-extensions-testing-helpers",
-                        version(0, 9, 5)))
+                        version(0, 9, 6, "SNAPSHOT")))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
                         version(5, 3, 2)))
                 .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
