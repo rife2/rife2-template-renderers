@@ -22,11 +22,9 @@ import mockwebserver3.MockWebServer;
 import okhttp3.Headers;
 import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
 import rife.bld.extension.testing.RandomRange;
-import rife.bld.extension.testing.RandomRangeResolver;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -1101,7 +1099,6 @@ class RenderUtilsTests {
 
         @Nested
         @DisplayName("Edge cases and special scenarios")
-        @ExtendWith(RandomRangeResolver.class)
         class EdgeCasesAndSpecialScenarios {
 
             @ParameterizedTest
