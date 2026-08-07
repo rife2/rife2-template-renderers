@@ -17,7 +17,8 @@
 
 package rife.render;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import rife.tools.Localization;
 import rife.tools.StringUtils;
 
@@ -32,6 +33,7 @@ import java.time.Duration;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,6 +45,7 @@ import java.util.regex.Pattern;
  * @author <a href="https://erik.thauvin.net/">Erik C. Thauvin</a>
  * @since 1.0
  */
+@NullMarked
 public final class RenderUtils {
 
     /**
@@ -89,23 +92,35 @@ public final class RenderUtils {
      */
     static final char[] COMMON_SEPARATORS =
             {' ', '&', '(', ')', '-', '_', '=', '[', '{', ']', '}', '\\', '|', ';', ':', ',', '<', '.', '>', '/', '@'};
-    private static final String DEFAULT_USER_AGENT =
+    private static final String
+            DEFAULT_USER_AGENT =
             "Mozilla/5.0 (X11; Linux x86_64; rv:140.0) Gecko/20100101 Firefox/140.0";
+    /**
+     * Shared HTTP client. Thread-safe; reused across all requests.
+     * Uses a fixed 10-second connect timeout and 30-second request timeout.
+     */
     private static final HttpClient HTTP_CLIENT = HttpClient.newBuilder()
             .connectTimeout(Duration.ofSeconds(10))
             .build();
     private static final Logger LOGGER = Logger.getLogger(RenderUtils.class.getName());
-    //Pre-computed lookup for separator characters - much faster than indexOf
-    private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
+    private static final long MILLIS_PER_MINUTE = 60L * 1000;
+    private static final long MILLIS_PER_HOUR = 60L * MILLIS_PER_MINUTE;
+    private static final long MILLIS_PER_DAY = 24L * MILLIS_PER_HOUR;
+    private static final long MILLIS_PER_WEEK = 7L * MILLIS_PER_DAY;
+    private static final long MILLIS_PER_MONTH = 30L * MILLIS_PER_DAY;
+    // Year is intentionally fixed at 365 days (leap years not accounted for)
+    private static final long MILLIS_PER_YEAR = 365L * MILLIS_PER_DAY;
     private static final UptimeUnit[] UPTIME_UNITS = {
-            new UptimeUnit(365L * 24 * 60 * 60 * 1000, "year", "years", " year ", " years "),
-            new UptimeUnit(30L * 24 * 60 * 60 * 1000, "month", "months", " month ", " months "),
-            new UptimeUnit(7L * 24 * 60 * 60 * 1000, "week", "weeks", " week ", " weeks "),
-            new UptimeUnit(24L * 60 * 60 * 1000, "day", "days", " day ", " days "),
-            new UptimeUnit(60L * 60 * 1000, "hour", "hours", " hour ", " hours "),
-            new UptimeUnit(60L * 1000, "minute", "minutes", " minute", " minutes")
+            new UptimeUnit(MILLIS_PER_YEAR, "year", "years", " year ", " years "),
+            new UptimeUnit(MILLIS_PER_MONTH, "month", "months", " month ", " months "),
+            new UptimeUnit(MILLIS_PER_WEEK, "week", "weeks", " week ", " weeks "),
+            new UptimeUnit(MILLIS_PER_DAY, "day", "days", " day ", " days "),
+            new UptimeUnit(MILLIS_PER_HOUR, "hour", "hours", " hour ", " hours "),
+            new UptimeUnit(MILLIS_PER_MINUTE, "minute", "minutes", " minute", " minutes")
     };
-    private static final Pattern URL_MATCH = Pattern.compile("^[Hh][Tt][Tt][Pp][Ss]?://\\w.*");
+    // Pre-computed lookup for separator characters — much faster than indexOf.
+    private static final boolean[] SEPARATOR_LOOKUP = new boolean[128];
+    private static final Pattern URL_MATCH = Pattern.compile("https?://\\w.*", Pattern.CASE_INSENSITIVE);
 
     static {
         for (char c : COMMON_SEPARATORS) {
@@ -117,6 +132,7 @@ public final class RenderUtils {
         // no-op
     }
 
+
     /**
      * Abbreviates a {@code String} to the given length using a replacement marker.
      *
@@ -124,15 +140,30 @@ public final class RenderUtils {
      * @param max    the maximum length of the resulting {@code String}
      * @param marker the {@code String} used as a replacement marker
      * @return the abbreviated {@code String}
+     * @throws NullPointerException if the {@code src} or {@code marker} is {@code null}
      */
     public static String abbreviate(String src, int max, String marker) {
-        if (src == null || src.isBlank() || marker == null) {
+        Objects.requireNonNull(src, "The abbreviate source string cannot be null");
+        Objects.requireNonNull(marker, "The abbreviate marker string cannot be null");
+        if (src.isBlank()) {
             return src;
         } else if (src.length() <= max || max < 0) {
             return src;
         }
 
         return src.substring(0, max - marker.length()) + marker;
+    }
+
+    /**
+     * Appends a {@code \\uXXXX} Unicode escape sequence for the given char to the builder.
+     * Avoids {@code String.format} overhead in hot encoding paths.
+     */
+    private static void appendUnicodeEscape(StringBuilder sb, char c) {
+        sb.append("\\u")
+                .append(Character.forDigit((c >> 12) & 0xF, 16))
+                .append(Character.forDigit((c >> 8) & 0xF, 16))
+                .append(Character.forDigit((c >> 4) & 0xF, 16))
+                .append(Character.forDigit(c & 0xF, 16));
     }
 
     /**
@@ -148,13 +179,19 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns a {@code String} with the first letter of each word capitalized.
+     * Returns a {@code String} with the first letter of each word capitalized and
+     * the remaining letters lowercased (i.e., title-cased).
+     *
+     * <p>Note: this method lowercases all non-initial characters within each word.
+     * For example, {@code "myHTML"} becomes {@code "Myhtml"}.</p>
      *
      * @param src the source {@code String}
-     * @return the capitalized {@code String}
+     * @return the title-cased {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String capitalizeWords(String src) {
-        if (src == null || src.isBlank()) {
+        Objects.requireNonNull(src, "The capitalizeWords source string cannot be null");
+        if (src.isBlank()) {
             return src;
         }
 
@@ -195,9 +232,11 @@ public final class RenderUtils {
      * @param src        the source {@code String} to encode
      * @param properties the properties containing the {@link #ENCODING_PROPERTY encoding property}.
      * @return the encoded {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String encode(String src, Properties properties) {
-        if (src == null || src.isBlank() || properties.isEmpty()) {
+        Objects.requireNonNull(src, "The encode source string cannot be null");
+        if (src.isBlank() || properties.isEmpty()) {
             return src;
         }
 
@@ -232,9 +271,11 @@ public final class RenderUtils {
      *
      * @param src the source {@code String}
      * @return the encoded {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String encodeJs(String src) {
-        if (src == null || src.isEmpty()) {
+        Objects.requireNonNull(src, "The encodeJs source string cannot be null");
+        if (src.isEmpty()) {
             return src;
         }
 
@@ -254,27 +295,26 @@ public final class RenderUtils {
                 case '\t' -> encoded.append("\\t");
                 case '\f' -> encoded.append("\\f");
                 case '\b' -> encoded.append("\\b");
-                case '\u2028' -> // Line separator
-                        encoded.append("\\u2028");
-                case '\u2029' -> // Paragraph separator
-                        encoded.append("\\u2029");
+                case '\u2028' -> encoded.append("\\u2028"); // Line separator
+                case '\u2029' -> encoded.append("\\u2029"); // Paragraph separator
                 default -> {
                     if (c <= 0x1F || c == 0x7F || (c >= 0x80 && c <= 0x9F)) {
                         // Control characters
-                        encoded.append(String.format("\\u%04X", (int) c));
+                        appendUnicodeEscape(encoded, c);
                     } else if (c > 0x7F) {
                         // Non-ASCII Unicode characters
                         if (Character.isHighSurrogate(c) && i + 1 < src.length()) {
                             // Handle surrogate pairs for characters outside BMP
                             char lowSurrogate = src.charAt(i + 1);
                             if (Character.isLowSurrogate(lowSurrogate)) {
-                                encoded.append(String.format("\\u%04X\\u%04X", (int) c, (int) lowSurrogate));
+                                appendUnicodeEscape(encoded, c);
+                                appendUnicodeEscape(encoded, lowSurrogate);
                                 i++; // Skip the low surrogate
                             } else {
-                                encoded.append(String.format("\\u%04X", (int) c));
+                                appendUnicodeEscape(encoded, c);
                             }
                         } else {
-                            encoded.append(String.format("\\u%04X", (int) c));
+                            appendUnicodeEscape(encoded, c);
                         }
                     } else {
                         // Regular character, no escaping needed
@@ -293,11 +333,12 @@ public final class RenderUtils {
      *
      * @param url            the URL {@code String}
      * @param defaultContent the default content to return if none fetched
-     * @return the url content, or empty
+     * @return the URL content, or empty
+     * @throws NullPointerException if the URL or default content is {@code null}
      */
-    @SuppressFBWarnings("DCN_NULLPOINTER_EXCEPTION")
-    @SuppressWarnings("PMD.AvoidCatchingGenericException")
     public static String fetchUrl(String url, String defaultContent) {
+        Objects.requireNonNull(url, "The fetch URL cannot be null");
+        Objects.requireNonNull(defaultContent, "The fetch default content cannot be null");
         try {
             var uri = URI.create(url);
             var request = HttpRequest.newBuilder()
@@ -317,11 +358,18 @@ public final class RenderUtils {
                     LOGGER.warning("A " + statusCode + " status code was returned by " + uri.getHost());
                 }
             }
-        } catch (IllegalArgumentException | NullPointerException e) {
+        } catch (IllegalArgumentException e) {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.log(Level.WARNING, "Invalid URL: " + url, e);
             }
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
+            // Intentionally not re-interrupting — fetchUrl is called from container-managed
+            // threads (e.g. servlet workers) where resetting the interrupt flag could
+            // interfere with the container's thread lifecycle.
+            if (LOGGER.isLoggable(Level.WARNING)) {
+                LOGGER.log(Level.WARNING, "Interrupted while fetching URL: " + url, e);
+            }
+        } catch (IOException e) {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.log(Level.WARNING, "Error occurred while fetching URL: " + url, e);
             }
@@ -339,20 +387,20 @@ public final class RenderUtils {
      * </ul>
      *
      * @param src the credit card number
-     * @return the last 4 digits of the credit card number or empty
+     * @return the last 4 digits of the credit card number, or {@code empty} if blank or invalid
+     * @throws NullPointerException if {@code src} is {@code null}
      */
     public static String formatCreditCard(String src) {
-        if (src == null || src.isBlank()) {
-            return src;
+        Objects.requireNonNull(src, "The credit card number cannot be null");
+        if (!src.isBlank()) {
+            var cc = src.replaceAll("[^0-9]", "");
+
+            if (validateCreditCard(cc)) {
+                return cc.substring(cc.length() - 4);
+            }
         }
 
-        var cc = src.replaceAll("[^0-9]", "");
-
-        if (validateCreditCard(cc)) {
-            return cc.substring(cc.length() - 4);
-        } else {
-            return "";
-        }
+        return "";
     }
 
     /**
@@ -360,14 +408,16 @@ public final class RenderUtils {
      *
      * @param src the {@code String} to convert
      * @return the converted {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String htmlEntities(String src) {
-        if (src == null || src.isEmpty()) {
+        Objects.requireNonNull(src, "The htmlEntities source string cannot be null");
+        if (src.isEmpty()) {
             return src;
         }
 
         int len = src.length();
-        var sb = new StringBuilder(len * 8); // Increased capacity estimate
+        var sb = new StringBuilder(len * 6);
 
         int codePoint;
         int i = 0;
@@ -391,14 +441,21 @@ public final class RenderUtils {
     /**
      * Masks characters in a String.
      *
+     * <p>If {@code unmasked} is negative or zero, the entire string is masked.
+     * If {@code unmasked} is greater than or equal to the total character count,
+     * the entire string is returned unmasked.</p>
+     *
      * @param src       the source {@code String}
      * @param mask      the {@code String} to mask characters with
-     * @param unmasked  the number of characters to leave unmasked
+     * @param unmasked  the number of characters to leave unmasked (negative treated as 0)
      * @param fromStart to unmask characters from the start of the {@code String}
      * @return the masked {@code String}
+     * @throws NullPointerException if {@code src} or {@code mask} are null
      */
     public static String mask(String src, String mask, int unmasked, boolean fromStart) {
-        if (src == null || src.isEmpty()) {
+        Objects.requireNonNull(src, "The mask source string cannot be null");
+        Objects.requireNonNull(mask, "The mask string cannot be null");
+        if (src.isEmpty()) {
             return src;
         }
 
@@ -432,9 +489,11 @@ public final class RenderUtils {
      *
      * @param src the source {@code String}
      * @return the normalized {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String normalize(String src) {
-        if (src == null || src.isBlank()) {
+        Objects.requireNonNull(src, "The normalize source string cannot be null");
+        if (src.isBlank()) {
             return "";
         }
 
@@ -473,7 +532,7 @@ public final class RenderUtils {
      * @param src the {@code} String containing the properties
      * @return the new {@code Properties}
      */
-    public static Properties parsePropertiesString(String src) {
+    public static Properties parsePropertiesString(@Nullable String src) {
         var properties = new Properties();
         if (src != null && !src.isBlank()) {
             try {
@@ -486,7 +545,10 @@ public final class RenderUtils {
     }
 
     /**
-     * Returns the plural form of a word, if count &gt; 1.
+     * Returns the plural form of a word based on count.
+     *
+     * <p>Uses {@code count != 1} as the pluralization condition, so both {@code 0} and
+     * values {@code > 1} return the plural form (e.g., "0 minutes", "2 minutes").</p>
      *
      * @param count  the count
      * @param word   the singular word
@@ -494,7 +556,9 @@ public final class RenderUtils {
      * @return the singular or plural {@code String}
      */
     public static String plural(final long count, final String word, final String plural) {
-        if (count > 1) {
+        Objects.requireNonNull(word, "The plural word cannot be null");
+        Objects.requireNonNull(plural, "The plural cannot be null");
+        if (count != 1) { // 0 minutes, not 0 minute
             return plural;
         } else {
             return word;
@@ -507,9 +571,12 @@ public final class RenderUtils {
      * @param src  the data {@code String}
      * @param size the QR Code size. (e.g. {@code 150x150})
      * @return the QR code
+     * @throws NullPointerException if the {@code src} or {@code size} is {@code null}
      */
     public static String qrCode(String src, String size) {
-        if (src == null || src.isBlank()) {
+        Objects.requireNonNull(src, "The qrCode source string cannot be null");
+        Objects.requireNonNull(size, "The qrCode size string cannot be null");
+        if (src.isBlank()) {
             return src;
         }
         return fetchUrl(
@@ -524,11 +591,10 @@ public final class RenderUtils {
      *
      * @param src the source {@code String}
      * @return the translated {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String rot13(String src) {
-        if (src == null) {
-            return "";
-        }
+        Objects.requireNonNull(src, "The rot13 source string cannot be null");
 
         if (src.isEmpty()) {
             return src;
@@ -575,9 +641,11 @@ public final class RenderUtils {
      *
      * @param url the source URL
      * @return the short URL
+     * @throws NullPointerException if the {@code url} is {@code null}
      */
     public static String shortenUrl(String url) {
-        if (url == null || url.isBlank() || !URL_MATCH.matcher(url).matches()) {
+        Objects.requireNonNull(url, "The shorten URL string cannot be null");
+        if (url.isBlank() || !URL_MATCH.matcher(url).matches()) {
             return url;
         }
         return fetchUrl(String.format("https://is.gd/create.php?format=simple&url=%s",
@@ -588,11 +656,13 @@ public final class RenderUtils {
      * Swaps the case of a String.
      *
      * @param src the {@code String} to swap the case of
-     * @return the modified {@code String} or null
+     * @return the modified {@code String}
+     * @throws NullPointerException if the {@code src} is {@code null}
      */
     public static String swapCase(String src) {
-        if (src == null || src.isEmpty()) {
-            return "";
+        Objects.requireNonNull(src, "The swapCase source string cannot be null");
+        if (src.isEmpty()) {
+            return src;
         }
 
         var result = new StringBuilder(src.length());
@@ -668,11 +738,10 @@ public final class RenderUtils {
      *
      * @param cc the credit card number
      * @return {@code true} if the credit card number is valid
+     * @throws NullPointerException if the {@code cc} is {@code null}
      */
     public static boolean validateCreditCard(String cc) {
-        if (cc == null) {
-            return false;
-        }
+        Objects.requireNonNull(cc, "The credit card number cannot be null");
 
         int len = cc.length();
         if (len < 8 || len > 19) {

@@ -24,7 +24,7 @@ import org.assertj.core.api.AutoCloseableSoftAssertions;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.*;
-import rife.bld.extension.testing.RandomRange;
+import rife.bld.testing.RandomRange;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings({"PMD.AvoidDuplicateLiterals", "PMD.TestClassWithoutTestCases"})
 class RenderUtilsTests {
@@ -167,9 +168,9 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
-        @NullAndEmptySource
+        @EmptySource
         @ValueSource(strings = {"   ", "\t", "\n", "\r\n"})
-        @DisplayName("Should return unchanged for null, empty, or whitespace-only strings")
+        @DisplayName("Should return unchanged for empty or whitespace-only strings")
         void shouldHandleNullEmptyAndWhitespaceOnlyStrings(String input) {
             assertThat(RenderUtils.capitalizeWords(input)).isEqualTo(input);
         }
@@ -282,6 +283,13 @@ class RenderUtilsTests {
         class InvalidCreditCards {
 
             @ParameterizedTest
+            @EmptySource
+            @DisplayName("Should reject null and empty strings")
+            void shouldRejectEmpty(String creditCard) {
+                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
+            }
+
+            @ParameterizedTest
             @DisplayName("Should reject cards that fail Luhn algorithm")
             @ValueSource(strings = {
                     "4532015112830367",  // Last digit wrong
@@ -298,13 +306,6 @@ class RenderUtilsTests {
                     "4000001234567890127" // 19 digits, fails Luhn
             })
             void shouldRejectLuhnFailures(String creditCard) {
-                assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            @DisplayName("Should reject null and empty strings")
-            void shouldRejectNullAndEmpty(String creditCard) {
                 assertThat(RenderUtils.validateCreditCard(creditCard)).isFalse();
             }
 
@@ -505,10 +506,11 @@ class RenderUtilsTests {
             assertThat(RenderUtils.encode(blankSrc, p)).as("encode(%s)", blankSrc).isEqualTo(blankSrc);
         }
 
-        @Test
-        void encodeWhenSrcIsNull() {
+        @ParameterizedTest
+        @NullSource
+        void encodeWhenSrcIsNull(String src) {
             var p = createProperties("html"); // Properties are not empty
-            assertThat(RenderUtils.encode(null, p)).isNull();
+            assertThatThrownBy(() -> RenderUtils.encode(src, p)).isInstanceOf(NullPointerException.class);
         }
 
         @Test
@@ -566,8 +568,8 @@ class RenderUtilsTests {
                 try (var softly = new AutoCloseableSoftAssertions()) {
                     softly.assertThat(RenderUtils.encodeJs("\u0000")).isEqualTo("\\u0000"); // null character
                     softly.assertThat(RenderUtils.encodeJs("\u0001")).isEqualTo("\\u0001"); // start of heading
-                    softly.assertThat(RenderUtils.encodeJs("\u001f")).isEqualTo("\\u001F"); // unit separator
-                    softly.assertThat(RenderUtils.encodeJs("\u007f")).isEqualTo("\\u007F"); // delete character
+                    softly.assertThat(RenderUtils.encodeJs("\u001f")).isEqualTo("\\u001f"); // unit separator
+                    softly.assertThat(RenderUtils.encodeJs("\u007f")).isEqualTo("\\u007f"); // delete character
                 }
             }
 
@@ -625,14 +627,23 @@ class RenderUtilsTests {
             @DisplayName("Should escape Unicode")
             @NotWindowsJdk17
             @CsvSource({
-                    "'世', '\\u4E16'",
-                    "'界', '\\u754C'",
-                    "'é', '\\u00E9'",
-                    "'ñ', '\\u00F1'",
-                    "'ü', '\\u00FC'"
+                    "'世', '\\u4e16'",
+                    "'界', '\\u754c'",
+                    "'é', '\\u00e9'",
+                    "'ñ', '\\u00f1'",
+                    "'ü', '\\u00fc'"
             })
             void shouldEscapeUnicode(String input, String expected) {
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
+            }
+
+            @ParameterizedTest
+            @EmptySource
+            @ValueSource(strings = {"", " ", "   "})
+            @DisplayName("Should handle null and empty strings")
+            void shouldHandleEmptyStrings(String input) {
+                var result = RenderUtils.encodeJs(input);
+                assertThat(result).isEqualTo(input);
             }
 
             @Test
@@ -670,9 +681,9 @@ class RenderUtilsTests {
             @DisplayName("Should handle mixed ASCII and Unicode content")
             @NotWindowsJdk17
             @CsvSource({
-                    "'Hello 世界', 'Hello \\u4E16\\u754C'",
-                    "'café-shop', 'caf\\u00E9-shop'",
-                    "'Price: €100', 'Price: \\u20AC100'"
+                    "'Hello 世界', 'Hello \\u4e16\\u754c'",
+                    "'café-shop', 'caf\\u00e9-shop'",
+                    "'Price: €100', 'Price: \\u20ac100'"
             })
             void shouldHandleMixedContent(String input, String expected) {
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
@@ -682,17 +693,8 @@ class RenderUtilsTests {
             @DisplayName("Should handle mixed content with control characters")
             void shouldHandleMixedContentWithControlCharacters() {
                 var input = "Hello\u0001World\u007f";
-                var expected = "Hello\\u0001World\\u007F";
+                var expected = "Hello\\u0001World\\u007f";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
-            }
-
-            @ParameterizedTest
-            @NullAndEmptySource
-            @ValueSource(strings = {"", " ", "   "})
-            @DisplayName("Should handle null and empty strings")
-            void shouldHandleNullAndEmptyStrings(String input) {
-                var result = RenderUtils.encodeJs(input);
-                assertThat(result).isEqualTo(input);
             }
 
             @Test
@@ -718,7 +720,7 @@ class RenderUtilsTests {
                 var result = RenderUtils.encodeJs(emoji);
 
                 assertThat(result)
-                        .isEqualTo("\\uD83D\\uDE00")
+                        .isEqualTo("\\ud83d\\ude00")
                         .hasSize(12);
             }
 
@@ -727,14 +729,15 @@ class RenderUtilsTests {
             @NotWindowsJdk17
             void shouldHandleUnicodeCharacters() {
                 var input = "Hello 世界 🌍";
-                var expected = "Hello \\u4E16\\u754C \\uD83C\\uDF0D";
+                var expected = "Hello \\u4e16\\u754c \\ud83c\\udf0d";
                 assertThat(RenderUtils.encodeJs(input)).isEqualTo(expected);
             }
 
-            @Test
+            @ParameterizedTest
+            @NullSource
             @DisplayName("Should return null for null input")
-            void shouldReturnNullForNullInput() {
-                assertThat(RenderUtils.encodeJs(null)).isNull();
+            void shouldReturnNullForNullInput(String src) {
+                assertThatThrownBy(() -> RenderUtils.encodeJs(src)).isInstanceOf(NullPointerException.class);
             }
         }
     }
@@ -1030,10 +1033,12 @@ class RenderUtilsTests {
             assertThat(RenderUtils.htmlEntities("")).isEmpty();
         }
 
-        @Test
+        @ParameterizedTest
+        @NullSource
         @DisplayName("Should return null for null input")
-        void shouldReturnNullForNullInput() {
-            assertThat(RenderUtils.htmlEntities(null)).isNull();
+        void shouldReturnNullForNullInput(String src) {
+            assertThatThrownBy(() -> RenderUtils.htmlEntities(src))
+                    .isInstanceOf(NullPointerException.class);
         }
     }
 
@@ -1202,11 +1207,14 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.mask("", "*", 2, false)).isEmpty();
             }
 
-            @Test
+            @ParameterizedTest
+            @NullSource
             @DisplayName("Null input should return null")
-            void nullInputReturnsNull() {
-                assertThat(RenderUtils.mask(null, "*", 2, true)).isNull();
-                assertThat(RenderUtils.mask(null, "*", 2, false)).isNull();
+            void nullInputReturnsNull(String str) {
+                assertThatThrownBy(() -> RenderUtils.mask(str, "*", 2, true))
+                        .isInstanceOf(NullPointerException.class);
+                assertThatThrownBy(() -> RenderUtils.mask("src", str, 2, false))
+                        .isInstanceOf(NullPointerException.class);
             }
         }
 
@@ -1474,7 +1482,7 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
-        @NullAndEmptySource
+        @EmptySource
         @ValueSource(strings = {" ", "  ", "\t", "\n", " \t \n "})
         @DisplayName("Should return empty when blank")
         void shouldReturnEmptyWhenBlank(String input) {
@@ -1512,10 +1520,10 @@ class RenderUtilsTests {
         }
 
         @ParameterizedTest
-        @NullAndEmptySource
+        @EmptySource
         @ValueSource(strings = {" "})
-        @DisplayName("Should handle empty or null string input")
-        void handleEmptyOrNullStringInput(String input) {
+        @DisplayName("Should handle empty string input")
+        void handleEmptyStringInput(String input) {
             Properties result = RenderUtils.parsePropertiesString(input);
 
             assertThat(result).isEmpty();
@@ -1659,12 +1667,12 @@ class RenderUtilsTests {
         @NullAndEmptySource
         @DisplayName("Should handle null and empty input gracefully")
         void shouldHandleNullAndEmpty(String input) {
-            var result = RenderUtils.rot13(input);
-
             if (input == null) {
-                assertThat(result).isEmpty();
+                //noinspection DataFlowIssue, ConstantValue
+                assertThatThrownBy(() -> RenderUtils.rot13(input))
+                        .isInstanceOf(NullPointerException.class);
             } else {
-                assertThat(result).isEqualTo(input);
+                assertThat(RenderUtils.rot13(input)).isEqualTo(input);
             }
         }
 
@@ -1944,9 +1952,13 @@ class RenderUtilsTests {
         @NullAndEmptySource
         @DisplayName("Should return empty string for null or empty input")
         void shouldReturnEmptyStringForNullOrEmpty(String input) {
-            var result = RenderUtils.swapCase(input);
-
-            assertThat(result).isEmpty();
+            if (input == null) {
+                //noinspection DataFlowIssue, ConstantValue
+                assertThatThrownBy(() -> RenderUtils.swapCase(input))
+                        .isInstanceOf(NullPointerException.class);
+            } else {
+                assertThat(RenderUtils.swapCase(input)).isEmpty();
+            }
         }
 
         @ParameterizedTest
@@ -2208,8 +2220,8 @@ class RenderUtilsTests {
         class ShortenUrlTests {
 
             @ParameterizedTest
-            @NullAndEmptySource
-            @DisplayName("Should handle null and empty URLs gracefully")
+            @EmptySource
+            @DisplayName("Should handle empty URLs gracefully")
             void shouldHandleNullAndEmptyUrls(String url) {
                 var result = RenderUtils.shortenUrl(url);
 
@@ -2268,6 +2280,132 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.uptime(uptime, PROPERTIES))
                         .isEqualTo("29 years 8 months 2 weeks 1 hour 5 minutes");
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("RenderUtils Validation Tests")
+    @SuppressWarnings("DataFlowIssue")
+    class ValidationTests {
+
+        @ParameterizedTest
+        @NullSource
+        void abbreviateWithNull(String src) {
+            assertThatThrownBy(() -> RenderUtils.abbreviate(src, 5, "..."))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("source string cannot be null");
+            assertThatThrownBy(() -> RenderUtils.abbreviate("test", 5, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("marker string cannot be null");
+        }
+
+        @Test
+        void capitalizeWordsWithNull() {
+            assertThatThrownBy(() -> RenderUtils.capitalizeWords(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("source string cannot be null");
+        }
+
+        @Test
+        void encodeJsWithNull() {
+            assertThatThrownBy(() -> RenderUtils.encodeJs(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The encodeJs source string cannot be null");
+        }
+
+        @Test
+        void encodeWithNull() {
+            var props = new Properties();
+            assertThatThrownBy(() -> RenderUtils.encode(null, props))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The encode source string cannot be null");
+        }
+
+        @Test
+        void fetchUrlWithNull() {
+            assertThatThrownBy(() -> RenderUtils.fetchUrl(null, "default"))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The fetch URL cannot be null");
+        }
+
+        @Test
+        void formatCreditCardWithNull() {
+            assertThatThrownBy(() -> RenderUtils.formatCreditCard(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The credit card number cannot be null");
+        }
+
+        @Test
+        void htmlEntitiesWithNull() {
+            assertThatThrownBy(() -> RenderUtils.htmlEntities(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The htmlEntities source string cannot be null");
+        }
+
+        @Test
+        void maskWithNull() {
+            assertThatThrownBy(() -> RenderUtils.mask(null, "*", 2, true))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The mask source string cannot be null");
+            assertThatThrownBy(() -> RenderUtils.mask("test", null, 2, true))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The mask string cannot be null");
+        }
+
+        @Test
+        void normalizeWithNull() {
+            assertThatThrownBy(() -> RenderUtils.normalize(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The normalize source string cannot be null");
+        }
+
+        @ParameterizedTest
+        @NullSource
+        void pluralWithNull(String s) {
+            assertThatThrownBy(() -> RenderUtils.plural(1, s, "bar"))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The plural word cannot be null");
+            assertThatThrownBy(() -> RenderUtils.plural(1, "foo", s))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The plural cannot be null");
+        }
+
+        @Test
+        void qrCodeWithNull() {
+            assertThatThrownBy(() -> RenderUtils.qrCode(null, "150x150"))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The qrCode source string cannot be null");
+            assertThatThrownBy(() -> RenderUtils.qrCode("data", null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The qrCode size string cannot be null");
+        }
+
+        @Test
+        void rot13WithNull() {
+            assertThatThrownBy(() -> RenderUtils.rot13(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The rot13 source string cannot be null");
+        }
+
+        @Test
+        void shortenUrlWithNull() {
+            assertThatThrownBy(() -> RenderUtils.shortenUrl(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The shorten URL string cannot be null");
+        }
+
+        @Test
+        void swapCaseWithNull() {
+            assertThatThrownBy(() -> RenderUtils.swapCase(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The swapCase source string cannot be null");
+        }
+
+        @Test
+        void validateCreditCardWithNull() {
+            assertThatThrownBy(() -> RenderUtils.validateCreditCard(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessageContaining("The credit card number cannot be null");
         }
     }
 }

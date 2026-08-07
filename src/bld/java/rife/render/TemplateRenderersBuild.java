@@ -47,19 +47,21 @@ public class TemplateRenderersBuild extends Project {
         downloadSources = true;
         autoDownloadPurge = true;
 
-        repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_RELEASES);
+        repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_SNAPSHOTS);
 
         var junit = version(6, 1, 3);
         scope(compile)
                 .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
         scope(provided)
                 .include(dependency("com.github.spotbugs", "spotbugs-annotations",
-                        version(4, 9, 8)));
+                        version(4, 10, 3)))
+                .include(dependency("org.jspecify", "jspecify",
+                        version(1, 0, 1)));
         scope(test)
-                .include(dependency("com.uwyn.rife2", "bld-extensions-testing-helpers",
-                        version(0, 9, 6)))
+                .include(dependency("com.uwyn.rife2", "bld-testing-helpers",
+                        version(1, 1, 0, "SNAPSHOT")))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
-                        version(5, 3, 2)))
+                        version(5, 4, 0)))
                 .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
                 .include(dependency("org.junit.platform", "junit-platform-console-standalone", junit))
                 .include(dependency("org.assertj", "assertj-core",
@@ -69,7 +71,8 @@ public class TemplateRenderersBuild extends Project {
                 .docTitle("<a href=\"https://rife2.com\">RIFE2</a> Template Renderers")
                 .author()
                 .docLint(NO_MISSING)
-                .link("https://rife2.github.io/rife2/");
+                .link("https://rife2.github.io/rife2/")
+                .link("https://jspecify.dev/docs/api/");
 
         publishOperation()
                 .repository(version.isSnapshot() ? CENTRAL_SNAPSHOTS
@@ -131,9 +134,9 @@ public class TemplateRenderersBuild extends Project {
     @BuildCommand(summary = "Runs PMD analysis")
     public void pmd() throws Exception {
         new PmdOperation()
-                .fromProject(this)
                 .failOnViolation(true)
                 .ruleSets("config/pmd.xml")
+                .fromProject(this)
                 .execute();
     }
 
