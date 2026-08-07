@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout source repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -40,18 +40,25 @@ jobs:
           distribution: "zulu"
           java-version: 17
 
+      - name: Cache bld dependencies
+        id: cache-bld
+        uses: actions/cache@v6
+        with:
+          path: lib
+          key: ${{ runner.os }}-bld-pages-lib
+
       - name: Build Javadocs
-        run: ./bld download clean javadoc
+        run: ./bld clean compile javadoc
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4.0.0
+        uses: actions/upload-pages-artifact@v5
         with:
           # Upload generated Javadocs repository
           path: "build/javadoc/"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
