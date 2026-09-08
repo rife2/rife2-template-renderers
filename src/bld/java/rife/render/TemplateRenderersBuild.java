@@ -47,7 +47,7 @@ public class TemplateRenderersBuild extends Project {
         downloadSources = true;
         autoDownloadPurge = true;
 
-        repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_SNAPSHOTS);
+        repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_RELEASES);
 
         var junit = version(6, 1, 3);
         scope(compile)
@@ -59,7 +59,7 @@ public class TemplateRenderersBuild extends Project {
                         version(1, 0, 1)));
         scope(test)
                 .include(dependency("com.uwyn.rife2", "bld-testing-helpers",
-                        version(1, 1, 0, "SNAPSHOT")))
+                        version(1, 1, 0)))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
                         version(5, 5, 0)))
                 .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
