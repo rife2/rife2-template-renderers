@@ -51,7 +51,7 @@ public class TemplateRenderersBuild extends Project {
 
         var junit = version(6, 1, 3);
         scope(compile)
-                .include(dependency("com.uwyn.rife2", "rife2", version(1, 9, 1)));
+                .include(dependency("com.uwyn.rife2", "rife2", version(1, 10, 0)));
         scope(provided)
                 .include(dependency("com.github.spotbugs", "spotbugs-annotations",
                         version(4, 10, 4)))
