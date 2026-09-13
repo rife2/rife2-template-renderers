@@ -59,7 +59,7 @@ public class TemplateRenderersBuild extends Project {
                         version(1, 0, 1)));
         scope(test)
                 .include(dependency("com.uwyn.rife2", "bld-testing-helpers",
-                        version(1, 1, 0)))
+                        version(1, 1, 1)))
                 .include(dependency("com.squareup.okhttp3", "mockwebserver",
                         version(5, 5, 0)))
                 .include(dependency("org.junit.jupiter", "junit-jupiter", junit))
