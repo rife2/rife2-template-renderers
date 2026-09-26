@@ -47,7 +47,7 @@ public class TemplateRenderersBuild extends Project {
         downloadSources = true;
         autoDownloadPurge = true;
 
-        repositories = List.of(MAVEN_CENTRAL, RIFE2_SNAPSHOTS, RIFE2_RELEASES);
+        repositories = List.of(MAVEN_CENTRAL, RIFE2_RELEASES);
 
         var junit = version(6, 1, 3);
         scope(compile)
