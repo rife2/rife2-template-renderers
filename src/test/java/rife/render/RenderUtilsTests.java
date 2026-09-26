@@ -42,6 +42,18 @@ class RenderUtilsTests {
     class AbbreviateTests {
 
         @Test
+        void abbreviateAppendsMarkerWhenItFits() {
+            // regression: normal case unaffected by the guard
+            assertThat(RenderUtils.abbreviate("hello world", 6, "...")).isEqualTo("hel...");
+        }
+
+        @Test
+        void abbreviateTruncatesWithoutMarkerWhenMarkerLongerThanMax() {
+            // marker.length() (3) >= max (2) — must not throw StringIndexOutOfBoundsException
+            assertThat(RenderUtils.abbreviate("hello world", 2, "...")).isEqualTo("he");
+        }
+
+        @Test
         @NotWindowsJdk17
         void abbreviateWithEllipsis() {
             assertThat(RenderUtils.abbreviate(CaseTests.SAMPLE_TEXT, 10, "…"))
@@ -275,6 +287,20 @@ class RenderUtilsTests {
                 assertThat(RenderUtils.validateCreditCard(creditCard))
                         .as("Testing %s (%d digits): %s", description, creditCard.length(), creditCard)
                         .isEqualTo(expected);
+            }
+
+            @Test
+            void validateCreditCardAcceptsValidNumberPaddedWithSeparators() {
+                // 16 digits (valid Luhn), raw length 31 due to spaces — old raw-length check
+                // rejected this outright
+                assertThat(RenderUtils.validateCreditCard("4 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1")).isTrue();
+            }
+
+            @Test
+            void validateCreditCardRejectsTooFewDigitsDespiteSeparatorsInflatingLength() {
+                // only 5 digits, but raw length (9, via dashes) fell inside the old 8-19 window
+                // and sum % 10 == 0 — old code returned true; digit-count check now catches it
+                assertThat(RenderUtils.validateCreditCard("0-0-0-0-0")).isFalse();
             }
         }
 

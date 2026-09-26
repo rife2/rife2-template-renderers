@@ -149,6 +149,8 @@ public final class RenderUtils {
             return src;
         } else if (src.length() <= max || max < 0) {
             return src;
+        } else if (marker.length() >= max) {
+            return src.substring(0, max);
         }
 
         return src.substring(0, max - marker.length()) + marker;
@@ -743,32 +745,31 @@ public final class RenderUtils {
     public static boolean validateCreditCard(String cc) {
         Objects.requireNonNull(cc, "The credit card number cannot be null");
 
-        int len = cc.length();
-        if (len < 8 || len > 19) {
-            return false;
-        }
-
         int sum = 0;
+        int digitCount = 0;
         boolean second = false;
 
-        // Process from right to left
-        for (int i = len - 1; i >= 0; i--) {
+        for (int i = cc.length() - 1; i >= 0; i--) {
             char c = cc.charAt(i);
 
-            // Process only digits
             if (c >= '0' && c <= '9') {
                 int digit = c - '0';
 
                 if (second) {
-                    digit <<= 1; // Multiply by 2 using bit shift
+                    digit <<= 1;
                     if (digit > 9) {
-                        digit -= 9; // Equivalent to digit/10 + digit%10 when digit <= 18
+                        digit -= 9;
                     }
                 }
 
                 sum += digit;
+                digitCount++;
                 second = !second;
             }
+        }
+
+        if (digitCount < 8 || digitCount > 19) {
+            return false;
         }
 
         return sum % 10 == 0;
